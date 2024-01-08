@@ -22,5 +22,10 @@
         "tailwindcss": "^3.2.1",
         "typescript": "^5.0.2",
         "vite": "^5.0.0"
+    },
+    "dependencies": {
+        "@heroicons/react": "^2.1.1",
+        "@wedevs/tail-react": "^0.3.3",
+        "classnames": "^2.5.1"
     }
 }

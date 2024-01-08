@@ -31,6 +31,10 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'email',
+        'email_verified_at',
+        'created_at',
+        'updated_at',
     ];
 
     /**
@@ -42,4 +46,23 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    /**
+     * The attributes that should be appended.
+     *
+     * @var array<int, string>
+     */
+    protected $appends = [
+        'avatar'
+    ];
+
+    /**
+     * Get the user's avatar.
+     *
+     * @return string
+     */
+    public function getAvatarAttribute()
+    {
+        return 'https://www.gravatar.com/avatar/' . md5($this->email) . '?s=56&d=mm';
+    }
 }
