@@ -8,7 +8,7 @@ import Dropdown from '@/Components/Dropdown';
 import { PageProps } from '@/types';
 
 const FrontendLayout = ({ children }: PropsWithChildren) => {
-  const { auth, appName } = usePage<PageProps>().props;
+  const { auth, appName, appLogo } = usePage<PageProps>().props;
 
   return (
     <div>
@@ -19,7 +19,7 @@ const FrontendLayout = ({ children }: PropsWithChildren) => {
               <Link href="/" className="flex items-center">
                 <img
                   alt={`${appName} Logo`}
-                  src="https://canny.io/images/b41281d4e19b97d6ac3f38a5c8f085e1.png"
+                  src={appLogo || '/images/logo.svg'}
                   loading="lazy"
                   className="w-10 h-10 mr-3"
                 />

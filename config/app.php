@@ -17,7 +17,7 @@ return [
     */
 
     'name' => env('APP_NAME', 'IdeaBox'),
-    'logo' => env('APP_LOGO', 'https://i.imgur.com/7b7b7b.png'),
+    'logo' => env('APP_LOGO', '/images/logo.svg'),
 
     /*
     |--------------------------------------------------------------------------
