@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
-import { BoardType, PageProps, PostType, CommentType, User } from '@/types';
 import { Button } from '@wedevs/tail-react';
-import { useForm } from '@inertiajs/react';
+import { useForm, usePage } from '@inertiajs/react';
 import axios from 'axios';
+
+import { BoardType, PageProps, PostType, CommentType, User } from '@/types';
 
 type Props = {
   post: PostType;
   parent?: number;
   onComment?: (comment: CommentType) => void;
-  user: User;
 };
 
-const CommentBox = ({ user, post, parent, onComment }: Props) => {
+const CommentBox = ({ post, parent, onComment }: Props) => {
+  const { auth } = usePage<PageProps>().props;
   const [isFocused, setIsFocused] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [rows, setRows] = useState(1);
@@ -122,7 +123,7 @@ const CommentBox = ({ user, post, parent, onComment }: Props) => {
             <Button
               variant="primary"
               type="submit"
-              disabled={isProcessing || form.body === ''}
+              disabled={isProcessing || form.body === '' || !auth.user}
               loading={isProcessing}
             >
               Submit

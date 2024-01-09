@@ -9,20 +9,23 @@ use App\Models\Board;
 
 class PostController extends Controller
 {
-    public function show(Board $board, Post $post)
+    public function show(Board $board, $post)
     {
+
+        $post = Post::where('slug', $post)->withVote()->firstOrFail();
         $post->load('creator');
 
         $data = [
             'post' => $post,
             'board' => $board,
+            'status' => $post->status_id ? $post->status : null,
             'comments' => $post->comments()->with('user')->get(),
         ];
 
         return inertia('Frontend/Post', $data);
     }
 
-    public function vote(Request $request, $board, Post $post)
+    public function vote(Request $request, Post $post)
     {
         $vote = $post->votes()->where('user_id', auth()->user()->id)->first();
         $hasVoted = false;

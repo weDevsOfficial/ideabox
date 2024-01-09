@@ -1,27 +1,19 @@
 import React from 'react';
+import { Head, Link } from '@inertiajs/react';
 
 import FrontendLayout from '@/Layouts/FrontendLayout';
-import { Head } from '@inertiajs/react';
 import VoteButton from '@/Components/VoteButton';
-import { BoardType, PageProps, PostType } from '@/types';
-import CommentBox from '@/Components/CommentBox';
+import { BoardType, PageProps, PostType, StatusType } from '@/types';
 import Comments from '@/Components/Comments';
+import { formatDate } from '@/utils';
 
 type Props = {
   post: PostType;
   board: BoardType;
+  status: null | StatusType;
 };
 
-const formatDate = (date: Date) => {
-  const d = new Date(date);
-  const month = d.toLocaleString('default', { month: 'long' });
-  const day = d.getDate();
-  const year = d.getFullYear();
-
-  return `${month} ${day}, ${year}`;
-};
-
-const Post = ({ auth, post, board }: PageProps<Props>) => {
+const Post = ({ post, status, board }: PageProps<Props>) => {
   return (
     <div>
       <Head title="Post" />
@@ -36,11 +28,32 @@ const Post = ({ auth, post, board }: PageProps<Props>) => {
         <div className="flex-1">
           <div className="flex items-center mb-6">
             <div className="mr-3">
-              <VoteButton post={post} board={board} auth={auth} />
+              <VoteButton post={post} />
             </div>
 
             <div className="flex flex-col flex-1">
-              <div className="text-xl font-semibold">{post.title}</div>
+              <div className="text-xl font-semibold mb-2">{post.title}</div>
+              <div className="flex text-sm text-gray-500">
+                {status && (
+                  <>
+                    <span
+                      className="uppercase font-bold"
+                      style={{
+                        color: status.color,
+                      }}
+                    >
+                      {status.name}
+                    </span>
+                    <span className="mx-1">·</span>
+                  </>
+                )}{' '}
+                <Link
+                  href={route('board.show', board.slug)}
+                  className="hover:text-gray-800"
+                >
+                  {board.name}
+                </Link>
+              </div>
             </div>
           </div>
 
@@ -62,7 +75,7 @@ const Post = ({ auth, post, board }: PageProps<Props>) => {
             </div>
           </div>
 
-          <Comments board={board} post={post} auth={auth} />
+          <Comments board={board} post={post} />
         </div>
       </div>
     </div>

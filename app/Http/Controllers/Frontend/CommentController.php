@@ -14,7 +14,7 @@ class CommentController extends Controller
         $sort = $request->has('sort') && in_array($request->sort, ['latest', 'oldest']) ? $request->sort : 'latest';
         $orderBy = ($sort === 'latest') ? 'desc' : 'asc';
 
-        $comments = $post->comments()->with('user')->orderBy('created_at', $orderBy)->get();
+        $comments = $post->comments()->with('user', 'status')->orderBy('created_at', $orderBy)->get();
 
         // Group comments by parent_id
         $groupedComments = $comments->groupBy('parent_id');

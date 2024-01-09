@@ -18,6 +18,8 @@ return new class extends Migration
             $table->tinyInteger('order');
             $table->integer('posts')->default(0);
             $table->enum('privacy', ['public', 'private']);
+            $table->boolean('allow_posts')->default(true);
+            $table->json('settings')->nullable();
             $table->timestamps();
         });
     }

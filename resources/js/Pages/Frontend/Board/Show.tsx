@@ -11,6 +11,7 @@ import { BoardType, PageProps, PostType, User } from '@/types';
 import PostForm from './PostForm';
 import classNames from 'classnames';
 import axios from 'axios';
+import VoteButton from '@/Components/VoteButton';
 
 type Props = {
   posts: PostType[];
@@ -66,7 +67,7 @@ const ShowBoard = ({ auth, posts, board }: PageProps<Props>) => {
       <Head title={board.name} />
 
       <div className="flex gap-8 mb-8">
-        <PostForm board={board} />
+        <PostForm board={board} user={auth.user} />
 
         <div className="flex-1">
           <div className="border rounded">
@@ -125,23 +126,9 @@ const ShowBoard = ({ auth, posts, board }: PageProps<Props>) => {
                     </div>
                   </Link>
                   <div className="text-sm text-gray-500">
-                    <button
-                      className={classNames(
-                        'flex flex-col self-start w-9 ml-4 rounded-md border py-2 items-center hover:bg-gray-100',
-                        post.has_voted
-                          ? 'border-indigo-500 bg-indigo-50'
-                          : 'border-gray-300'
-                      )}
-                      onClick={() => toggleVote(post)}
-                    >
-                      <ChevronUpIcon
-                        className={classNames(
-                          'h-3 w-3 mb-1',
-                          post.has_voted ? 'text-indigo-600' : 'text-gray-400'
-                        )}
-                      />
-                      <span className="text-xs">{post.vote}</span>
-                    </button>
+                    <div className="ml-4">
+                      <VoteButton post={post} />
+                    </div>
                   </div>
                 </div>
               ))}

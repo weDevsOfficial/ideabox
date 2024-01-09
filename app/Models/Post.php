@@ -10,7 +10,21 @@ class Post extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'slug', 'body', 'vote', 'status_id', 'board_id', 'comments', 'by', 'created_by'];
+    protected $fillable = [
+        'title',
+        'slug',
+        'body',
+        'vote',
+        'status_id',
+        'board_id',
+        'comments',
+        'by',
+        'owner',
+        'eta',
+        'impact',
+        'effort',
+        'created_by'
+    ];
 
     protected static function boot()
     {
@@ -49,7 +63,7 @@ class Post extends Model
 
     public function status()
     {
-        return $this->hasOne(Status::class);
+        return $this->hasOne(Status::class, 'id', 'status_id');
     }
 
     public function votes()
@@ -73,5 +87,19 @@ class Post extends Model
     public function comments()
     {
         return $this->hasMany(Comment::class);
+    }
+
+    public function scopeWithVote($query)
+    {
+        if (auth()->check()) {
+            $userId = auth()->id();
+
+            $query->addSelect([
+                'has_voted' => Vote::selectRaw('count(*)')
+                    ->whereColumn('post_id', 'posts.id')
+                    ->where('user_id', $userId)
+                    ->take(1)
+            ]);
+        }
     }
 }

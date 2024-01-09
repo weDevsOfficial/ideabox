@@ -34,7 +34,7 @@ Route::get('/dashboard', function () {
 
 Route::middleware('auth')->group(function () {
     Route::post('/b/{board}', [BoardController::class,'store'])->name('board.posts.store');
-    Route::post('/b/{board}/p/{post}/vote', [PostController::class,'vote'])->name('post.vote');
+    Route::post('/p/{post}/vote', [PostController::class,'vote'])->name('post.vote');
     Route::post('/p/{post}/comments', [CommentController::class,'store'])->name('post.comments.store');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

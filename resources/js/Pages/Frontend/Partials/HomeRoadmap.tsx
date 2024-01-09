@@ -1,8 +1,8 @@
 import React from 'react';
-import { ChevronUpIcon } from '@heroicons/react/24/outline';
-
-import { RoadmapType, PostType, BoardType } from '@/types';
 import { Link } from '@inertiajs/react';
+
+import { RoadmapType, PostType, BoardType, PageProps, User } from '@/types';
+import VoteButton from '@/Components/VoteButton';
 
 type Props = {
   boards: BoardType[];
@@ -15,8 +15,8 @@ const HomeRoadmap = ({ roadmaps, posts, boards }: Props) => {
     return posts.filter((post) => post.status_id === roadmapId);
   };
 
-  const getBoardNameById = (boardId: number) => {
-    return boards.find((board) => board.id === boardId)?.name;
+  const getBoardById = (boardId: number) => {
+    return boards.find((board) => board.id === boardId);
   };
 
   return (
@@ -35,26 +35,29 @@ const HomeRoadmap = ({ roadmaps, posts, boards }: Props) => {
             </div>
 
             <div className="px-4 pb-4 min-h-80 h-[500px] overflow-y-auto">
-              {postsByRoadmapId(roadmap.id).map((post) => (
-                <div key={post.id} className="flex mt-6">
-                  <button className="flex flex-col self-start w-9 mr-4 rounded-md border border-gray-300 py-2 items-center hover:bg-gray-100">
-                    <ChevronUpIcon className="h-3 w-3 text-gray-400 mb-1" />
-                    <span className="text-xs">{post.vote}</span>
-                  </button>
+              {postsByRoadmapId(roadmap.id).map((post) => {
+                let board = getBoardById(post.board_id);
 
-                  <Link
-                    href={route('post.show', ['feature-request', post.slug])}
-                    className="flex flex-col flex-1 group"
-                  >
-                    <div className="mb-1.5 text-sm font-semibold text-gray-700 group-hover:text-indigo-600">
-                      {post.title}
+                return (
+                  <div key={post.id} className="flex mt-6">
+                    <div className="mr-4">
+                      <VoteButton post={post} />
                     </div>
-                    <div className="text-xs text-gray-500 uppercase font-semibold">
-                      {getBoardNameById(post.board_id)}
-                    </div>
-                  </Link>
-                </div>
-              ))}
+
+                    <Link
+                      href={route('post.show', [board?.slug, post.slug])}
+                      className="flex flex-col flex-1 group"
+                    >
+                      <div className="mb-1.5 text-sm font-semibold text-gray-700 group-hover:text-indigo-600">
+                        {post.title}
+                      </div>
+                      <div className="text-xs text-gray-500 uppercase font-semibold">
+                        {board?.name}
+                      </div>
+                    </Link>
+                  </div>
+                );
+              })}
             </div>
           </div>
         ))}

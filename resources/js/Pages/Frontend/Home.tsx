@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Head, Link } from '@inertiajs/react';
 
 import FrontendLayout from '@/Layouts/FrontendLayout';
-import { BoardType, PostType, RoadmapType } from '@/types';
+import { BoardType, PageProps, PostType, RoadmapType } from '@/types';
 import HomeBoardList from './Partials/HomeBoardList';
 import HomeRoadmap from './Partials/HomeRoadmap';
 
@@ -12,7 +12,7 @@ type Props = {
   posts: PostType[];
 };
 
-const Home = ({ boards, roadmaps, posts }: Props) => {
+const Home = ({ boards, roadmaps, posts, auth }: PageProps<Props>) => {
   const [allPosts, setAllPosts] = useState<PostType[]>(posts);
 
   return (

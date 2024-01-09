@@ -12,11 +12,10 @@ type CommentsProps = {
 type CommentProps = {
   comment: CommentType;
   post: PostType;
-  user: User;
   parentId?: number;
 };
 
-const Comments: React.FC<PageProps<CommentsProps>> = ({ auth, post }) => {
+const Comments: React.FC<CommentsProps> = ({ post }) => {
   const [comments, setComments] = useState<CommentType[]>([]);
   const [sort, setSort] = useState('latest');
   const [isFetching, setIsFetching] = useState(false);
@@ -52,7 +51,7 @@ const Comments: React.FC<PageProps<CommentsProps>> = ({ auth, post }) => {
   return (
     <div className="mt-8">
       <div className="mb-8 ml-12">
-        <CommentBox post={post} user={auth.user} onComment={appendToComments} />
+        <CommentBox post={post} onComment={appendToComments} />
       </div>
 
       {comments.length > 0 && !isFetching && (
@@ -75,19 +74,14 @@ const Comments: React.FC<PageProps<CommentsProps>> = ({ auth, post }) => {
 
       <div className="mt-4">
         {comments.map((comment) => (
-          <Comment
-            key={comment.id}
-            post={post}
-            comment={comment}
-            user={auth.user}
-          />
+          <Comment key={comment.id} post={post} comment={comment} />
         ))}
       </div>
     </div>
   );
 };
 
-const Comment = ({ post, comment, parentId, user }: CommentProps) => {
+const Comment = ({ post, comment, parentId }: CommentProps) => {
   const [showReplyBox, setShowReplyBox] = useState(false);
 
   const toggleReplyBox = () => {
@@ -104,7 +98,20 @@ const Comment = ({ post, comment, parentId, user }: CommentProps) => {
       </div>
 
       <div className="flex-1">
-        <div className="text-sm font-semibold mb-2">{comment.user?.name}</div>
+        <div className="flex items-center text-sm mb-2">
+          <div className="font-semibold">{comment.user?.name}</div>
+          {comment.status && (
+            <div className="text-sm text-gray-700 ml-2">
+              <span>marked this post as</span>
+              <span
+                className="uppercase text-xs font-bold ml-2 text-white px-2 py-1 rounded"
+                style={{ backgroundColor: comment.status.color }}
+              >
+                {comment.status.name}
+              </span>
+            </div>
+          )}
+        </div>
         <div className="text-sm text-gray-800 mb-2">{comment.body}</div>
         <div className="flex text-xs text-gray-500">
           <div className="">{formatDate(comment.created_at)}</div>
@@ -125,7 +132,6 @@ const Comment = ({ post, comment, parentId, user }: CommentProps) => {
                 post={post}
                 comment={child}
                 parentId={comment.id}
-                user={user}
               />
             ))}
           </div>
@@ -133,7 +139,7 @@ const Comment = ({ post, comment, parentId, user }: CommentProps) => {
 
         {showReplyBox && (
           <div className="mt-4">
-            <CommentBox post={post} parent={parentId} user={user} />
+            <CommentBox post={post} parent={parentId} />
           </div>
         )}
       </div>

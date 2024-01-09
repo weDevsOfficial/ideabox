@@ -11,6 +11,13 @@ class Status extends Model
 
     protected $fillable = ['name', 'color'];
 
+    protected $hidden = ['created_at', 'updated_at'];
+
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
+
     public function post()
     {
         return $this->belongsTo(Post::class);

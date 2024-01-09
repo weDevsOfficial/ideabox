@@ -9,7 +9,19 @@ class Board extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'slug', 'order', 'posts', 'privacy'];
+    protected $fillable = [
+        'name',
+        'slug',
+        'order',
+        'posts',
+        'privacy',
+        'allow_posts',
+        'settings'
+    ];
+
+    protected $casts = [
+        'settings' => 'array'
+    ];
 
     public function getRouteKeyName()
     {

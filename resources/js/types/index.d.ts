@@ -12,13 +12,39 @@ export type PageProps<
   auth: {
     user: User;
   };
+  appName: string;
+  appLogo: string;
 };
+
+export interface StatusType {
+  color: string;
+  id: number;
+  name: string;
+}
 
 export interface BoardType {
   id: number;
   name: string;
   slug: string;
   posts: number;
+  allow_posts: boolean;
+  settings?: {
+    form: {
+      heading: string;
+      description: string;
+      button: string;
+      fields: {
+        title: {
+          label: string;
+          placeholder: string;
+        };
+        details: {
+          label: string;
+          placeholder: string;
+        };
+      };
+    };
+  };
 }
 
 export interface PostType {
@@ -46,6 +72,7 @@ export interface CommentType {
   updated_at: Date;
   user?: User;
   children: CommentType[];
+  status: null | StatusType;
 }
 
 export interface RoadmapType {

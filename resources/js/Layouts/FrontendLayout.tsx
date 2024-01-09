@@ -2,17 +2,13 @@ import React, { PropsWithChildren } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import classNames from 'classnames';
 import { Button } from '@wedevs/tail-react';
-import {
-  LightBulbIcon,
-  MagnifyingGlassIcon,
-  MapIcon,
-} from '@heroicons/react/24/outline';
+import { LightBulbIcon, MapIcon } from '@heroicons/react/24/outline';
 
 import Dropdown from '@/Components/Dropdown';
 import { PageProps } from '@/types';
 
 const FrontendLayout = ({ children }: PropsWithChildren) => {
-  const { auth } = usePage<PageProps>().props;
+  const { auth, appName } = usePage<PageProps>().props;
 
   return (
     <div>
@@ -22,12 +18,12 @@ const FrontendLayout = ({ children }: PropsWithChildren) => {
             <div className="">
               <Link href="/" className="flex items-center">
                 <img
-                  alt="FlyWP logo"
+                  alt={`${appName} Logo`}
                   src="https://canny.io/images/b41281d4e19b97d6ac3f38a5c8f085e1.png"
                   loading="lazy"
                   className="w-10 h-10 mr-3"
                 />
-                <span className="text-xl font-semibold">FlyWP</span>
+                <span className="text-xl font-semibold">{appName}</span>
               </Link>
             </div>
             <div className="">
@@ -119,7 +115,7 @@ const FrontendLayout = ({ children }: PropsWithChildren) => {
               </Link>
             </div>
 
-            <div className="relative">
+            {/* <div className="relative">
               <input
                 type="search"
                 placeholder="Search"
@@ -128,7 +124,7 @@ const FrontendLayout = ({ children }: PropsWithChildren) => {
               <div className="absolute inset-y-0 left-2 flex items-center pr-3 pointer-events-none">
                 <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </header>
@@ -137,7 +133,7 @@ const FrontendLayout = ({ children }: PropsWithChildren) => {
 
       <footer className="border-t border-gray-200 mt-12 py-4">
         <div className="w-[960px] mx-auto text-sm text-gray-600">
-          &copy; Company Name.
+          &copy; {appName}
         </div>
       </footer>
     </div>

@@ -38,7 +38,7 @@ class BoardController extends Controller
             $orderBy = $sortFields[$request->sort];
         }
 
-        $postsQuery->orderBy($orderBy, 'desc');
+        $postsQuery->orderBy($orderBy, $request->sort === 'oldest' ? 'asc' : 'desc');
         $posts = $postsQuery->get();
 
         $data = [
