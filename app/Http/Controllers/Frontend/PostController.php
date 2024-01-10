@@ -6,6 +6,7 @@ use App\Models\Post;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Board;
+use App\Models\Vote;
 
 class PostController extends Controller
 {
@@ -18,6 +19,7 @@ class PostController extends Controller
         $data = [
             'post' => $post,
             'board' => $board,
+            'votes' => Vote::select('id', 'user_id')->onPost($post)->with('user')->take(10)->get(),
             'status' => $post->status_id ? $post->status : null,
             'comments' => $post->comments()->with('user')->get(),
         ];

@@ -3,7 +3,7 @@ import { Head, Link } from '@inertiajs/react';
 
 import FrontendLayout from '@/Layouts/FrontendLayout';
 import VoteButton from '@/Components/VoteButton';
-import { BoardType, PageProps, PostType, StatusType } from '@/types';
+import { BoardType, PageProps, PostType, StatusType, VoteType } from '@/types';
 import Comments from '@/Components/Comments';
 import { formatDate } from '@/utils';
 
@@ -11,9 +11,10 @@ type Props = {
   post: PostType;
   board: BoardType;
   status: null | StatusType;
+  votes: VoteType[];
 };
 
-const Post = ({ post, status, board }: PageProps<Props>) => {
+const Post = ({ post, status, board, votes }: PageProps<Props>) => {
   return (
     <div>
       <Head title="Post" />
@@ -22,6 +23,36 @@ const Post = ({ post, status, board }: PageProps<Props>) => {
         <div className="w-72">
           <div className="px-4 py-4 border rounded">
             <h3 className="text-base font-semibold mb-3">Voters</h3>
+
+            {votes.length > 0 ? (
+              <>
+                <ul>
+                  {votes.map((vote) => (
+                    <li key={vote.id} className="flex items-center mb-2">
+                      <div className="mr-3">
+                        <img
+                          src={vote.user.avatar}
+                          className="rounded-full h-7 w-7"
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-sm font-semibold">
+                          {vote.user.name}
+                        </div>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+
+                {post.vote > 10 && (
+                  <div className="text-sm text-gray-500 mt-2">
+                    + {post.vote - 10} more votes
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="text-sm text-gray-500">No voters yet.</div>
+            )}
           </div>
         </div>
 

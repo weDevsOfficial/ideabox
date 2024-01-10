@@ -48,4 +48,17 @@ class Vote extends Model
     {
         return $this->belongsTo(Board::class);
     }
+
+    /**
+     * Scope a query to only include votes on a specific post.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  \App\Models\Post  $post
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeOnPost($query, $post)
+    {
+        return $query->where('post_id', $post->id);
+    }
 }

@@ -80,3 +80,9 @@ export interface RoadmapType {
   name: string;
   color: string;
 }
+
+export interface VoteType {
+  id: number;
+  user_id: number;
+  user: User;
+}
