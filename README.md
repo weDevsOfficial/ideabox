@@ -2,6 +2,8 @@
 
 Welcome to **IdeaBox**, an open-source customer feedback and roadmap management tool.
 
+![Screenshot](docs/screenshot.png)
+
 This application is designed to help businesses gather, organize, and prioritize customer feedback to streamline their product development and roadmap planning. Built with Laravel, Inertia, React, and Tailwind, IdeaBox offers a robust and user-friendly platform for managing customer insights.
 
 ## Features
