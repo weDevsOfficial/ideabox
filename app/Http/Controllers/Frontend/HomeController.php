@@ -16,7 +16,7 @@ class HomeController extends Controller
             ->orderBy('order')
             ->get();
         $statuses = Status::select('id', 'name', 'color')
-            ->whereIn('id', [2, 3, 4])
+            ->inRoadmap()
             ->get();
 
         $posts = Post::whereIn('status_id', $statuses->pluck('id'))

@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('color');
+            $table->tinyInteger('order')->default(0);
+            $table->boolean('in_roadmap')->default(false);
             $table->timestamps();
         });
     }

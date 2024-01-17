@@ -11,6 +11,7 @@
         "@tailwindcss/forms": "^0.5.3",
         "@types/node": "^18.13.0",
         "@types/react": "^18.0.28",
+        "@types/react-color": "^3.0.11",
         "@types/react-dom": "^18.0.10",
         "@vitejs/plugin-react": "^4.2.0",
         "autoprefixer": "^10.4.12",
@@ -25,7 +26,9 @@
     },
     "dependencies": {
         "@heroicons/react": "^2.1.1",
+        "@radix-ui/react-popover": "^1.0.7",
         "@wedevs/tail-react": "^0.3.3",
-        "classnames": "^2.5.1"
+        "classnames": "^2.5.1",
+        "react-color": "^2.19.3"
     }
 }

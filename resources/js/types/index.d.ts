@@ -15,12 +15,16 @@ export type PageProps<
   };
   appName: string;
   appLogo: string;
+  error: string;
+  success: string;
 };
 
 export interface StatusType {
   color: string;
   id: number;
   name: string;
+  in_roadmap: boolean;
+  order: number;
 }
 
 export interface BoardType {

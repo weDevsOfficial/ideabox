@@ -36,6 +36,8 @@ class HandleInertiaRequests extends Middleware
             ],
             'appName' => config('app.name'),
             'appLogo' => config('app.logo'),
+            'success' => fn () => $request->session()->get('success'),
+            'error' => fn () => $request->session()->get('error'),
         ];
     }
 }

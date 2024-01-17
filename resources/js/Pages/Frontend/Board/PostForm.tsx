@@ -26,8 +26,6 @@ const PostForm = ({ board, user }: Props) => {
     });
   };
 
-  console.log(board.settings);
-
   return (
     <div className="w-72">
       <form

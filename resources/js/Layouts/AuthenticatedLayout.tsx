@@ -1,20 +1,20 @@
-import { useState, PropsWithChildren, ReactNode } from 'react';
+import { useEffect, useState, PropsWithChildren, ReactNode } from 'react';
 import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { Link, usePage } from '@inertiajs/react';
 import { PageProps, User } from '@/types';
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline';
+import { Notice } from '@wedevs/tail-react';
 
 export default function Authenticated({
-  user,
   header,
   children,
-}: PropsWithChildren<{ user: User; header?: ReactNode }>) {
+}: PropsWithChildren<{ header?: ReactNode }>) {
   const [showingNavigationDropdown, setShowingNavigationDropdown] =
     useState(false);
 
-  const { appName, appLogo } = usePage<PageProps>().props;
+  const { auth, appName, appLogo, success, error } = usePage<PageProps>().props;
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
@@ -40,6 +40,13 @@ export default function Authenticated({
                 >
                   Dashboard
                 </NavLink>
+
+                <NavLink
+                  href={route('admin.statuses.index')}
+                  active={route().current('admin.statuses.index')}
+                >
+                  Status
+                </NavLink>
               </div>
             </div>
 
@@ -47,7 +54,7 @@ export default function Authenticated({
               <a
                 href={route('home')}
                 target="_blank"
-                className="text-sm inline-flex text-gray-600"
+                className="text-sm font-medium inline-flex text-gray-500 hover:text-gray-700"
               >
                 <span>Preview</span>
                 <ArrowTopRightOnSquareIcon className="h-5 w-5 ml-2" />
@@ -61,7 +68,7 @@ export default function Authenticated({
                         type="button"
                         className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150"
                       >
-                        {user.name}
+                        {auth.user.name}
 
                         <svg
                           className="ms-2 -me-0.5 h-4 w-4"
@@ -151,10 +158,10 @@ export default function Authenticated({
           <div className="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
             <div className="px-4">
               <div className="font-medium text-base text-gray-800 dark:text-gray-200">
-                {user.name}
+                {auth.user.name}
               </div>
               <div className="font-medium text-sm text-gray-500">
-                {user.email}
+                {auth.user.email}
               </div>
             </div>
 
@@ -182,7 +189,20 @@ export default function Authenticated({
         </header>
       )}
 
-      <main>{children}</main>
+      <main className="max-w-7xl mx-auto sm:px-6 lg:px-8 py-12 ">
+        {error && (
+          <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <Notice type="error" label={error} className="mb-4" />
+          </div>
+        )}
+
+        {success && (
+          <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <Notice type="success" label={success} className="mb-4" />
+          </div>
+        )}
+        {children}
+      </main>
     </div>
   );
 }

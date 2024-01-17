@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\StatusController;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
@@ -24,15 +26,17 @@ Route::get('/', [HomeController::class, 'index'])
     ->name('home');
 Route::get('/b/{board}', [BoardController::class, 'show'])
     ->name('board.show');
-Route::get('/b/{board}/p/{post}', [PostController::class, 'show'])
+Route::get('/b/{board}/{post}', [PostController::class, 'show'])
     ->name('post.show');
 Route::get('/p/{post}/comments', [CommentController::class, 'index'])->name('post.comments.index');
 
 // route group with 'admin' prefix
 Route::prefix('admin')->middleware('auth', 'verified', 'admin')->group(function () {
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::get('/statuses', [StatusController::class, 'index'])->name('admin.statuses.index');
+    Route::post('/statuses', [StatusController::class, 'store'])->name('admin.statuses.store');
+    Route::put('/statuses/update', [StatusController::class, 'update'])->name('admin.statuses.update');
 });
 
 Route::middleware('auth')->group(function () {

@@ -12,7 +12,6 @@ class PostController extends Controller
 {
     public function show(Board $board, $post)
     {
-
         $post = Post::where('slug', $post)->withVote()->firstOrFail();
         $post->load('creator');
 
