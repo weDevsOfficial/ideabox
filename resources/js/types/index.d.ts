@@ -19,6 +19,21 @@ export type PageProps<
   success: string;
 };
 
+export interface PaginatedLink {
+  url: string;
+  label: string;
+  active: boolean;
+}
+
+export interface PaginatedResponse<T> {
+  current_page: number;
+  last_page: number;
+  per_page: number;
+  total: number;
+  data: T[];
+  links: PaginatedLink[];
+}
+
 export interface StatusType {
   color: string;
   id: number;
@@ -59,12 +74,14 @@ export interface PostType {
   body: string;
   vote: number;
   comments: number;
-  status_id: number;
+  status_id: null | number;
   board_id: number;
   has_voted: boolean;
   created_at: Date;
   updated_at: Date;
   creator?: User;
+  board?: BoardType;
+  status?: StatusType;
 }
 
 export interface CommentType {

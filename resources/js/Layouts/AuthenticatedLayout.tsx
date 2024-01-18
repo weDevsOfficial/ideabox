@@ -42,6 +42,13 @@ export default function Authenticated({
                 </NavLink>
 
                 <NavLink
+                  href={route('admin.feedbacks.index')}
+                  active={route().current('admin.feedbacks.index')}
+                >
+                  Feedback
+                </NavLink>
+
+                <NavLink
                   href={route('admin.statuses.index')}
                   active={route().current('admin.statuses.index')}
                 >
@@ -191,13 +198,13 @@ export default function Authenticated({
 
       <main className="max-w-7xl mx-auto sm:px-6 lg:px-8 py-12 ">
         {error && (
-          <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto">
             <Notice type="error" label={error} className="mb-4" />
           </div>
         )}
 
         {success && (
-          <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto">
             <Notice type="success" label={success} className="mb-4" />
           </div>
         )}

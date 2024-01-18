@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\FeedbackController;
 use App\Http\Controllers\Admin\StatusController;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
@@ -33,6 +34,10 @@ Route::get('/p/{post}/comments', [CommentController::class, 'index'])->name('pos
 // route group with 'admin' prefix
 Route::prefix('admin')->middleware('auth', 'verified', 'admin')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::get('/feedbacks', [FeedbackController::class, 'index'])->name('admin.feedbacks.index');
+    Route::get('/feedbacks/{post}', [FeedbackController::class, 'show'])->name('admin.feedbacks.show');
+    Route::post('/feedbacks/{post}', [FeedbackController::class, 'update'])->name('admin.feedbacks.update');
 
     Route::get('/statuses', [StatusController::class, 'index'])->name('admin.statuses.index');
     Route::post('/statuses', [StatusController::class, 'store'])->name('admin.statuses.store');
