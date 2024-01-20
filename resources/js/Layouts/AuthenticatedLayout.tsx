@@ -23,7 +23,7 @@ export default function Authenticated({
           <div className="flex justify-between h-16">
             <div className="flex">
               <div className="shrink-0 flex items-center">
-                <Link href={route('dashboard')}>
+                <Link href="/admin">
                   <img
                     alt={`${appName} Logo`}
                     src={appLogo || '/images/logo.svg'}
@@ -35,17 +35,17 @@ export default function Authenticated({
 
               <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                 <NavLink
-                  href={route('dashboard')}
-                  active={route().current('dashboard')}
-                >
-                  Dashboard
-                </NavLink>
-
-                <NavLink
                   href={route('admin.feedbacks.index')}
                   active={route().current('admin.feedbacks.index')}
                 >
-                  Feedback
+                  Feedbacks
+                </NavLink>
+
+                <NavLink
+                  href={route('admin.boards.index')}
+                  active={route().current('admin.boards.index')}
+                >
+                  Boards
                 </NavLink>
 
                 <NavLink
@@ -155,10 +155,24 @@ export default function Authenticated({
         >
           <div className="pt-2 pb-3 space-y-1">
             <ResponsiveNavLink
-              href={route('dashboard')}
-              active={route().current('dashboard')}
+              href={route('admin.feedbacks.index')}
+              active={route().current('admin.feedbacks.index')}
             >
-              Dashboard
+              Feedbacks
+            </ResponsiveNavLink>
+
+            <ResponsiveNavLink
+              href={route('admin.boards.index')}
+              active={route().current('admin.boards.index')}
+            >
+              Boards
+            </ResponsiveNavLink>
+
+            <ResponsiveNavLink
+              href={route('admin.statuses.index')}
+              active={route().current('admin.statuses.index')}
+            >
+              Status
             </ResponsiveNavLink>
           </div>
 

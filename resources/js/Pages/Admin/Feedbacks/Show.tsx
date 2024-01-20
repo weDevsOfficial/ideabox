@@ -53,10 +53,10 @@ const FeedbackShow = ({ post, statuses, boards }: Props) => {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
+    <div className="bg-white dark:bg-gray-800 overflow-hidden shadow sm:rounded-lg p-6">
       <Head title={post.title} />
 
-      <div className="flex gap-6">
+      <div className="sm:flex gap-6">
         <div className="flex-1">
           <Link
             className="flex mb-6 items-center text-sm text-gray-600 "
@@ -104,7 +104,7 @@ const FeedbackShow = ({ post, statuses, boards }: Props) => {
           <Comments post={localPost} board={localPost.board} />
         </div>
 
-        <div className="w-96 border-l pl-5 border-gray-100">
+        <div className="sm:w-96 sm:border-l sm:pl-5 border-gray-100">
           <Button
             as="a"
             href={route('post.show', {

@@ -48,6 +48,7 @@ export interface BoardType {
   slug: string;
   posts: number;
   allow_posts: boolean;
+  privacy: 'public' | 'private';
   settings?: {
     form: {
       heading: string;

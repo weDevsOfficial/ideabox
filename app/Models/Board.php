@@ -20,7 +20,8 @@ class Board extends Model
     ];
 
     protected $casts = [
-        'settings' => 'array'
+        'settings' => 'array',
+        'allow_posts' => 'boolean',
     ];
 
     public function getRouteKeyName()

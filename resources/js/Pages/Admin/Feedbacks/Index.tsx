@@ -62,12 +62,12 @@ const Feedbacks = ({ posts, boards, statuses }: Props) => {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+    <div className="bg-white dark:bg-gray-800 overflow-hidden shadow sm:rounded-lg">
       <Head title="Feedbacks" />
 
       <div className="p-6 text-gray-900 dark:text-gray-100">
-        <div className="flex gap-6">
-          <div className="w-52 border-r pr-5 border-gray-100">
+        <div className="sm:flex gap-6">
+          <div className="sm:w-52 sm:border-r sm:pr-5 border-gray-100">
             <SelectInput
               label="Sort By"
               selectedKey={sortKey}

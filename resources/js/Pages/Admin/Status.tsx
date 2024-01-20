@@ -143,9 +143,9 @@ const StatusPage = ({ statuses }: Props) => {
 
         <CreateModal isOpen={isModalOpen} onClose={onClose} />
 
-        <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-          <div className="flex gap-6 p-6 text-gray-900 dark:text-gray-100">
-            <div className="w-96 border-r pr-5 border-gray-100">
+        <div className="bg-white dark:bg-gray-800 overflow-hidden shadow sm:rounded-lg">
+          <div className="sm:flex gap-6 p-6 text-gray-900 dark:text-gray-100">
+            <div className="mb-4 sm:mb-0 sm:w-96 sm:border-r sm:pr-5 border-gray-100">
               <h3 className="font-semibold mb-2">About Statuses</h3>
               <p className="text-sm">
                 Statuses are the integral part of product roadmap. Only 3
@@ -156,9 +156,9 @@ const StatusPage = ({ statuses }: Props) => {
               {form.data.statuses.map((status) => (
                 <div
                   key={status.id}
-                  className="flex items-center justify-between mb-2"
+                  className="sm:flex items-center justify-between mb-6 sm:mb-2"
                 >
-                  <div className="flex items-center">
+                  <div className="mb-2 sm:mb-0 flex items-center">
                     <div className="mr-2">
                       <ColorPicker
                         color={status.color}
