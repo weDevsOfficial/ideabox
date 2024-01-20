@@ -32,7 +32,7 @@ const FrontendLayout = ({ children }: PropsWithChildren) => {
                   {auth.user.role === 'admin' && (
                     <Button
                       as={Link}
-                      href={route('dashboard')}
+                      href={route('admin.feedbacks.index')}
                       variant="primary"
                       style="outline"
                       className="mr-2 font-medium text-[13px] py-1.5 px-2"
