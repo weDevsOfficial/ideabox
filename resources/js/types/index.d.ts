@@ -81,7 +81,7 @@ export interface PostType {
   created_at: Date;
   updated_at: Date;
   creator?: User;
-  board?: BoardType;
+  board: BoardType;
   status?: StatusType;
 }
 

@@ -16,8 +16,30 @@ type Props = {
   board: BoardType;
 };
 
+type FieldType = {
+  label: string;
+  placeholder: string;
+};
+
+type FormFields = {
+  title: FieldType;
+  details: FieldType;
+  [key: string]: FieldType;
+};
+
 const Show = ({ board }: Props) => {
-  const form = useForm({
+  const form = useForm<{
+    name: string;
+    slug: string;
+    privacy: string;
+    allow_posts: boolean;
+    settings: {
+      heading: string;
+      description: string;
+      fields: FormFields;
+      button: string;
+    };
+  }>({
     name: board.name,
     slug: board.slug,
     privacy: board.privacy,
@@ -110,7 +132,11 @@ const Show = ({ board }: Props) => {
             { value: 'Public', key: 'public' },
             { value: 'Private', key: 'private' },
           ]}
-          onChange={(option) => form.setData('privacy', option.key)}
+          onChange={(option) => {
+            if (option.key === 'public' || option.key === 'private') {
+              form.setData('privacy', option.key);
+            }
+          }}
           renderItem={(option) => (
             <div className="text-sm w-20">{option.value}</div>
           )}

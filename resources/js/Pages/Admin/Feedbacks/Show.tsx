@@ -124,14 +124,18 @@ const FeedbackShow = ({ post, statuses, boards }: Props) => {
               label="Board"
               selectedKey={form.data.board_id.toString()}
               options={boardOptions}
-              onChange={(option) => form.setData('board_id', option.key)}
+              onChange={(option) =>
+                form.setData('board_id', Number(option.key))
+              }
             />
 
             <SelectInput
               label="Status"
               selectedKey={form.data.status_id?.toString()}
               options={statusOptions}
-              onChange={(option) => form.setData('status_id', option.key)}
+              onChange={(option) =>
+                form.setData('status_id', Number(option.key))
+              }
             />
 
             {form.data.status_id !== localPost.status_id && (
