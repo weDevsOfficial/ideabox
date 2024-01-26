@@ -38,7 +38,7 @@ export default function Authenticated({
                   href={route('admin.feedbacks.index')}
                   active={route().current('admin.feedbacks.index')}
                 >
-                  Feedbacks
+                  Feedback
                 </NavLink>
 
                 <NavLink
@@ -53,6 +53,13 @@ export default function Authenticated({
                   active={route().current('admin.statuses.index')}
                 >
                   Status
+                </NavLink>
+
+                <NavLink
+                  href={route('admin.users.index')}
+                  active={route().current('admin.users.index')}
+                >
+                  Users
                 </NavLink>
               </div>
             </div>

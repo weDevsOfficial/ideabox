@@ -12,6 +12,9 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    public const ROLE_ADMIN = 'admin';
+    public const ROLE_USER = 'user';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -21,6 +24,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
 
     /**
@@ -64,5 +68,15 @@ class User extends Authenticatable
     public function getAvatarAttribute()
     {
         return 'https://www.gravatar.com/avatar/' . md5($this->email) . '?s=56&d=mm';
+    }
+
+    public function scopeAdmin($query)
+    {
+        return $query->where('role', 'admin');
+    }
+
+    public function posts()
+    {
+        return $this->hasMany(Post::class, 'created_by');
     }
 }

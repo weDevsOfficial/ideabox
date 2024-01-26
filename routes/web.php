@@ -12,6 +12,7 @@ use App\Http\Controllers\Frontend\BoardController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Frontend\CommentController;
 use App\Http\Controllers\Admin\BoardController as AdminBoardController;
+use App\Http\Controllers\Admin\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,6 +51,11 @@ Route::prefix('admin')->middleware('auth', 'verified', 'admin')->group(function 
     Route::get('/statuses', [StatusController::class, 'index'])->name('admin.statuses.index');
     Route::post('/statuses', [StatusController::class, 'store'])->name('admin.statuses.store');
     Route::put('/statuses/update', [StatusController::class, 'update'])->name('admin.statuses.update');
+
+    Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
+    Route::post('/users', [UserController::class, 'store'])->name('admin.users.store');
+    Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
+    Route::put('/users/{user}', [UserController::class, 'update'])->name('admin.users.update');
 });
 
 Route::middleware('auth')->group(function () {

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 
 import { formatDate } from '@/utils';
 import CommentBox from './CommentBox';
+import classNames from 'classnames';
 
 type CommentsProps = {
   post: PostType;
@@ -93,7 +94,10 @@ const Comment = ({ post, comment, parentId }: CommentProps) => {
       <div className="w-9 mr-3">
         <img
           src={comment.user?.avatar}
-          className="rounded-full h-7 w-7 bg-gray-300"
+          className={classNames(
+            'rounded-full h-7 w-7',
+            comment.user?.role === 'admin' ? 'ring-2 ring-indigo-500' : ''
+          )}
         />
       </div>
 

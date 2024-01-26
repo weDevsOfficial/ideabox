@@ -12,6 +12,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { formatDate } from '@/utils';
 import { PostType, StatusType, BoardType } from '@/types';
 import Comments from '@/Components/Comments';
+import classNames from 'classnames';
 
 type Props = {
   post: PostType;
@@ -71,11 +72,20 @@ const FeedbackShow = ({ post, statuses, boards }: Props) => {
           </div>
 
           <div className="flex mb-6">
-            <div className="w-9 mr-3">
+            <div className="relative w-9 mr-3">
               <img
                 src={localPost.creator?.avatar}
-                className="rounded-full h-7 w-7"
+                className={classNames(
+                  'rounded-full h-7 w-7',
+                  localPost.creator?.role === 'admin'
+                    ? 'ring-2 ring-indigo-500'
+                    : ''
+                )}
               />
+
+              {localPost.creator?.role === 'admin' && (
+                <div className="absolute top-0 right-0 h-3 w-3 bg-indigo-500 border-2 border-white rounded-full"></div>
+              )}
             </div>
             <div className="flex-1">
               <div className="text-sm font-semibold mb-3">
