@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->string('slug')->unique();
-            $table->longText('description');
+            $table->longText('body');
             $table->integer('vote')->default(0);
             $table->integer('comments')->default(0);
             $table->unsignedBigInteger('status_id')->nullable();
