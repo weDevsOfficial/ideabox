@@ -7,7 +7,10 @@ use App\Models\Vote;
 use App\Models\Board;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Notifications\NewFeedbackPosted;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Notification;
 
 class BoardController extends Controller
 {
@@ -78,15 +81,28 @@ class BoardController extends Controller
                 'user_id' => auth()->user()->id,
                 'board_id' => $board->id,
             ]);
+
+            $this->notifyAdmins($post);
         } catch (\Throwable $th) {
-            // throw a validation error for title
             return redirect()->back()->withErrors([
                 'title' => $th->getMessage(),
             ]);
-
         }
 
-        // redirect to the single post
         return redirect()->route('post.show', [$board, $post]);
+    }
+
+    /**
+     * Notify all admins about the new feedback.
+     */
+    private function notifyAdmins(Post $post)
+    {
+        if ($post->creator->role === 'admin') {
+            return;
+        }
+
+        $admins = User::admin()->get();
+
+        Notification::send($admins, new NewFeedbackPosted($post));
     }
 }
