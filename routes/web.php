@@ -58,7 +58,7 @@ Route::prefix('admin')->middleware('auth', 'verified', 'admin')->group(function 
     Route::put('/users/{user}', [UserController::class, 'update'])->name('admin.users.update');
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/b/{board}', [BoardController::class, 'store'])->name('board.posts.store');
     Route::post('/p/{post}/vote', [PostController::class, 'vote'])->name('post.vote');
     Route::post('/p/{post}/comments', [CommentController::class, 'store'])->name('post.comments.store');

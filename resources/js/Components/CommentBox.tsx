@@ -85,6 +85,9 @@ const CommentBox = ({ post, parent, onComment }: Props) => {
           onComment(response.data);
         }
       })
+      .catch((error) => {
+        alert(error.response.data.message);
+      })
       .finally(() => {
         setIsProcessing(false);
       });

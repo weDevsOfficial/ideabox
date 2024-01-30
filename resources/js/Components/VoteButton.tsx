@@ -22,10 +22,15 @@ const VoteButton = ({ post }: Props) => {
       return;
     }
 
-    axios.post(route('post.vote', [post.slug])).then((response) => {
-      setVote(response.data.vote);
-      setHasVoted(response.data.has_voted);
-    });
+    axios
+      .post(route('post.vote', [post.slug]))
+      .then((response) => {
+        setVote(response.data.vote);
+        setHasVoted(response.data.has_voted);
+      })
+      .catch((error) => {
+        alert(error.response.data.message);
+      });
   };
 
   return (
