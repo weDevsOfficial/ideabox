@@ -45,20 +45,25 @@ Ensure you have the following installed:
      ```bash
      php artisan key:generate
      ```
+    To set the application logo, add a square image as logo in the environment:
 
-4. **Run Database Migrations**
+   ```bash
+   APP_LOGO='https://path/to/logo.svg'
+   ```
+
+5. **Run Database Migrations**
 
    ```bash
    php artisan migrate
    ```
 
-5. **Install JavaScript Dependencies**
+6. **Install JavaScript Dependencies**
 
    ```bash
    yarn
    ```
 
-6. **Build Assets**
+7. **Build Assets**
    ```bash
    yarn build
    ```
