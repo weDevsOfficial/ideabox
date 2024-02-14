@@ -12,6 +12,7 @@ use App\Http\Controllers\Frontend\BoardController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Frontend\CommentController;
 use App\Http\Controllers\Admin\BoardController as AdminBoardController;
+use App\Http\Controllers\Admin\PostsController;
 use App\Http\Controllers\Admin\UserController;
 
 /*
@@ -39,6 +40,7 @@ Route::prefix('admin')->middleware('auth', 'verified', 'admin')->group(function 
 
     Route::get('/feedbacks', [FeedbackController::class, 'index'])->name('admin.feedbacks.index');
     Route::get('/feedbacks/{post}', [FeedbackController::class, 'show'])->name('admin.feedbacks.show');
+    Route::post('/feedbacks', [PostsController::class, 'store'])->name('admin.feedbacks.store');
     Route::post('/feedbacks/{post}', [FeedbackController::class, 'update'])->name('admin.feedbacks.update');
 
     Route::put('/boards/{board}', [AdminBoardController::class, 'update'])->name('admin.boards.update');
