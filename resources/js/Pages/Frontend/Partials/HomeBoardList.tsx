@@ -17,7 +17,7 @@ const HomeBoardList = ({ boards }: Props) => {
           <div key={board.id}>
             <Link
               href={route('board.show', board.slug)}
-              className="flex py-3 px-4 justify-between items-center font-semibold text-gray-900 border rounded-md bg-white dark:bg-gray-700 dark:hover:bg-gray-600 hover:bg-gray-100"
+              className="flex py-3 px-4 justify-between items-center font-semibold text-gray-900 border rounded-md bg-white hover:bg-gray-100"
             >
               <div className="text-sm">{board.name}</div>
               <div className="text-xs">{board.posts}</div>
