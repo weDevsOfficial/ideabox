@@ -32,6 +32,12 @@ type Props = {
   votes: VoteType[];
 };
 
+type VoteProps = {
+  show: boolean;
+  onClose: () => void;
+  post: PostType;
+};
+
 const FeedbackShow = ({ post, statuses, boards, votes }: Props) => {
   const [localPost, setLocalPost] = useState(post);
   const [showVoteModal, setShowVoteModal] = useState(false);
@@ -256,9 +262,7 @@ FeedbackShow.layout = (page: React.ReactNode) => (
   ></AuthenticatedLayout>
 );
 
-export default FeedbackShow;
-
-const VoteModal = ({ show, onClose, post }) => {
+const VoteModal = ({ show, onClose, post }: VoteProps) => {
   const [showUserModal, setShowUserModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState<null | User>(null);
   const form = useForm({
@@ -268,8 +272,8 @@ const VoteModal = ({ show, onClose, post }) => {
   const submitVote = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    form.post(route('admin.feedbacks.vote', post), {
-      onSuccess: (resp) => {
+    form.post(route('admin.feedbacks.vote', [post]), {
+      onSuccess: () => {
         onClose();
         form.reset();
         setSelectedUser(null);
@@ -323,3 +327,5 @@ const VoteModal = ({ show, onClose, post }) => {
     </Modal>
   );
 };
+
+export default FeedbackShow;
