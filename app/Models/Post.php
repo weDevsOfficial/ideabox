@@ -37,7 +37,7 @@ class Post extends Model
 
             $post->slug = $count ? "{$slug}-{$count}" : $slug;
 
-            if (auth()->id()) {
+            if (auth()->id() && ! $post->created_by) {
                 $post->created_by = auth()->id();
             }
         });

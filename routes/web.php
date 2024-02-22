@@ -4,16 +4,17 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\PostsController;
 use App\Http\Controllers\Admin\StatusController;
 use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\PostController;
 use App\Http\Controllers\Admin\FeedbackController;
 use App\Http\Controllers\Frontend\BoardController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\UserSearchController;
 use App\Http\Controllers\Frontend\CommentController;
 use App\Http\Controllers\Admin\BoardController as AdminBoardController;
-use App\Http\Controllers\Admin\PostsController;
-use App\Http\Controllers\Admin\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -58,6 +59,8 @@ Route::prefix('admin')->middleware('auth', 'verified', 'admin')->group(function 
     Route::post('/users', [UserController::class, 'store'])->name('admin.users.store');
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
     Route::put('/users/{user}', [UserController::class, 'update'])->name('admin.users.update');
+
+    Route::get('/search-users', [UserSearchController::class, 'search'])->name('admin.users.search');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
