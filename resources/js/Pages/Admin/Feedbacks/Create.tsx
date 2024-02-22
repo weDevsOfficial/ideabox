@@ -13,6 +13,7 @@ import {
 import { User } from '@/types';
 import axios from 'axios';
 import UserSearchDropdown from '@/Components/UserSearchDropdown';
+import CreateUserModal from '@/Components/CreateUserModal';
 
 type Option = {
   value: string;
@@ -58,20 +59,6 @@ const CreateModal = ({
     value: board.key === 'all' ? '- Select - ' : board.value,
     key: board.key === 'all' ? '' : board.key,
   }));
-
-  const createUser = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    axios.post(route('admin.users.store'), userForm).then((response) => {
-      setShowUserForm(false);
-      form.setData('behalf_id', response.data.id);
-      setBehalfUser(response.data);
-      setUserForm({
-        name: '',
-        email: '',
-      });
-    });
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -162,35 +149,14 @@ const CreateModal = ({
         </ModalActions>
       </form>
 
-      <Modal isOpen={showUserForm} onClose={() => setShowUserForm(false)}>
-        <form onSubmit={createUser}>
-          <ModalHeader>Create User</ModalHeader>
-          <ModalBody>
-            <TextField
-              label="Name"
-              placeholder="Enter a name"
-              value={userForm.name}
-              required={true}
-              onChange={(value) => setUserForm({ ...userForm, name: value })}
-            />
-            <TextField
-              label="Email"
-              placeholder="Enter an email"
-              required={true}
-              value={userForm.email}
-              onChange={(value) => setUserForm({ ...userForm, email: value })}
-            />
-          </ModalBody>
-          <ModalActions>
-            <Button type="submit" variant="primary">
-              Create
-            </Button>
-            <Button onClick={() => setShowUserForm(false)} variant="secondary">
-              Cancel
-            </Button>
-          </ModalActions>
-        </form>
-      </Modal>
+      <CreateUserModal
+        show={showUserForm}
+        onClose={() => setShowUserForm(false)}
+        onSubmit={(data) => {
+          setBehalfUser(data);
+          form.setData('behalf_id', data.id);
+        }}
+      />
     </Modal>
   );
 };

@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Post;
+use App\Models\Vote;
 use App\Models\Board;
 use App\Models\Status;
+use App\Models\Comment;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\Comment;
 use App\Notifications\FeedbackStatusChanged;
 
 class FeedbackController extends Controller
@@ -20,7 +21,7 @@ class FeedbackController extends Controller
 
         $boards = Board::select('id', 'name', 'posts', 'slug')->get();
         $statuses = Status::select('id', 'name', 'color')->get();
-        $query = Post::with('user', 'board', 'status');
+        $query = Post::with('by', 'board', 'status');
 
         if ($board && $board !== 'all') {
             $query->where('board_id', $board);
@@ -53,7 +54,7 @@ class FeedbackController extends Controller
 
     public function show(Post $post)
     {
-        $post->load('creator', 'board', 'status');
+        $post->load('creator', 'board', 'status', 'by');
 
         $boards = Board::select('id', 'name', 'posts', 'slug')->get();
         $statuses = Status::select('id', 'name', 'color')->get();
@@ -62,6 +63,7 @@ class FeedbackController extends Controller
             'post' => $post,
             'boards' => $boards,
             'statuses' => $statuses,
+            'votes' => Vote::select('id', 'user_id')->onPost($post)->with('user')->take(10)->get(),
         ]);
     }
 
@@ -109,5 +111,23 @@ class FeedbackController extends Controller
         $voters->each(function ($voter) use ($post) {
             $voter->user->notify(new FeedbackStatusChanged($post));
         });
+    }
+
+    public function addVote(Post $post, Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+        ]);
+
+        if ($post->votes()->where('user_id', $request->user_id)->exists()) {
+            return redirect()->back()->with('error', 'The user has already voted.');
+        }
+
+        $post->votes()->create([
+            'user_id' => $request->user_id,
+            'board_id' => $post->board_id,
+        ]);
+
+        return redirect()->back()->with('success', 'Vote added successfully.');
     }
 }
