@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Head, Link, router, useForm } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import {
   Button,
   Checkbox,
@@ -282,12 +282,12 @@ const VoteModal = ({ show, onClose, post }: VoteProps) => {
   };
 
   const onSelect = (user: User) => {
-    form.setData('user_id', user.id);
+    form.setData('user_id', user.id.toString());
     setSelectedUser(user);
   };
 
   const onUserCreate = (user: User) => {
-    form.setData('user_id', user.id);
+    form.setData('user_id', user.id.toString());
     setSelectedUser(user);
   };
 
