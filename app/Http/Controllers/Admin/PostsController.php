@@ -15,14 +15,29 @@ class PostsController extends Controller
             'body' => 'required',
             'status_id' => 'required|exists:statuses,id',
             'board_id' => 'required|exists:boards,id',
+            'behalf_id' => 'sometimes|exists:users,id',
         ]);
 
-        $post = Post::create([
+        $args = [
             'title' => $request->title,
             'body' => $request->body,
             'status_id' => $request->status_id,
             'board_id' => $request->board_id,
-        ]);
+        ];
+
+        if ($request->behalf_id) {
+            $args['created_by'] = $request->behalf_id;
+            $args['by'] = auth()->id();
+        }
+
+        $post = Post::create($args);
+
+        if ($post) {
+            $post->votes()->create([
+                'user_id' => $post->created_by,
+                'board_id' => $post->board_id,
+            ]);
+        }
 
         return redirect()->route('admin.feedbacks.show', $post)->with('success', 'Post created successfully');
     }

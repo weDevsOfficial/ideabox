@@ -30,6 +30,7 @@
         "@radix-ui/react-popover": "^1.0.7",
         "@wedevs/tail-react": "^0.3.3",
         "classnames": "^2.5.1",
+        "lodash.debounce": "^4.0.8",
         "react-color": "^2.19.3"
     },
     "config": {
