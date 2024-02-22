@@ -31,8 +31,12 @@ class UserController extends Controller
             'name'     => $request->name,
             'email'    => $request->email,
             'password' => bcrypt($password),
-            'role'     => User::ROLE_ADMIN,
+            'role'     => $request->wantsJson() ? User::ROLE_USER : User::ROLE_ADMIN,
         ]);
+
+        if ($request->wantsJson()) {
+            return response()->json($user);
+        }
 
         $user->notify(new NewAccountNotification($password));
 
