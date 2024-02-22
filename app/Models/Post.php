@@ -71,7 +71,7 @@ class Post extends Model
         return $this->hasMany(Vote::class);
     }
 
-    public function user()
+    public function by()
     {
         return $this->belongsTo(User::class, 'by');
     }

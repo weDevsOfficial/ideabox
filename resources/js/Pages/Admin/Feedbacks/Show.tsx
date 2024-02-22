@@ -1,6 +1,15 @@
 import React, { useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
-import { Button, Checkbox, SelectInput, Textarea } from '@wedevs/tail-react';
+import {
+  Button,
+  Checkbox,
+  Modal,
+  ModalActions,
+  ModalBody,
+  ModalHeader,
+  SelectInput,
+  Textarea,
+} from '@wedevs/tail-react';
 import {
   ArrowTopRightOnSquareIcon,
   ChevronUpIcon,
@@ -10,18 +19,22 @@ import {
 
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { formatDate } from '@/utils';
-import { PostType, StatusType, BoardType } from '@/types';
+import { PostType, StatusType, BoardType, VoteType, User } from '@/types';
 import Comments from '@/Components/Comments';
 import classNames from 'classnames';
+import UserSearchDropdown from '@/Components/UserSearchDropdown';
+import CreateUserModal from '@/Components/CreateUserModal';
 
 type Props = {
   post: PostType;
   statuses: StatusType[];
   boards: BoardType[];
+  votes: VoteType[];
 };
 
-const FeedbackShow = ({ post, statuses, boards }: Props) => {
+const FeedbackShow = ({ post, statuses, boards, votes }: Props) => {
   const [localPost, setLocalPost] = useState(post);
+  const [showVoteModal, setShowVoteModal] = useState(false);
   const form = useForm({
     status_id: post.status_id,
     board_id: post.board_id,
@@ -94,6 +107,10 @@ const FeedbackShow = ({ post, statuses, boards }: Props) => {
               <div className="text-sm text-gray-800 mb-3">{localPost.body}</div>
 
               <div className="flex text-xs text-gray-500 gap-4 items-center">
+                {localPost.by && (
+                  <div className="text-xs">Created by {localPost.by?.name}</div>
+                )}
+
                 <div className="text-xs">
                   {formatDate(localPost.created_at)}
                 </div>
@@ -172,8 +189,58 @@ const FeedbackShow = ({ post, statuses, boards }: Props) => {
               </div>
             )}
           </form>
+
+          <div className="mt-8 py-4">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-base font-semibold">Voters</h3>
+
+              <Button
+                variant="secondary"
+                size="small"
+                onClick={() => setShowVoteModal(true)}
+              >
+                Add Vote
+              </Button>
+            </div>
+
+            {votes.length > 0 ? (
+              <>
+                <ul>
+                  {votes.map((vote) => (
+                    <li key={vote.id} className="flex items-center mb-2">
+                      <div className="mr-3">
+                        <img
+                          src={vote.user.avatar}
+                          className="rounded-full h-7 w-7"
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-sm font-semibold">
+                          {vote.user.name}
+                        </div>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+
+                {localPost.vote > 10 && (
+                  <div className="text-sm text-gray-500 mt-2">
+                    + {localPost.vote - 10} more votes
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="text-sm text-gray-500">No voters yet.</div>
+            )}
+          </div>
         </div>
       </div>
+
+      <VoteModal
+        show={showVoteModal}
+        onClose={() => setShowVoteModal(false)}
+        post={localPost}
+      />
     </div>
   );
 };
@@ -190,3 +257,69 @@ FeedbackShow.layout = (page: React.ReactNode) => (
 );
 
 export default FeedbackShow;
+
+const VoteModal = ({ show, onClose, post }) => {
+  const [showUserModal, setShowUserModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<null | User>(null);
+  const form = useForm({
+    user_id: '',
+  });
+
+  const submitVote = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    form.post(route('admin.feedbacks.vote', post), {
+      onSuccess: (resp) => {
+        onClose();
+        form.reset();
+        setSelectedUser(null);
+      },
+    });
+  };
+
+  const onSelect = (user: User) => {
+    form.setData('user_id', user.id);
+    setSelectedUser(user);
+  };
+
+  const onUserCreate = (user: User) => {
+    form.setData('user_id', user.id);
+    setSelectedUser(user);
+  };
+
+  return (
+    <Modal isOpen={show} onClose={onClose}>
+      <form onSubmit={submitVote}>
+        <ModalHeader>Add Voter</ModalHeader>
+
+        <ModalBody className="min-h-20">
+          <UserSearchDropdown
+            onSelect={onSelect}
+            onCreate={() => setShowUserModal(true)}
+            onClear={() => form.setData('user_id', '')}
+            selectedUser={selectedUser}
+          />
+        </ModalBody>
+
+        <ModalActions>
+          <Button
+            className="ml-2"
+            type="submit"
+            disabled={form.data.user_id === '' || form.processing}
+          >
+            Add Vote
+          </Button>
+          <Button variant="secondary" onClick={onClose}>
+            Cancel
+          </Button>
+        </ModalActions>
+      </form>
+
+      <CreateUserModal
+        show={showUserModal}
+        onClose={() => setShowUserModal(false)}
+        onSubmit={onUserCreate}
+      />
+    </Modal>
+  );
+};

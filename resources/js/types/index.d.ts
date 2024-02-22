@@ -83,6 +83,7 @@ export interface PostType {
   creator?: User;
   board: BoardType;
   status?: StatusType;
+  by: User | null;
 }
 
 export interface CommentType {

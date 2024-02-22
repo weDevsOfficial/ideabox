@@ -43,6 +43,7 @@ Route::prefix('admin')->middleware('auth', 'verified', 'admin')->group(function 
     Route::get('/feedbacks/{post}', [FeedbackController::class, 'show'])->name('admin.feedbacks.show');
     Route::post('/feedbacks', [PostsController::class, 'store'])->name('admin.feedbacks.store');
     Route::post('/feedbacks/{post}', [FeedbackController::class, 'update'])->name('admin.feedbacks.update');
+    Route::post('/feedbacks/{post}/vote', [FeedbackController::class, 'addVote'])->name('admin.feedbacks.vote');
 
     Route::put('/boards/{board}', [AdminBoardController::class, 'update'])->name('admin.boards.update');
     Route::post('/boards', [AdminBoardController::class, 'store'])->name('admin.boards.store');
