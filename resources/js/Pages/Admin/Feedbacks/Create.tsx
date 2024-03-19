@@ -47,7 +47,7 @@ const CreateModal = ({
     body: '',
     board_id: '',
     status_id: '',
-    behalf_id: 0,
+    behalf_id: null,
   });
 
   const statusOptions = statuses.map((status) => ({
@@ -92,7 +92,7 @@ const CreateModal = ({
                 setBehalfUser(user);
                 form.setData('behalf_id', user.id);
               }}
-              onClear={() => form.setData('behalf_id', 0)}
+              onClear={() => form.setData('behalf_id', null)}
             />
           </div>
 

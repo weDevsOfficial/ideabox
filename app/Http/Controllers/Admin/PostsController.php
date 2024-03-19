@@ -10,13 +10,18 @@ class PostsController extends Controller
 {
     public function store(Request $request)
     {
-        $request->validate([
+        $rules = [
             'title' => 'required',
             'body' => 'required',
             'status_id' => 'required|exists:statuses,id',
             'board_id' => 'required|exists:boards,id',
-            'behalf_id' => 'sometimes|exists:users,id',
-        ]);
+        ];
+
+        if ($request->has('behalf_id') && $request->behalf_id) {
+            $rules['behalf_id'] = 'exists:users,id';
+        }
+
+        $request->validate($rules);
 
         $args = [
             'title' => $request->title,
