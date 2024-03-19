@@ -84,7 +84,9 @@ const BoardsIndex = ({ boards }: Props) => {
             />
           </ModalBody>
           <ModalActions>
-            <Button variant="primary">Add Board</Button>
+            <Button variant="primary" type="submit">
+              Add Board
+            </Button>
             <Button
               variant="secondary"
               onClick={() => setIsModalOpen(false)}
