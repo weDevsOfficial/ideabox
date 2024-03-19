@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers\Frontend;
 
-use App\Http\Controllers\Controller;
 use App\Models\Post;
+use App\Models\User;
+use App\Models\Comment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
+use App\Notifications\CommentNotification;
 
 class CommentController extends Controller
 {
@@ -54,9 +58,30 @@ class CommentController extends Controller
             'parent_id' => $parentId === 0 ? null : $parentId,
         ]);
 
+        $this->notifyUsers($post, $comment);
+
         $comment->load('user');
         $comment->children = [];
 
         return response()->json($comment);
+    }
+
+    private function notifyUsers(Post $post, Comment $comment)
+    {
+        $userIds = $post->comments()
+                    ->where('user_id', '!=', $comment->user_id)
+                    ->pluck('user_id')
+                    ->merge($post->votes()->where('user_id', '!=', $comment->user_id)->pluck('user_id'))
+                    ->unique();
+
+        if ($userIds->isEmpty()) {
+            return;
+        }
+
+        $users = User::whereIn('id', $userIds)->get();
+
+        foreach ($users as $user) {
+            $user->notify(new CommentNotification($post, $comment));
+        }
     }
 }
