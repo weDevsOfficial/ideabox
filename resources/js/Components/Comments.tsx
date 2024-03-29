@@ -1,12 +1,11 @@
-import { BoardType, CommentType, PostType, User } from '@/types';
 import React, { useEffect, useState } from 'react';
-
-import { formatDate } from '@/utils';
-import CommentBox from './CommentBox';
+import axios from 'axios';
 import classNames from 'classnames';
 import { usePage } from '@inertiajs/react';
-import axios from 'axios';
-import { on } from 'events';
+
+import { BoardType, CommentType, PageProps, PostType, User } from '@/types';
+import { formatDate } from '@/utils';
+import CommentBox from './CommentBox';
 
 type CommentsProps = {
   post: PostType;
@@ -100,7 +99,7 @@ const Comment = ({
   onCommentDelete,
 }: CommentProps) => {
   const [showReplyBox, setShowReplyBox] = useState(false);
-  const { auth } = usePage().props;
+  const { auth } = usePage<PageProps>().props;
 
   const toggleReplyBox = () => {
     setShowReplyBox(!showReplyBox);
@@ -186,6 +185,7 @@ const Comment = ({
                 post={post}
                 comment={child}
                 parentId={comment.id}
+                onCommentDelete={() => {}}
               />
             ))}
           </div>
