@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Frontend;
 
+use App\Helpers\Formatting;
+use App\Http\Controllers\Admin\FeedbackController;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -14,6 +16,8 @@ class PostController extends Controller
     {
         $post = Post::where('slug', $post)->withVote()->firstOrFail();
         $post->load('creator');
+
+        $post->body = Formatting::transformBody($post->body);
 
         $data = [
             'post' => $post,

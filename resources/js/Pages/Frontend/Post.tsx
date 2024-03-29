@@ -21,8 +21,10 @@ const Post = ({ post, status, board, votes }: PageProps<Props>) => {
 
       <div className="flex gap-8 mb-8">
         <div className="w-72">
-          <div className="px-4 py-4 border rounded">
-            <h3 className="text-base font-semibold mb-3">Voters</h3>
+          <div className="px-4 py-4 border dark:border-gray-700 rounded">
+            <h3 className="text-base font-semibold dark:text-gray-300 mb-3">
+              Voters
+            </h3>
 
             {votes.length > 0 ? (
               <>
@@ -36,7 +38,7 @@ const Post = ({ post, status, board, votes }: PageProps<Props>) => {
                         />
                       </div>
                       <div className="flex-1">
-                        <div className="text-sm font-semibold">
+                        <div className="text-sm font-semibold dark:text-gray-300">
                           {vote.user.name}
                         </div>
                       </div>
@@ -63,7 +65,9 @@ const Post = ({ post, status, board, votes }: PageProps<Props>) => {
             </div>
 
             <div className="flex flex-col flex-1">
-              <div className="text-xl font-semibold mb-2">{post.title}</div>
+              <div className="text-xl font-semibold mb-2 dark:text-gray-300">
+                {post.title}
+              </div>
               <div className="flex text-sm text-gray-500">
                 {status && (
                   <>
@@ -96,10 +100,13 @@ const Post = ({ post, status, board, votes }: PageProps<Props>) => {
               />
             </div>
             <div className="flex-1">
-              <div className="text-sm font-semibold mb-3">
+              <div className="text-sm font-semibold dark:text-gray-300 mb-3">
                 {post.creator?.name}
               </div>
-              <div className="text-sm text-gray-800 mb-3">{post.body}</div>
+              <div
+                className="text-sm text-gray-800 dark:text-gray-300 mb-3"
+                dangerouslySetInnerHTML={{ __html: post.body }}
+              ></div>
               <div className="text-xs text-gray-500">
                 {formatDate(post.created_at)}
               </div>

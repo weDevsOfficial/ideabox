@@ -38,14 +38,16 @@ const VoteButton = ({ post }: Props) => {
       <button
         className={classNames(
           'flex flex-col self-start w-9 text-sm text-gray-700 rounded-md border py-2 items-center hover:bg-gray-100',
-          hasVoted ? 'border-indigo-500 bg-indigo-50' : 'border-gray-300'
+          hasVoted
+            ? 'dark:text-gray-300 border-indigo-500 bg-indigo-50 dark:bg-gray-700'
+            : 'dark:text-gray-300 dark:bg-gray-700 border-gray-300 dark:border-gray-600'
         )}
         onClick={() => toggleVote(post)}
       >
         <ChevronUpIcon
           className={classNames(
             'h-3 w-3 mb-1',
-            hasVoted ? 'text-indigo-600' : 'text-gray-400'
+            hasVoted ? 'text-indigo-600 dark:text-gray-300' : 'text-gray-400'
           )}
         />
         <span className="text-xs">{vote}</span>

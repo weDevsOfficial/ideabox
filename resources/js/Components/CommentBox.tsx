@@ -94,9 +94,12 @@ const CommentBox = ({ post, parent, onComment }: Props) => {
   };
 
   return (
-    <form className="border border-gray-300 rounded" onSubmit={onFormSubmit}>
+    <form
+      className="border border-gray-300 dark:border-gray-700 rounded"
+      onSubmit={onFormSubmit}
+    >
       <textarea
-        className="w-full border-0 text-sm px-3 py-2 mt-1 focus:ring-0"
+        className="w-full border-0 dark:bg-gray-800 dark:text-gray-300 text-sm px-3 py-2 mt-1 focus:ring-0"
         autoComplete="off"
         rows={rows}
         value={form.body}
@@ -112,7 +115,7 @@ const CommentBox = ({ post, parent, onComment }: Props) => {
       ></textarea>
 
       {showButtons && (
-        <div className="flex border-t border-gray-300 px-3 py-2 justify-between items-center">
+        <div className="flex border-t border-gray-300 dark:border-gray-700 px-3 py-2 justify-between items-center">
           <div className="text-xs text-gray-500">
             {parent ? (
               <span>&nbsp;</span>

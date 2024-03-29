@@ -73,6 +73,7 @@ export interface PostType {
   title: string;
   slug: string;
   body: string;
+  raw_body: string;
   vote: number;
   comments: number;
   status_id: null | number;

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Frontend;
 
+use App\Helpers\Formatting;
 use App\Models\Post;
 use App\Models\User;
 use App\Models\Comment;
@@ -29,6 +30,7 @@ class CommentController extends Controller
             if (isset($groupedComments[$parentId])) {
                 foreach ($groupedComments[$parentId] as $comment) {
                     $children = $buildCommentTree($comment->id);
+                    $comment->body = Formatting::transformBody($comment->body);
                     $comment->children = $children;
                     $result[] = $comment;
                 }
@@ -53,7 +55,7 @@ class CommentController extends Controller
         ]);
 
         $comment = $post->comments()->create([
-            'body' => $request->body,
+            'body' => strip_tags($request->body),
             'user_id' => auth()->user()->id,
             'parent_id' => $parentId === 0 ? null : $parentId,
         ]);

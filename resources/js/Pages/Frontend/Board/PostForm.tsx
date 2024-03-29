@@ -29,11 +29,11 @@ const PostForm = ({ board, user }: Props) => {
   return (
     <div className="w-72">
       <form
-        className="px-4 py-4 border rounded text-center"
+        className="px-4 py-4 border dark:border-gray-700 rounded text-center"
         onSubmit={createPost}
       >
         {board.allow_posts && (
-          <h3 className="text-base font-semibold mb-3">
+          <h3 className="text-base font-semibold dark:text-gray-300 mb-3">
             {board.settings?.form.heading || 'Create a post'}
           </h3>
         )}

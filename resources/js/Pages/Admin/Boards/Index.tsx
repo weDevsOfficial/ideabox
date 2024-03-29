@@ -60,11 +60,11 @@ const BoardsIndex = ({ boards }: Props) => {
         {boards.map((board) => (
           <Link
             key={board.id}
-            className="rounded-lg bg-white shadow"
+            className="rounded-lg bg-white shadow dark:bg-gray-800"
             href={route('admin.boards.show', [board])}
           >
             <div className="space-x-6 p-6">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between dark:text-gray-300">
                 <span className="font-medium">{board.name}</span>
                 <span className="text-sm">{board.posts}</span>
               </div>

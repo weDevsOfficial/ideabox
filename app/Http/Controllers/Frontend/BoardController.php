@@ -69,8 +69,8 @@ class BoardController extends Controller
 
         try {
             $post = Post::create([
-                'title'      => $request->title,
-                'body'       => $request->body,
+                'title'      => strip_tags($request->title),
+                'body'       => strip_tags($request->body),
                 'board_id'   => $board->id,
                 'status_id'  => null,
                 'created_by' => auth()->user()->id,

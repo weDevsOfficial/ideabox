@@ -29,7 +29,7 @@
     "dependencies": {
         "@heroicons/react": "^2.1.1",
         "@radix-ui/react-popover": "^1.0.7",
-        "@wedevs/tail-react": "^0.3.3",
+        "@wedevs/tail-react": "^0.5.0",
         "classnames": "^2.5.1",
         "lodash.debounce": "^4.0.8",
         "react-color": "^2.19.3"

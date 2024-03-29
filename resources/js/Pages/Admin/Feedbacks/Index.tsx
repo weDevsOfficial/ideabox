@@ -94,7 +94,7 @@ const Feedbacks = ({ posts, boards, statuses }: Props) => {
 
         <div className="p-6 text-gray-900 dark:text-gray-100">
           <div className="sm:flex gap-6">
-            <div className="sm:w-52 sm:border-r sm:pr-5 border-gray-100">
+            <div className="sm:w-52 sm:border-r sm:pr-5 border-gray-100 dark:border-gray-700">
               <SelectInput
                 label="Sort By"
                 selectedKey={sortKey}
@@ -129,7 +129,7 @@ const Feedbacks = ({ posts, boards, statuses }: Props) => {
               {posts.data.map((post) => (
                 <div
                   key={post.id}
-                  className="p-4 flex justify-between hover:bg-slate-50"
+                  className="p-4 flex justify-between hover:bg-slate-50 hover:dark:bg-slate-900 rounded"
                 >
                   <Link
                     href={route('admin.feedbacks.show', [post])}

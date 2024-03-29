@@ -1,9 +1,12 @@
-import { BoardType, CommentType, PageProps, PostType, User } from '@/types';
+import { BoardType, CommentType, PostType, User } from '@/types';
 import React, { useEffect, useState } from 'react';
 
 import { formatDate } from '@/utils';
 import CommentBox from './CommentBox';
 import classNames from 'classnames';
+import { usePage } from '@inertiajs/react';
+import axios from 'axios';
+import { on } from 'events';
 
 type CommentsProps = {
   post: PostType;
@@ -14,6 +17,7 @@ type CommentProps = {
   comment: CommentType;
   post: PostType;
   parentId?: number;
+  onCommentDelete: (commentId: number) => void;
 };
 
 const Comments: React.FC<CommentsProps> = ({ post }) => {
@@ -56,11 +60,11 @@ const Comments: React.FC<CommentsProps> = ({ post }) => {
       </div>
 
       {comments.length > 0 && !isFetching && (
-        <div className="flex justify-between items-center text-gray-700 ml-12 mb-8 pb-4 border-b">
-          <h3 className="text-lg font-semibold">Comments</h3>
+        <div className="flex justify-between items-center text-gray-700 ml-12 mb-8 pb-4 border-b dark:border-gray-700">
+          <h3 className="text-lg font-semibold dark:text-gray-300">Comments</h3>
 
           <div className="flex items-center">
-            <div className="text-sm mr-2">Sort By</div>
+            <div className="text-sm mr-2 dark:text-gray-400">Sort By</div>
             <select
               className="px-2 min-w-28 text-sm py-1.5 rounded border border-gray-200"
               value={sort}
@@ -75,18 +79,46 @@ const Comments: React.FC<CommentsProps> = ({ post }) => {
 
       <div className="mt-4">
         {comments.map((comment) => (
-          <Comment key={comment.id} post={post} comment={comment} />
+          <Comment
+            key={comment.id}
+            post={post}
+            comment={comment}
+            onCommentDelete={() => {
+              setComments(comments.filter((c) => c.id !== comment.id));
+            }}
+          />
         ))}
       </div>
     </div>
   );
 };
 
-const Comment = ({ post, comment, parentId }: CommentProps) => {
+const Comment = ({
+  post,
+  comment,
+  parentId,
+  onCommentDelete,
+}: CommentProps) => {
   const [showReplyBox, setShowReplyBox] = useState(false);
+  const { auth } = usePage().props;
 
   const toggleReplyBox = () => {
     setShowReplyBox(!showReplyBox);
+  };
+
+  const deleteComment = (commentId: number) => {
+    if (!confirm('Are you sure you want to delete this comment?')) {
+      return;
+    }
+
+    axios
+      .delete(route('admin.comments.destroy', [commentId]))
+      .then(() => {
+        onCommentDelete(commentId);
+      })
+      .catch((error) => {
+        alert(error.response.data.message);
+      });
   };
 
   return (
@@ -103,7 +135,9 @@ const Comment = ({ post, comment, parentId }: CommentProps) => {
 
       <div className="flex-1">
         <div className="flex items-center text-sm mb-2">
-          <div className="font-semibold">{comment.user?.name}</div>
+          <div className="font-semibold dark:text-gray-300">
+            {comment.user?.name}
+          </div>
           {comment.status && (
             <div className="text-sm text-gray-700 ml-2">
               <span>marked this post as</span>
@@ -116,16 +150,32 @@ const Comment = ({ post, comment, parentId }: CommentProps) => {
             </div>
           )}
         </div>
-        <div className="text-sm text-gray-800 mb-2">{comment.body}</div>
+        <div
+          className="text-sm text-gray-800 dark:text-gray-300 mb-2"
+          dangerouslySetInnerHTML={{ __html: comment.body }}
+        ></div>
         <div className="flex text-xs text-gray-500">
           <div className="">{formatDate(comment.created_at)}</div>
           <div className="mx-1">•</div>
           <div
-            className="cursor-pointer hover:text-gray-800"
+            className="cursor-pointer hover:text-gray-800 dark:hover:text-gray-300"
             onClick={toggleReplyBox}
           >
             Reply
           </div>
+          {auth.user?.role === 'admin' && (
+            <>
+              <div className="mx-1">•</div>
+              <div className="">
+                <button
+                  className="text-xs text-red-500 dark:text-red-300"
+                  onClick={() => deleteComment(comment.id)}
+                >
+                  Delete
+                </button>
+              </div>
+            </>
+          )}
         </div>
 
         {comment.children.length > 0 && (

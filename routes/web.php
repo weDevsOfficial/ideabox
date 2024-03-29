@@ -1,20 +1,18 @@
 <?php
 
-use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Admin\PostsController;
 use App\Http\Controllers\Admin\StatusController;
 use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\PostController;
 use App\Http\Controllers\Admin\FeedbackController;
 use App\Http\Controllers\Frontend\BoardController;
-use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\UserSearchController;
 use App\Http\Controllers\Frontend\CommentController;
 use App\Http\Controllers\Admin\BoardController as AdminBoardController;
+use App\Http\Controllers\Admin\CommentController as AdminCommentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,9 +39,13 @@ Route::prefix('admin')->middleware('auth', 'verified', 'admin')->group(function 
 
     Route::get('/feedbacks', [FeedbackController::class, 'index'])->name('admin.feedbacks.index');
     Route::get('/feedbacks/{post}', [FeedbackController::class, 'show'])->name('admin.feedbacks.show');
-    Route::post('/feedbacks', [PostsController::class, 'store'])->name('admin.feedbacks.store');
+    Route::post('/feedbacks', [FeedbackController::class, 'store'])->name('admin.feedbacks.store');
     Route::post('/feedbacks/{post}', [FeedbackController::class, 'update'])->name('admin.feedbacks.update');
+    Route::put('/feedbacks/{post}/update', [FeedbackController::class, 'updateContent'])->name('admin.feedbacks.update-content');
     Route::post('/feedbacks/{post}/vote', [FeedbackController::class, 'addVote'])->name('admin.feedbacks.vote');
+    Route::delete('/feedbacks/{post}', [FeedbackController::class, 'destroy'])->name('admin.feedbacks.destroy');
+
+    Route::delete('/comment/{comment}', [AdminCommentController::class, 'destroy'])->name('admin.comments.destroy');
 
     Route::put('/boards/{board}', [AdminBoardController::class, 'update'])->name('admin.boards.update');
     Route::post('/boards', [AdminBoardController::class, 'store'])->name('admin.boards.store');

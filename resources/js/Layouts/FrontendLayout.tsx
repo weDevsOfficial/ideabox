@@ -11,8 +11,8 @@ const FrontendLayout = ({ children }: PropsWithChildren) => {
   const { auth, appName, appLogo } = usePage<PageProps>().props;
 
   return (
-    <div>
-      <header className="border-b border-gray-200 mb-8">
+    <div className="dark:bg-gray-900">
+      <header className="border-b border-gray-200 dark:border-gray-700 mb-8">
         <div className="w-[960px] mx-auto">
           <div className="flex justify-between py-3 mb-1 items-center">
             <div className="">
@@ -23,7 +23,9 @@ const FrontendLayout = ({ children }: PropsWithChildren) => {
                   loading="lazy"
                   className="w-10 h-10 mr-3"
                 />
-                <span className="text-xl font-semibold">{appName}</span>
+                <span className="text-xl font-semibold dark:text-gray-300">
+                  {appName}
+                </span>
               </Link>
             </div>
             <div className="">
@@ -45,7 +47,7 @@ const FrontendLayout = ({ children }: PropsWithChildren) => {
                       <span className="inline-flex rounded-md">
                         <button
                           type="button"
-                          className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150"
+                          className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white dark:bg-gray-800 hover:text-gray-700 focus:outline-none transition ease-in-out duration-150"
                         >
                           {auth.user.name}
 
@@ -107,8 +109,8 @@ const FrontendLayout = ({ children }: PropsWithChildren) => {
                 className={classNames(
                   'inline-flex items-center text-sm mr-3 px-3 py-3',
                   route().current('home')
-                    ? 'text-indigo-600 font-semibold hover:text-indigo-700 border-b border-indigo-500'
-                    : ''
+                    ? 'text-indigo-600 dark:text-indigo-300 font-semibold hover:text-indigo-700 border-b border-indigo-500'
+                    : 'dark:text-gray-400'
                 )}
               >
                 <MapIcon className="h-5 w-5 mr-1.5" />
@@ -119,8 +121,8 @@ const FrontendLayout = ({ children }: PropsWithChildren) => {
                 className={classNames(
                   'inline-flex items-center text-sm mr-3 px-3 py-2',
                   route().current('board.show')
-                    ? 'text-indigo-600 font-medium hover:text-indigo-700 border-b border-indigo-500'
-                    : ''
+                    ? 'text-indigo-600 dark:text-indigo-300 font-semibold hover:text-indigo-700 border-b border-indigo-500'
+                    : 'dark:text-gray-400'
                 )}
               >
                 <LightBulbIcon className="h-5 w-5 mr-1.5" />
@@ -144,8 +146,8 @@ const FrontendLayout = ({ children }: PropsWithChildren) => {
 
       <main className="w-[960px] mx-auto">{children}</main>
 
-      <footer className="border-t border-gray-200 mt-12 py-4">
-        <div className="w-[960px] mx-auto text-sm text-gray-600">
+      <footer className="border-t border-gray-200 dark:border-gray-700 mt-12 py-4">
+        <div className="w-[960px] mx-auto text-sm text-gray-600 dark:text-gray-300">
           &copy; {appName}
         </div>
       </footer>

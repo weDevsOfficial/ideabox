@@ -9,7 +9,6 @@ import {
 import FrontendLayout from '@/Layouts/FrontendLayout';
 import { BoardType, PageProps, PostType, User } from '@/types';
 import PostForm from './PostForm';
-import classNames from 'classnames';
 import axios from 'axios';
 import VoteButton from '@/Components/VoteButton';
 
@@ -70,13 +69,13 @@ const ShowBoard = ({ auth, posts, board }: PageProps<Props>) => {
         <PostForm board={board} user={auth.user} />
 
         <div className="flex-1">
-          <div className="border rounded">
-            <div className="flex border-b px-3 py-3 bg-gray-50 justify-between">
-              <div className="flex gap-2 items-center">
+          <div className="border dark:border-gray-700 rounded">
+            <div className="flex border-b dark:border-gray-700 px-3 py-3 bg-gray-50 dark:bg-gray-800 justify-between">
+              <div className="flex gap-2 items-center dark:text-gray-300">
                 <div className="">Showing</div>
                 <div className="">
                   <select
-                    className="px-2 text-sm py-1.5 rounded border border-gray-200"
+                    className="px-2 text-sm py-1.5 rounded border border-gray-200 dark:border-gray-700 dark:bg-gray-800"
                     onChange={handleSortChange}
                     value={sortKey}
                   >
@@ -95,7 +94,7 @@ const ShowBoard = ({ auth, posts, board }: PageProps<Props>) => {
                     type="search"
                     placeholder="Search"
                     disabled
-                    className="px-4 pl-9 py-2 rounded border-0 text-sm ring-1 ring-indigo-50 focus:outline-none focus:ring-1"
+                    className="px-4 pl-9 py-2 dark:bg-gray-800 rounded border-0 text-sm ring-1 ring-indigo-50 dark:ring-gray-700 focus:outline-none focus:ring-1"
                   />
                   <div className="absolute inset-y-0 left-2 flex items-center pr-3 pointer-events-none">
                     <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
@@ -104,17 +103,17 @@ const ShowBoard = ({ auth, posts, board }: PageProps<Props>) => {
               </div>
             </div>
 
-            <div className="divide-y">
+            <div className="divide-y dark:divide-gray-700">
               {allPosts.map((post) => (
                 <div
                   key={post.id}
-                  className="p-4 flex justify-between hover:bg-slate-50"
+                  className="p-4 flex justify-between hover:bg-slate-50 dark:hover:bg-slate-800"
                 >
                   <Link
                     href={route('post.show', [board.slug, post.slug])}
                     className="flex flex-col flex-1"
                   >
-                    <div className="text-sm font-semibold mb-1">
+                    <div className="text-sm font-semibold dark:text-gray-300 mb-1">
                       {post.title}
                     </div>
                     <div className="text-sm text-gray-500 line-clamp-2">
@@ -132,6 +131,12 @@ const ShowBoard = ({ auth, posts, board }: PageProps<Props>) => {
                   </div>
                 </div>
               ))}
+
+              {allPosts.length === 0 && (
+                <div className="p-4 text-sm text-center dark:text-gray-300">
+                  No posts found.
+                </div>
+              )}
             </div>
           </div>
         </div>

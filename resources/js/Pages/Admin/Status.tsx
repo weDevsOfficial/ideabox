@@ -145,7 +145,7 @@ const StatusPage = ({ statuses }: Props) => {
 
         <div className="bg-white dark:bg-gray-800 overflow-hidden shadow sm:rounded-lg">
           <div className="sm:flex gap-6 p-6 text-gray-900 dark:text-gray-100">
-            <div className="mb-4 sm:mb-0 sm:w-96 sm:border-r sm:pr-5 border-gray-100">
+            <div className="mb-4 sm:mb-0 sm:w-96 sm:border-r sm:pr-5 border-gray-100 dark:border-gray-700">
               <h3 className="font-semibold mb-2">About Statuses</h3>
               <p className="text-sm">
                 Statuses are the integral part of product roadmap. Only 3

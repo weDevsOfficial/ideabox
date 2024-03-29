@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
 import {
   Button,
@@ -15,6 +15,8 @@ import {
   ChevronUpIcon,
   ChatBubbleLeftIcon,
   ChevronLeftIcon,
+  TrashIcon,
+  PencilSquareIcon,
 } from '@heroicons/react/24/outline';
 
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -24,6 +26,7 @@ import Comments from '@/Components/Comments';
 import classNames from 'classnames';
 import UserSearchDropdown from '@/Components/UserSearchDropdown';
 import CreateUserModal from '@/Components/CreateUserModal';
+import EditFeedback from './EditFeedback';
 
 type Props = {
   post: PostType;
@@ -39,6 +42,7 @@ type VoteProps = {
 };
 
 const FeedbackShow = ({ post, statuses, boards, votes }: Props) => {
+  const [showEditForm, setShowEditForm] = useState(false);
   const [localPost, setLocalPost] = useState(post);
   const [showVoteModal, setShowVoteModal] = useState(false);
   const form = useForm({
@@ -47,6 +51,10 @@ const FeedbackShow = ({ post, statuses, boards, votes }: Props) => {
     comment: '',
     notify: true,
   });
+
+  useEffect(() => {
+    setLocalPost(post);
+  }, [post]);
 
   const statusOptions = [
     { value: '- Select Status -', key: '' },
@@ -86,7 +94,7 @@ const FeedbackShow = ({ post, statuses, boards, votes }: Props) => {
             Back
           </Link>
 
-          <div className="text-xl font-semibold mb-4 ml-12">
+          <div className="text-xl font-semibold dark:text-gray-300 mb-4 ml-12">
             {localPost.title}
           </div>
 
@@ -107,10 +115,14 @@ const FeedbackShow = ({ post, statuses, boards, votes }: Props) => {
               )}
             </div>
             <div className="flex-1">
-              <div className="text-sm font-semibold mb-3">
+              <div className="text-sm font-semibold dark:text-gray-300 mb-3">
                 {localPost.creator?.name}
               </div>
-              <div className="text-sm text-gray-800 mb-3">{localPost.body}</div>
+
+              <div
+                className="text-sm text-gray-800 dark:text-gray-300 mb-3"
+                dangerouslySetInnerHTML={{ __html: localPost.body }}
+              ></div>
 
               <div className="flex text-xs text-gray-500 gap-4 items-center">
                 {localPost.by && (
@@ -137,20 +149,56 @@ const FeedbackShow = ({ post, statuses, boards, votes }: Props) => {
           <Comments post={localPost} board={localPost.board} />
         </div>
 
-        <div className="sm:w-96 sm:border-l sm:pl-5 border-gray-100">
-          <Button
-            as="a"
-            href={route('post.show', {
-              board: post.board?.slug,
-              post: post.slug,
-            })}
-            variant="secondary"
-            className="inline-flex mb-4"
-            target="_blank"
-          >
-            <ArrowTopRightOnSquareIcon className="h-5 w-5 mr-2" />
-            View Feedback
-          </Button>
+        <div className="sm:w-96 sm:border-l sm:pl-5 border-gray-100 dark:border-gray-700">
+          <div className="flex items-center justify-between mb-4 border-b border-gray-100 dark:border-gray-700 pb-4">
+            <div className="">
+              <Button
+                as="a"
+                href={route('post.show', {
+                  board: post.board?.slug,
+                  post: post.slug,
+                })}
+                variant="secondary"
+                className="inline-flex"
+                target="_blank"
+              >
+                <ArrowTopRightOnSquareIcon className="h-5 w-5 mr-2" />
+                View
+              </Button>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Button
+                variant="secondary"
+                className="inline-flex"
+                onClick={() => setShowEditForm(true)}
+              >
+                <PencilSquareIcon className="h-5 w-5 mr-2" />
+                Edit
+              </Button>
+              <Button
+                variant="danger"
+                style="outline"
+                className="inline-flex"
+                onClick={() => {
+                  if (
+                    confirm(
+                      'Are you sure you want to delete this feedback? This action cannot be undone.'
+                    )
+                  ) {
+                    form.delete(
+                      route('admin.feedbacks.destroy', {
+                        post: post.slug,
+                      })
+                    );
+                  }
+                }}
+              >
+                <TrashIcon className="h-5 w-5 mr-2" />
+                <span>Delete</span>
+              </Button>
+            </div>
+          </div>
 
           <form onSubmit={onSubmit}>
             <SelectInput
@@ -198,7 +246,9 @@ const FeedbackShow = ({ post, statuses, boards, votes }: Props) => {
 
           <div className="mt-8 py-4">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-base font-semibold">Voters</h3>
+              <h3 className="text-base font-semibold dark:text-gray-300">
+                Voters
+              </h3>
 
               <Button
                 variant="secondary"
@@ -208,7 +258,6 @@ const FeedbackShow = ({ post, statuses, boards, votes }: Props) => {
                 Add Vote
               </Button>
             </div>
-
             {votes.length > 0 ? (
               <>
                 <ul>
@@ -221,7 +270,7 @@ const FeedbackShow = ({ post, statuses, boards, votes }: Props) => {
                         />
                       </div>
                       <div className="flex-1">
-                        <div className="text-sm font-semibold">
+                        <div className="text-sm dark:text-gray-300 font-semibold">
                           {vote.user.name}
                         </div>
                       </div>
@@ -246,6 +295,15 @@ const FeedbackShow = ({ post, statuses, boards, votes }: Props) => {
         show={showVoteModal}
         onClose={() => setShowVoteModal(false)}
         post={localPost}
+      />
+
+      <EditFeedback
+        isOpen={showEditForm}
+        onClose={() => setShowEditForm(false)}
+        post={localPost}
+        onUpdate={() => {
+          // inertia reload
+        }}
       />
     </div>
   );

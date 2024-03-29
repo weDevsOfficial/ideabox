@@ -100,7 +100,7 @@ const Show = ({ board }: Props) => {
   };
 
   return (
-    <div className="p-6 bg-white rounded shadow">
+    <div className="p-6 bg-white dark:bg-gray-800 rounded shadow">
       <Link
         className="flex mb-6 items-center text-sm text-gray-600 "
         href={route('admin.boards.index')}
@@ -149,7 +149,7 @@ const Show = ({ board }: Props) => {
         />
 
         {form.data.allow_posts && (
-          <div className="p-6 bg-gray-50 border border-gray-200 rounded mt-4">
+          <div className="p-6 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded mt-4">
             <h3 className="font-semibold text-base mb-4">Form Settings</h3>
 
             <TextField
@@ -165,8 +165,10 @@ const Show = ({ board }: Props) => {
             />
 
             <div className="border border-dashed border-indigo-200 p-4 rounded mb-4">
-              <div className="mb-4 bg-indigo-50 border border-indigo-100 p-4 rounded">
-                <div className="mb-4 text-sm font-semibold">Title Field</div>
+              <div className="mb-4 bg-indigo-50 dark:bg-gray-800 border border-indigo-100 dark:border-gray-700 p-4 rounded">
+                <div className="mb-4 text-sm font-semibold dark:text-gray-300">
+                  Title Field
+                </div>
 
                 <div className="sm:flex gap-4">
                   <TextField
@@ -187,8 +189,8 @@ const Show = ({ board }: Props) => {
                 </div>
               </div>
 
-              <div className="mb-4 bg-indigo-50 border border-indigo-100 p-4 rounded">
-                <div className="mb-4 text-sm font-semibold">
+              <div className="mb-4 bg-indigo-50 dark:bg-gray-800 border border-indigo-100 dark:border-gray-700 p-4 rounded">
+                <div className="mb-4 text-sm font-semibold dark:text-gray-300">
                   Description Field
                 </div>
 
