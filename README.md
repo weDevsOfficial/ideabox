@@ -45,25 +45,33 @@ Ensure you have the following installed:
      ```bash
      php artisan key:generate
      ```
-    To set the application logo, add a square image as logo in the environment:
+     To set the application logo, add a square image as logo in the environment:
 
    ```bash
    APP_LOGO='https://path/to/logo.svg'
    ```
 
-5. **Run Database Migrations**
+4. **Run Database Migrations**
 
    ```bash
    php artisan migrate
+   php artisan db:seed
    ```
 
-6. **Install JavaScript Dependencies**
+   A user has been created with the following credentials:
+
+   ```
+    Email: admin@example.com
+    Password: password
+   ```
+
+5. **Install JavaScript Dependencies**
 
    ```bash
    yarn
    ```
 
-7. **Build Assets**
+6. **Build Assets**
    ```bash
    yarn build
    ```
