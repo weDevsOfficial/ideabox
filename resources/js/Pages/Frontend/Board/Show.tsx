@@ -24,6 +24,7 @@ const ShowBoard = ({ auth, posts, board }: PageProps<Props>) => {
   const urlParams = new URLSearchParams(window.location.search);
   const sort = urlParams.get('sort');
   const [sortKey, setSortKey] = useState(sort || 'voted');
+  const [searchParam, setSearchParam] = useState(urlParams.get('search') || '');
 
   const toggleVote = (post: PostType) => {
     if (!auth.user) {
@@ -61,6 +62,16 @@ const ShowBoard = ({ auth, posts, board }: PageProps<Props>) => {
     );
   };
 
+  const handleSearch = () => {
+    router.visit(
+      route('board.show', {
+        board: board.slug, search: searchParam
+      }),
+      {
+        replace: true
+      });
+  }
+
   return (
     <div>
       <Head title={board.name} />
@@ -93,8 +104,14 @@ const ShowBoard = ({ auth, posts, board }: PageProps<Props>) => {
                   <input
                     type="search"
                     placeholder="Search"
-                    disabled
-                    className="px-4 pl-9 py-2 dark:bg-gray-800 rounded border-0 text-sm ring-1 ring-indigo-50 dark:ring-gray-700 focus:outline-none focus:ring-1"
+                    value={searchParam}
+                    onChange={(e) => setSearchParam(e.target.value)}
+                    className="px-4 pl-9 py-2 dark:bg-gray-800 rounded border-0 text-sm ring-1 ring-indigo-50 dark:ring-gray-700 focus:outline-none focus:ring-1 dark:text-gray-300"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && searchParam) {
+                        handleSearch();
+                      }
+                    }}
                   />
                   <div className="absolute inset-y-0 left-2 flex items-center pr-3 pointer-events-none">
                     <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />

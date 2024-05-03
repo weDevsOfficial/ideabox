@@ -37,6 +37,10 @@ class BoardController extends Controller
             ]);
         }
 
+        if ($request->has('search')) {
+            $postsQuery->where('title', 'like', '%' . $request->search . '%');
+        }
+
         if ($request->has('sort') && in_array($request->sort, array_keys($sortFields))) {
             $orderBy = $sortFields[$request->sort];
         }
