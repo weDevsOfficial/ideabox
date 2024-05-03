@@ -65,7 +65,7 @@ const ShowBoard = ({ auth, posts, board }: PageProps<Props>) => {
       search: searchUrlParam.search
     };
 
-    if (searchUrlParam.search.length > 0) {
+    if (searchUrlParam.search.length === 0) {
       delete params['search'];
     }
 
