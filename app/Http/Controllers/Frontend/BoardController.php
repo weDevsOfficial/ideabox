@@ -37,7 +37,7 @@ class BoardController extends Controller
             ]);
         }
 
-        if ($request->has('search')) {
+        if ($request->has('search') && $request->search) {
             $postsQuery->where('title', 'like', '%' . $request->search . '%');
         }
 
