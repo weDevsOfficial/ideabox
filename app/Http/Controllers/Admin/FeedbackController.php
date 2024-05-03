@@ -141,16 +141,16 @@ class FeedbackController extends Controller
                 'body'      => $request->input('comment') ?? '',
                 'status_id' => $request->input('status_id'),
             ]);
-
-            if ($request->input('notify') === true) {
-                $this->notify($post);
-            }
         }
 
         $post->update([
             'board_id' => $request->input('board_id'),
             'status_id' => $request->input('status_id'),
         ]);
+
+        if ($request->input('notify') === true) {
+            $this->notify($post);
+        }
 
         return redirect()->back()->with('success', 'Feedback updated successfully.');
     }
