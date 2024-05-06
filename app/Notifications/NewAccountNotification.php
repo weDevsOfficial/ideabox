@@ -34,13 +34,13 @@ class NewAccountNotification extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        return (new MailMessage)
+        return (new MailMessage())
             ->subject('Welcome to ' . config('app.name'))
             ->greeting('Hello ' . $notifiable->name . ',')
             ->line('Your account has been created on ' . config('app.name') . '.')
             ->line('Your auto generated password is: ' . $this->password)
             ->action('Login', route('login'))
-            ->line('Thank you for using our application!');
+            ->line('Thank you!');
     }
 
     /**

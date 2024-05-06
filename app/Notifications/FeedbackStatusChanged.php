@@ -35,12 +35,12 @@ class FeedbackStatusChanged extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        return (new MailMessage)
+        return (new MailMessage())
             ->subject('Feedback Status Changed')
             ->greeting('Hello, ' . $notifiable->name . '!')
             ->line('The status of your feedback has been changed to ' . $this->post->status->name . '.')
             ->action('View Feedback', route('post.show', [$this->post->board, $this->post]))
-            ->line('Thank you for using our application!');
+            ->line('Thank you!');
     }
 
     /**

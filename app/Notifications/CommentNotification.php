@@ -37,9 +37,11 @@ class CommentNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage())
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+                    ->subject('New Comment on ' . $this->post->title)
+                    ->greeting('Hello, '. $notifiable->name . '!')
+                    ->line('A new comment has been posted on "' . $this->post->title . '" by ' . $this->comment->user->name . '.')
+                    ->line($this->comment->body)
+                    ->action('View Post', route('post.show', [$this->post->board, $this->post]));
     }
 
     /**
