@@ -126,6 +126,7 @@ const UserIndex = ({ users }: Props) => {
                     variant="secondary"
                     size="small"
                     onClick={() => editUser(user)}
+                    className="dark:bg-gray-700"
                   >
                     Edit
                   </Button>
@@ -134,7 +135,7 @@ const UserIndex = ({ users }: Props) => {
                     variant="danger"
                     size="small"
                     style="outline"
-                    className="ml-2"
+                    className="ml-2 dark:text-red-400 dark:hover:text-red-500 dark:bg-gray-900 dark:hover:bg-gray-800"
                     onClick={() => deleteUser(user.id)}
                   >
                     Delete
