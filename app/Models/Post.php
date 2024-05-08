@@ -24,7 +24,7 @@ class Post extends Model
         'impact',
         'effort',
         'created_by',
-        'archived_by_post_id',
+        'archived_by_post',
     ];
 
     protected static function boot()

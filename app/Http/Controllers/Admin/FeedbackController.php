@@ -57,8 +57,7 @@ class FeedbackController extends Controller
     {
         $search = $request->input('search');
 
-        $query = Post::where('status_id', '!=', Status::where('name', 'Closed')->first()->id);
-
+        $query = Post::where('archived_by_post', null);
         if ($request->has('search') && $search) {
             $query->where('title', 'like', '%' . $search . '%');
         }
