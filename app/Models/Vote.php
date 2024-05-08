@@ -9,7 +9,7 @@ class Vote extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['board_id', 'post_id', 'user_id', 'created_by'];
+    protected $fillable = ['board_id', 'post_id', 'user_id', 'created_by', 'archive_post_id'];
 
     protected static function boot()
     {

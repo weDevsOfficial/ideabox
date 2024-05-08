@@ -53,6 +53,23 @@ class FeedbackController extends Controller
         ]);
     }
 
+    public function search(Request $request)
+    {
+        $search = $request->input('search');
+
+        $query = Post::where('status_id', '!=', Status::where('name', 'Closed')->first()->id);
+
+        if ($request->has('search') && $search) {
+            $query->where('title', 'like', '%' . $search . '%');
+        }
+
+        $query->orderBy('vote', 'desc');
+
+        $response = $query->get();
+
+        return response()->json($response);
+    }
+
     public function show(Post $post)
     {
         $post->load('creator', 'board', 'status', 'by');
@@ -194,5 +211,37 @@ class FeedbackController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Vote added successfully.');
+    }
+
+    public function merge(Request $request)
+    {
+        $request->validate([
+            'post_id' => 'required|exists:posts,id',
+            'merge_ids' => 'required|array|exists:posts,id',
+        ]);
+
+        foreach ($request->merge_ids as $id) {
+            $post = Post::find($id);
+            if (!$post || $post->archived_by_post) {
+                continue;
+            }
+
+            Comment::where('post_id', $id)->update( [
+                'post_id' => $request->post_id,
+                'archive_post_id' => $id,
+            ]);
+
+            Vote::where('post_id', $id)->update([
+                    'post_id' => $request->post_id,
+                    'archive_post_id' => $id,
+                ]);
+
+            $post->update([
+                'archived_by_post' => $request->post_id,
+                'status_id' => Status::where('name', 'Closed')->first()->id,
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Posts merged successfully.');
     }
 }

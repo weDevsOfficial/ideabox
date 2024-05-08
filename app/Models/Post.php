@@ -23,7 +23,8 @@ class Post extends Model
         'eta',
         'impact',
         'effort',
-        'created_by'
+        'created_by',
+        'archived_by_post_id',
     ];
 
     protected static function boot()
