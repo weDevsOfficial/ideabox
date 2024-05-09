@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('posts', function (Blueprint $table) {
-            $table->foreignId('archived_by_post')->nullable()->constrained('posts')->onDelete('set null');
+            $table->foreignId('merged_with_post')->nullable()->constrained('posts')->onDelete('set null');
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('posts', function (Blueprint $table) {
-            $table->dropConstrainedForeignId('archived_by_post');
+            $table->dropConstrainedForeignId('merged_with_post');
         });
     }
 };

@@ -27,6 +27,9 @@ const Comments: React.FC<CommentsProps> = ({ post }) => {
   const fetchComments = async () => {
     setIsFetching(true);
 
+    if (post.merged_with_post){
+      return;
+    }
     try {
       const response = await fetch(
         route('post.comments.index', {

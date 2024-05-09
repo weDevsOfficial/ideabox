@@ -24,7 +24,7 @@ class Post extends Model
         'impact',
         'effort',
         'created_by',
-        'archived_by_post',
+        'merged_with_post',
     ];
 
     protected static function boot()
@@ -99,7 +99,7 @@ class Post extends Model
                 'has_voted' => Vote::selectRaw('count(*)')
                     ->whereColumn('post_id', 'posts.id')
                     ->where('user_id', $userId)
-                    ->take(1)
+                    ->take(1),
             ]);
         }
     }

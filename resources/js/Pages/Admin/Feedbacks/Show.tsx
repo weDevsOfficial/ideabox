@@ -99,6 +99,20 @@ const FeedbackShow = ({ post, statuses, boards, votes }: Props) => {
 
           <div className="text-xl font-semibold dark:text-gray-300 mb-4 ml-12">
             {localPost.title}
+            {post.merged_with_post && (
+              <span className="text-sm text-gray-500 ml-2">
+                (Merged with{' '}
+                <Link
+                  href={route('admin.feedbacks.show', {
+                    post: post.merged_with_post.slug,
+                  })}
+                  className="text-blue-500"
+                >
+                  {post.merged_with_post.title}
+                </Link>
+                )
+              </span>
+            )}
           </div>
 
           <div className="flex mb-6">

@@ -67,6 +67,21 @@ const Post = ({ post, status, board, votes }: PageProps<Props>) => {
             <div className="flex flex-col flex-1">
               <div className="text-xl font-semibold mb-2 dark:text-gray-300">
                 {post.title}
+                {post.merged_with_post && (
+                  <span className="text-sm text-gray-500 ml-2">
+                (Merged with{' '}
+                    <Link
+                      href={route('post.show', {
+                        board: post.merged_with_post.board.slug,
+                        post: post.merged_with_post.slug,
+                      })}
+                      className="text-blue-500"
+                    >
+                  {post.merged_with_post.title}
+                </Link>
+                )
+              </span>
+                )}
               </div>
               <div className="flex text-sm text-gray-500">
                 {status && (

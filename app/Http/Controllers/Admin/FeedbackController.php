@@ -57,7 +57,7 @@ class FeedbackController extends Controller
     {
         $search = $request->input('search');
 
-        $query = Post::where('archived_by_post', null);
+        $query = Post::where('merged_with_post', null);
         if ($request->has('search') && $search) {
             $query->where('title', 'like', '%' . $search . '%');
         }
@@ -72,6 +72,9 @@ class FeedbackController extends Controller
     public function show(Post $post)
     {
         $post->load('creator', 'board', 'status', 'by');
+        if ($post->merged_with_post) {
+            $post->merged_with_post = Post::find($post->merged_with_post);
+        }
 
         $boards = Board::select('id', 'name', 'posts', 'slug')->get();
         $statuses = Status::select('id', 'name', 'color')->get();
@@ -219,28 +222,24 @@ class FeedbackController extends Controller
             'merge_ids' => 'required|array|exists:posts,id',
         ]);
 
-        foreach ($request->merge_ids as $id) {
-            $post = Post::find($id);
-            if (!$post || $post->archived_by_post) {
-                continue;
-            }
+        try {
 
-            Comment::where('post_id', $id)->update( [
-                'post_id' => $request->post_id,
-                'archive_post_id' => $id,
-            ]);
+            $post = Post::where('id', $request->post_id);
+            $post->increment('comments', Post::whereIn('id', $request->merge_ids)->pluck( 'comments' )->sum() );
+            $post->increment('vote', Post::whereIn('id', $request->merge_ids)->pluck( 'vote' )->sum() );
 
-            Vote::where('post_id', $id)->update([
-                    'post_id' => $request->post_id,
-                    'archive_post_id' => $id,
+            Post::whereIn('id', $request->merge_ids)
+                ->update([
+                    'merged_with_post' => $request->post_id,
+                    'status_id' => Status::where('name', 'Closed')->first()->id,
+                    'comments' => 0,
+                    'vote' => 0,
                 ]);
 
-            $post->update([
-                'archived_by_post' => $request->post_id,
-                'status_id' => Status::where('name', 'Closed')->first()->id,
-            ]);
-        }
+            return redirect()->back()->with('success', 'Posts merged successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Post not found.');
 
-        return redirect()->back()->with('success', 'Posts merged successfully.');
+        }
     }
 }

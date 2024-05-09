@@ -18,6 +18,9 @@ class PostController extends Controller
         $post->load('creator');
 
         $post->body = Formatting::transformBody($post->body);
+        if ($post->merged_with_post) {
+            $post->merged_with_post = Post::with('board')->find($post->merged_with_post);
+        }
 
         $data = [
             'post' => $post,

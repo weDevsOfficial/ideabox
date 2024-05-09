@@ -19,7 +19,13 @@ class CommentController extends Controller
         $sort = $request->has('sort') && in_array($request->sort, ['latest', 'oldest']) ? $request->sort : 'latest';
         $orderBy = ($sort === 'latest') ? 'desc' : 'asc';
 
-        $comments = $post->comments()->with('user', 'status')->orderBy('created_at', $orderBy)->get();
+        // Search if there are any merged posts with the post id
+        $mergedPost = Post::where('merged_with_post', $post->id)->get();
+        $postIds = $mergedPost->pluck('id')->push($post->id);
+        $comments = Comment::whereIn('post_id', $postIds)
+                           ->with('user', 'status')
+                           ->orderBy('created_at', $orderBy)
+                           ->get();
 
         // Group comments by parent_id
         $groupedComments = $comments->groupBy('parent_id');
