@@ -9,7 +9,6 @@ type CommentsProps = {
   board: BoardType;
 };
 
-
 const Comments: React.FC<CommentsProps> = ({ post }) => {
   const [comments, setComments] = useState<CommentType[]>([]);
   const [sort, setSort] = useState('latest');
@@ -73,6 +72,7 @@ const Comments: React.FC<CommentsProps> = ({ post }) => {
             key={comment.id}
             post={post}
             comment={comment}
+            parentId={comment.id}
             onCommentDelete={() => {
               setComments(comments.filter((c) => c.id !== comment.id));
             }}

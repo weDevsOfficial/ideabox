@@ -22,13 +22,7 @@ const Comment = ({
 }: CommentProps) => {
   const [showReplyBox, setShowReplyBox] = useState(false);
   const { auth } = usePage<PageProps>().props;
-  const [commentParentId, setCommentParentId] = useState(parentId);
   const [commentState, setCommentState] = useState<CommentType>(comment);
-
-  const toggleReplyBox = (commentId: number) => {
-    setShowReplyBox(!showReplyBox);
-    setCommentParentId(commentId);
-  };
 
   const deleteComment = (commentId: number) => {
     if (!confirm('Are you sure you want to delete this comment?')) {
@@ -50,7 +44,7 @@ const Comment = ({
       ...commentState,
       children: [comment, ...commentState.children],
     });
-  }
+  };
 
   return (
     <div className="flex py-3">
@@ -87,17 +81,17 @@ const Comment = ({
         ></div>
         <div className="flex text-xs text-gray-500">
           <div className="">{formatDate(commentState.created_at)}</div>
-          {(commentState.parent_id === null || commentState.parent_id === 0) &&
+          {(commentState.parent_id === null || commentState.parent_id === 0) && (
             <>
               <div className="mx-1">•</div>
               <div
-              className="cursor-pointer hover:text-gray-800 dark:hover:text-gray-300"
-              onClick={() => toggleReplyBox(commentState.id)}
-            >
-              Reply
-            </div>
-          </>
-          }
+                className="cursor-pointer hover:text-gray-800 dark:hover:text-gray-300"
+                onClick={(_) => setShowReplyBox((prev) => !prev)}
+              >
+                Reply
+              </div>
+            </>
+          )}
           {auth.user?.role === 'admin' && (
             <>
               <div className="mx-1">•</div>
@@ -120,7 +114,7 @@ const Comment = ({
                 key={child.id}
                 post={post}
                 comment={child}
-                parentId={commentState.id}
+                parentId={comment.id}
                 onCommentDelete={() => {}}
               />
             ))}
@@ -129,7 +123,11 @@ const Comment = ({
 
         {showReplyBox && (
           <div className="mt-4">
-            <CommentBox post={post} parent={commentParentId} onComment={appendComment} />
+            <CommentBox
+              post={post}
+              parent={parentId}
+              onComment={appendComment}
+            />
           </div>
         )}
       </div>
