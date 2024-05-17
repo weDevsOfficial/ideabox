@@ -1,34 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
-import {
-  MagnifyingGlassIcon,
-  ChevronUpIcon,
-  ChatBubbleLeftIcon,
-} from '@heroicons/react/24/outline';
+import { MagnifyingGlassIcon, ChatBubbleLeftIcon } from '@heroicons/react/24/outline';
 
 import FrontendLayout from '@/Layouts/FrontendLayout';
-import { BoardType, PageProps, PostType, User } from '@/types';
+import { BoardType, PageProps, PostType } from '@/types';
 import PostForm from './PostForm';
 import axios from 'axios';
 import VoteButton from '@/Components/VoteButton';
+import BackToTop from '@/Components/BackToTop';
 
 type Props = {
-  posts: PostType[];
+  posts: {
+    data: PostType[];
+    next_page_url: string | null;
+  };
   board: BoardType;
 };
 
 const ShowBoard = ({ auth, posts, board }: PageProps<Props>) => {
-  const [allPosts, setAllPosts] = useState<PostType[]>(posts);
+  const [allPosts, setAllPosts] = useState<PostType[]>(posts.data);
+  const [nextPageUrl, setNextPageUrl] = useState<string | null>(posts.next_page_url);
+  const [loading, setLoading] = useState(false);
+  const observer = useRef<IntersectionObserver | null>(null);
 
-  // get sort key from url param
+  // Get sort key from URL param
   const urlParams = new URLSearchParams(window.location.search);
   const sort = urlParams.get('sort');
   const [sortKey, setSortKey] = useState(sort || 'voted');
 
   const toggleVote = (post: PostType) => {
-    if (!auth.user) {
-      return;
-    }
+    if (!auth.user) return;
 
     // send a ajax request for vote
     axios.post(route('post.vote', [board.slug, post.slug])).then((response) => {
@@ -47,19 +48,41 @@ const ShowBoard = ({ auth, posts, board }: PageProps<Props>) => {
 
   const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
-
     setSortKey(value);
-
-    router.visit(
-      route('board.show', {
-        board: board.slug,
-        sort: value,
-      }),
-      {
-        replace: true,
-      }
-    );
+    router.visit(route('board.show', { board: board.slug, sort: value }), { replace: true });
   };
+
+  const loadMorePosts = useCallback(() => {
+    if (loading || !nextPageUrl) return;
+    setLoading(true);
+
+    const url = new URL(nextPageUrl);
+    // @TODO: Need to add search query later
+    url.searchParams.set('sort', sortKey);
+
+    axios.get(url.toString()).then((response) => {
+      setAllPosts((prevPosts) => [...prevPosts, ...response.data.posts.data]);
+      setNextPageUrl(response.data.posts.next_page_url);
+      setLoading(false);
+    });
+  }, [loading, nextPageUrl]);
+
+  const lastPostRef = useCallback((node: HTMLDivElement) => {
+    if (loading) return;
+    if (observer.current) observer.current.disconnect();
+    observer.current = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        loadMorePosts();
+      }
+    });
+    if (node) observer.current.observe(node);
+  }, [loading, loadMorePosts]);
+
+  useEffect(() => {
+    return () => {
+      if (observer.current) observer.current.disconnect();
+    };
+  }, []);
 
   return (
     <div>
@@ -104,33 +127,66 @@ const ShowBoard = ({ auth, posts, board }: PageProps<Props>) => {
             </div>
 
             <div className="divide-y dark:divide-gray-700">
-              {allPosts.map((post) => (
-                <div
-                  key={post.id}
-                  className="p-4 flex justify-between hover:bg-slate-50 dark:hover:bg-slate-800"
-                >
-                  <Link
-                    href={route('post.show', [board.slug, post.slug])}
-                    className="flex flex-col flex-1"
-                  >
-                    <div className="text-sm font-semibold dark:text-gray-300 mb-1">
-                      {post.title}
+              {allPosts.map((post, index) => {
+                if (allPosts.length === index + 1) {
+                  return (
+                    <div
+                      key={post.id}
+                      ref={lastPostRef}
+                      className="p-4 flex justify-between hover:bg-slate-50 dark:hover:bg-slate-800"
+                    >
+                      <Link
+                        href={route('post.show', [board.slug, post.slug])}
+                        className="flex flex-col flex-1"
+                      >
+                        <div className="text-sm font-semibold dark:text-gray-300 mb-1">
+                          {post.title}
+                        </div>
+                        <div className="text-sm text-gray-500 line-clamp-2">
+                          {post.body}
+                        </div>
+                        <div className="text-xs text-gray-500 flex mt-2">
+                          <ChatBubbleLeftIcon className="h-4 w-4 inline-block mr-1.5" />
+                          <span>{post.comments}</span>
+                        </div>
+                      </Link>
+                      <div className="text-sm text-gray-500">
+                        <div className="ml-4">
+                          <VoteButton post={post} />
+                        </div>
+                      </div>
                     </div>
-                    <div className="text-sm text-gray-500 line-clamp-2">
-                      {post.body}
+                  );
+                } else {
+                  return (
+                    <div
+                      key={post.id}
+                      className="p-4 flex justify-between hover:bg-slate-50 dark:hover:bg-slate-800"
+                    >
+                      <Link
+                        href={route('post.show', [board.slug, post.slug])}
+                        className="flex flex-col flex-1"
+                      >
+                        <div className="text-sm font-semibold dark:text-gray-300 mb-1">
+                          {post.title}
+                        </div>
+                        <div className="text-sm text-gray-500 line-clamp-2">
+                          {post.body}
+                        </div>
+                        <div className="text-xs text-gray-500 flex mt-2">
+                          <ChatBubbleLeftIcon className="h-4 w-4 inline-block mr-1.5" />
+                          <span>{post.comments}</span>
+                        </div>
+                      </Link>
+                      <div className="text-sm text-gray-500">
+                        <div className="ml-4">
+                          <VoteButton post={post} />
+                        </div>
+                      </div>
                     </div>
-                    <div className="text-xs text-gray-500 flex mt-2">
-                      <ChatBubbleLeftIcon className="h-4 w-4 inline-block mr-1.5" />
-                      <span>{post.comments}</span>
-                    </div>
-                  </Link>
-                  <div className="text-sm text-gray-500">
-                    <div className="ml-4">
-                      <VoteButton post={post} />
-                    </div>
-                  </div>
-                </div>
-              ))}
+                  );
+                }
+              })}
 
               {allPosts.length === 0 && (
                 <div className="p-4 text-sm text-center dark:text-gray-300">
@@ -138,9 +194,16 @@ const ShowBoard = ({ auth, posts, board }: PageProps<Props>) => {
                 </div>
               )}
             </div>
+
+            {loading && (
+              <div className="p-4 text-sm text-center dark:text-gray-300">
+                Loading more posts...
+              </div>
+            )}
           </div>
         </div>
       </div>
+        <BackToTop />
     </div>
   );
 };
