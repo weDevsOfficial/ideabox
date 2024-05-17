@@ -8,10 +8,18 @@ import { BoardType, PageProps, PostType, CommentType, User } from '@/types';
 type Props = {
   post: PostType;
   parent?: number;
+  focus?: boolean;
   onComment?: (comment: CommentType) => void;
+  onCancel?: () => void;
 };
 
-const CommentBox = ({ post, parent, onComment }: Props) => {
+const CommentBox = ({
+  post,
+  parent,
+  onComment,
+  focus = false,
+  onCancel,
+}: Props) => {
   const { auth } = usePage<PageProps>().props;
   const [isFocused, setIsFocused] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -107,6 +115,7 @@ const CommentBox = ({ post, parent, onComment }: Props) => {
         onBlur={() => setIsFocused(false)}
         placeholder="Write a comment..."
         onChange={onTextareaChange}
+        autoFocus={focus}
         onKeyDown={(e) => {
           if (e.metaKey && e.key === 'Enter') {
             createComment();
@@ -118,7 +127,11 @@ const CommentBox = ({ post, parent, onComment }: Props) => {
         <div className="flex border-t border-gray-300 dark:border-gray-700 px-3 py-2 justify-between items-center">
           <div className="text-xs text-gray-500">
             {parent ? (
-              <span>&nbsp;</span>
+              <span>
+                <Button variant="secondary" style="link" onClick={onCancel}>
+                  Cancel
+                </Button>
+              </span>
             ) : (
               <span>
                 The post author and the voters will get an email notification.

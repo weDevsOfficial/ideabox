@@ -10,15 +10,15 @@ import CommentBox from './CommentBox';
 type CommentProps = {
   comment: CommentType;
   post: PostType;
-  parentId?: number;
   onCommentDelete: (commentId: number) => void;
+  level?: number;
 };
 
 const Comment = ({
   post,
   comment,
-  parentId,
   onCommentDelete,
+  level = 0,
 }: CommentProps) => {
   const [showReplyBox, setShowReplyBox] = useState(false);
   const { auth } = usePage<PageProps>().props;
@@ -42,8 +42,10 @@ const Comment = ({
   const appendComment = (comment: CommentType) => {
     setCommentState({
       ...commentState,
-      children: [comment, ...commentState.children],
+      children: [...commentState.children, comment],
     });
+
+    setShowReplyBox(false);
   };
 
   return (
@@ -81,7 +83,8 @@ const Comment = ({
         ></div>
         <div className="flex text-xs text-gray-500">
           <div className="">{formatDate(commentState.created_at)}</div>
-          {(commentState.parent_id === null || commentState.parent_id === 0) && (
+
+          {(level === 0 || level === 1) && auth.user !== null && (
             <>
               <div className="mx-1">•</div>
               <div
@@ -92,6 +95,7 @@ const Comment = ({
               </div>
             </>
           )}
+
           {auth.user?.role === 'admin' && (
             <>
               <div className="mx-1">•</div>
@@ -114,7 +118,7 @@ const Comment = ({
                 key={child.id}
                 post={post}
                 comment={child}
-                parentId={comment.id}
+                level={level + 1}
                 onCommentDelete={() => {}}
               />
             ))}
@@ -125,8 +129,10 @@ const Comment = ({
           <div className="mt-4">
             <CommentBox
               post={post}
-              parent={parentId}
+              parent={comment.id}
               onComment={appendComment}
+              focus={showReplyBox}
+              onCancel={() => setShowReplyBox(false)}
             />
           </div>
         )}
