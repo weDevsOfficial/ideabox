@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import {
   MagnifyingGlassIcon,
@@ -10,6 +10,7 @@ import { BoardType, PageProps, PostType, User } from '@/types';
 import PostForm from './PostForm';
 import axios from 'axios';
 import VoteButton from '@/Components/VoteButton';
+import { debounce } from 'lodash';
 
 type Props = {
   posts: PostType[];
@@ -77,13 +78,13 @@ const ShowBoard = ({ auth, posts, board }: PageProps<Props>) => {
     );
   };
 
-  const handleSearch = () => {
+  const handleSearch = useCallback( debounce((search: string) => {
     let params: UrlParams = {
       board: board.slug,
       sort: searchUrlParam.sort,
-      search: searchUrlParam.search,
+      search: search,
     };
-    if (searchUrlParam.search.length === 0) {
+    if (search.length === 0) {
       delete params['search'];
     }
     router.visit(
@@ -91,7 +92,7 @@ const ShowBoard = ({ auth, posts, board }: PageProps<Props>) => {
       {
         replace: true
       });
-  }
+  }, 500), []);
 
   return (
     <div>
@@ -131,13 +132,9 @@ const ShowBoard = ({ auth, posts, board }: PageProps<Props>) => {
                         ...searchUrlParam,
                         search: e.target.value,
                       });
+                      handleSearch(e.target.value);
                     }}
                     className="px-4 pl-9 py-2 dark:bg-gray-800 rounded border-0 text-sm ring-1 ring-indigo-50 dark:ring-gray-700 focus:outline-none focus:ring-1 dark:text-gray-300"
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        handleSearch();
-                      }
-                    }}
                     autoFocus={searchUrlParam.search.length > 0}
                   />
                   <div className="absolute inset-y-0 left-2 flex items-center pr-3 pointer-events-none">
