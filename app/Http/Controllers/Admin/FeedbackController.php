@@ -56,10 +56,15 @@ class FeedbackController extends Controller
     public function search(Request $request)
     {
         $search = $request->input('search');
+        $parent_id = $request->input('parent_id') ?? null;
+        if (!$request->has('search')) {
+            return response()->json([]);
+        }
 
         $query = Post::where('merged_with_post', null);
-        if ($request->has('search') && $search) {
-            $query->where('title', 'like', '%' . $search . '%');
+        $query->where('title', 'like', '%' . $search . '%');
+        if ($parent_id) {
+            $query->where('id', '!=', $parent_id);
         }
 
         $query->orderBy('vote', 'desc');

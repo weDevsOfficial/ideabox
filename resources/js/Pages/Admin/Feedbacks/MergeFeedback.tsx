@@ -52,8 +52,8 @@ const MergeFeedback: React.FC<Props> = ({ isOpen, onClose, post, onUpdate }) => 
 
   const handleSearch = useCallback( debounce((search: string) => {
     axios.get(route('admin.feedbacks.search', {
-      isApi: true,
       search: search,
+      parent_id: post.id,
     })).then((response) => {
       setSearchedData(response.data);
     });
