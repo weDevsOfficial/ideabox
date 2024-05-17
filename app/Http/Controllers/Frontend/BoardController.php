@@ -42,12 +42,16 @@ class BoardController extends Controller
         }
 
         $postsQuery->orderBy($orderBy, $request->sort === 'oldest' ? 'asc' : 'desc');
-        $posts = $postsQuery->get();
+        $posts = $postsQuery->cursorPaginate(20);
 
         $data = [
             'board' => $board,
             'posts' => $posts,
         ];
+
+        if ($request->cursor) {
+            return response()->json($data);
+        }
 
         return inertia('Frontend/Board/Show', $data);
     }
