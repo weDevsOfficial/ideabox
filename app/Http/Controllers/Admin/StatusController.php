@@ -42,6 +42,7 @@ class StatusController extends Controller
             'statuses.*.name' => 'required|string',
             'statuses.*.color' => 'required|string',
             'statuses.*.in_roadmap' => 'required|boolean',
+            'statuses.*.in_frontend' => 'required|boolean',
             'deleted' => 'nullable|array',
             'deleted.*' => 'required|integer|exists:statuses,id',
         ]);
@@ -61,6 +62,7 @@ class StatusController extends Controller
                 'name' => $status['name'],
                 'color' => $status['color'],
                 'in_roadmap' => $status['in_roadmap'],
+                'in_frontend' => $status['in_frontend'],
             ]);
         }
 

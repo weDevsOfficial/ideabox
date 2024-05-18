@@ -17,6 +17,7 @@ class HomeController extends Controller
             ->get();
         $statuses = Status::select('id', 'name', 'color')
             ->inRoadmap()
+            ->InFrontend()
             ->get();
 
         $posts = Post::whereIn('status_id', $statuses->pluck('id'))

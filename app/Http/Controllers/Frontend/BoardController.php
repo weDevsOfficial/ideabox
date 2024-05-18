@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Models\Post;
+use App\Models\Status;
 use App\Models\Vote;
 use App\Models\Board;
 use Illuminate\Http\Request;
@@ -24,6 +25,11 @@ class BoardController extends Controller
             'commented' => 'comments',
         ];
         $postsQuery = Post::where('board_id', $board->id);
+        $statuses = Status::select('id')
+                          ->InFrontend()
+                          ->get();
+
+        $postsQuery->whereIn('status_id', $statuses->pluck('id'));
 
         // If the user is logged in, add the subquery to check for votes
         if (Auth::check()) {

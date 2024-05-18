@@ -196,12 +196,20 @@ const StatusPage = ({ statuses }: Props) => {
                         updateItem(status.id, 'in_roadmap', checked)
                       }
                     />
+                    <div className="border-r border-gray-200 dark:border-gray-700 h-6 mx-3"></div>
+                    <SwitchInput
+                      label="Show in Frontend"
+                      initialValue={status.in_frontend}
+                      onChange={(checked) =>
+                        updateItem(status.id, 'in_frontend', checked)
+                      }
+                    />
 
                     <Button
                       variant="danger"
                       style="outline"
                       size="small"
-                      className="ml-3"
+                      className="ml-3 dark:bg-transparent dark:text-red-500"
                       onClick={() => confirmDelete(status.id)}
                     >
                       Delete
