@@ -1,7 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import axios from 'axios';
-import classNames from 'classnames';
-import { usePage } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 
 import CommentBox from './CommentBox';
 import Comment from '@/Components/Comment';
