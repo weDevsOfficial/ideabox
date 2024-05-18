@@ -228,7 +228,6 @@ class FeedbackController extends Controller
         ]);
 
         try {
-
             $post = Post::where('id', $request->post_id);
             $post->increment('comments', Post::whereIn('id', $request->merge_ids)->pluck( 'comments' )->sum() );
             $post->increment('vote', Post::whereIn('id', $request->merge_ids)->pluck( 'vote' )->sum() );
