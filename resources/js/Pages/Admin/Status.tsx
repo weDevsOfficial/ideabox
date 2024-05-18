@@ -196,6 +196,14 @@ const StatusPage = ({ statuses }: Props) => {
                         updateItem(status.id, 'in_roadmap', checked)
                       }
                     />
+                    <SwitchInput
+                      className="ml-3"
+                      label="Show in Frontend"
+                      initialValue={status.in_frontend}
+                      onChange={(checked) =>
+                        updateItem(status.id, 'in_frontend', checked)
+                      }
+                    />
 
                     <Button
                       variant="danger"
