@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
 import classNames from 'classnames';
 import { usePage } from '@inertiajs/react';
@@ -24,32 +24,32 @@ const Comments: React.FC<CommentsProps> = ({ post }) => {
   const [sort, setSort] = useState('latest');
   const [isFetching, setIsFetching] = useState(false);
 
-  const fetchComments = async () => {
-    setIsFetching(true);
+  const fetchComments = useCallback( async () => {
+      setIsFetching(true);
 
-    if (post.merged_with_post){
-      return;
-    }
-    try {
-      const response = await fetch(
-        route('post.comments.index', {
-          post: post.slug,
-          sort: sort,
-        })
-      );
+      if (post.merged_with_post){
+        return;
+      }
+      try {
+        const response = await fetch(
+          route('post.comments.index', {
+            post: post.slug,
+            sort: sort,
+          })
+        );
 
-      const data = await response.json();
-      setIsFetching(false);
-      setComments(data);
-    } catch (error) {
-      console.error('Error fetching comments:', error);
-      setIsFetching(false);
-    }
-  };
+        const data = await response.json();
+        setIsFetching(false);
+        setComments(data);
+      } catch (error) {
+        console.error('Error fetching comments:', error);
+        setIsFetching(false);
+      }
+    }, [sort, post]);
 
   useEffect(() => {
     fetchComments();
-  }, [sort]);
+  }, [sort, post]);
 
   const appendToComments = (comment: CommentType) => {
     setComments([comment, ...comments]);
