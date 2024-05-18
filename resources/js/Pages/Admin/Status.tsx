@@ -196,8 +196,8 @@ const StatusPage = ({ statuses }: Props) => {
                         updateItem(status.id, 'in_roadmap', checked)
                       }
                     />
+                    <div className="border-r border-gray-200 dark:border-gray-700 h-6 mx-3"></div>
                     <SwitchInput
-                      className="ml-3"
                       label="Show in Frontend"
                       initialValue={status.in_frontend}
                       onChange={(checked) =>
@@ -209,7 +209,7 @@ const StatusPage = ({ statuses }: Props) => {
                       variant="danger"
                       style="outline"
                       size="small"
-                      className="ml-3"
+                      className="ml-3 dark:bg-transparent dark:text-red-500"
                       onClick={() => confirmDelete(status.id)}
                     >
                       Delete
