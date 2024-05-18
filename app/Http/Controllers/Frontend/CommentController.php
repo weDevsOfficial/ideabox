@@ -16,7 +16,7 @@ class CommentController extends Controller
     // index function
     public function index(Request $request, Post $post)
     {
-        $sort = $request->has('sort') && in_array($request->sort, ['latest', 'oldest']) ? $request->sort : 'latest';
+        $sort = $request->has('sort') && in_array($request->sort, ['latest', 'oldest']) ? $request->sort : 'oldest';
         $orderBy = ($sort === 'latest') ? 'desc' : 'asc';
 
         // Search if there are any merged posts with the post id
@@ -33,6 +33,7 @@ class CommentController extends Controller
         // Recursive function to build comment tree
         $buildCommentTree = function ($parentId = null) use (&$buildCommentTree, &$groupedComments) {
             $result = [];
+
             if (isset($groupedComments[$parentId])) {
                 foreach ($groupedComments[$parentId] as $comment) {
                     $children = $buildCommentTree($comment->id);
@@ -40,6 +41,11 @@ class CommentController extends Controller
                     $comment->children = $children;
                     $result[] = $comment;
                 }
+
+                // Sort comments by id
+                usort($result, function ($a, $b) {
+                    return $a->id - $b->id;
+                });
             }
             return $result;
         };

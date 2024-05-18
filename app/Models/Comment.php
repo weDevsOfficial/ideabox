@@ -21,6 +21,14 @@ class Comment extends Model
             ]);
         });
 
+        // Delete all children when a parent comment is deleted
+        static::deleting(function ($comment) {
+            foreach ($comment->children as $child) {
+                $child->delete();
+            }
+        });
+
+        // Update the comments count when a comment is deleted
         static::deleted(function ($comment) {
             $comment->post->update([
                 'comments' => $comment->post->comments()->where('parent_id', null)->count('id')
