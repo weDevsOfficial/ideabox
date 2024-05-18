@@ -31,7 +31,7 @@ class Status extends Model
         return $query->where('in_roadmap', 1);
     }
 
-    public function scopeShowInFrontend($query)
+    public function scopeInFrontend($query)
     {
         return $query->where('in_frontend', 1);
     }

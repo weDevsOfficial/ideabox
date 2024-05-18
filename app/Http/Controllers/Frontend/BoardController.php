@@ -26,7 +26,7 @@ class BoardController extends Controller
         ];
         $postsQuery = Post::where('board_id', $board->id);
         $statuses = Status::select('id')
-                          ->ShowInFrontend()
+                          ->InFrontend()
                           ->get();
 
         $postsQuery->whereIn('status_id', $statuses->pluck('id'));
