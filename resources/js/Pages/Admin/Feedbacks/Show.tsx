@@ -315,6 +315,7 @@ const FeedbackShow = ({ post, statuses, boards, votes }: Props) => {
 
       <MergeFeedback
         post={localPost}
+        statuses={statuses}
         isOpen={showMergeForm}
         onClose={() => setShowMergeForm(false)}
       />

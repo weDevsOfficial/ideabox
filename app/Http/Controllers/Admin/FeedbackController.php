@@ -225,6 +225,7 @@ class FeedbackController extends Controller
         $request->validate([
             'post_id' => 'required|exists:posts,id',
             'merge_ids' => 'required|array|exists:posts,id',
+            'status_id' => 'required|exists:statuses,id',
         ]);
 
         try {
@@ -235,7 +236,7 @@ class FeedbackController extends Controller
             Post::whereIn('id', $request->merge_ids)
                 ->update([
                     'merged_with_post' => $request->post_id,
-                    'status_id' => Status::where('name', 'Closed')->first()->id,
+                    'status_id' => $request->status_id,
                     'comments' => 0,
                     'vote' => 0,
                 ]);
