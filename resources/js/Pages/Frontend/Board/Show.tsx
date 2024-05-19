@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import {
   MagnifyingGlassIcon,
-  ChevronUpIcon,
-  ChatBubbleLeftIcon,
+  ChatBubbleLeftIcon, ArrowPathIcon
 } from '@heroicons/react/24/outline';
 
 import FrontendLayout from '@/Layouts/FrontendLayout';
@@ -11,10 +10,16 @@ import { BoardType, PageProps, PostType, User } from '@/types';
 import PostForm from './PostForm';
 import axios from 'axios';
 import VoteButton from '@/Components/VoteButton';
+import { debounce } from 'lodash';
 
 type Props = {
   posts: PostType[];
   board: BoardType;
+};
+type UrlParams = {
+  board: string;
+  search?: string;
+  sort?: string;
 };
 
 const ShowBoard = ({ auth, posts, board }: PageProps<Props>) => {
@@ -23,8 +28,11 @@ const ShowBoard = ({ auth, posts, board }: PageProps<Props>) => {
   // get sort key from url param
   const urlParams = new URLSearchParams(window.location.search);
   const sort = urlParams.get('sort');
-  const [sortKey, setSortKey] = useState(sort || 'voted');
-
+  const search = urlParams.get('search');
+  const [searchUrlParam, setSearchUrlParam] = useState({
+    search: search || '',
+    sort: sort || 'voted',
+  });
   const toggleVote = (post: PostType) => {
     if (!auth.user) {
       return;
@@ -48,18 +56,43 @@ const ShowBoard = ({ auth, posts, board }: PageProps<Props>) => {
   const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
 
-    setSortKey(value);
+    setSearchUrlParam({
+      ...searchUrlParam,
+      sort: value,
+    });
+    let params: UrlParams = {
+      board: board.slug,
+      sort: value,
+      search: searchUrlParam.search
+    };
+
+    if (searchUrlParam.search.length === 0) {
+      delete params['search'];
+    }
 
     router.visit(
-      route('board.show', {
-        board: board.slug,
-        sort: value,
-      }),
+      route('board.show', params),
       {
         replace: true,
       }
     );
   };
+
+  const handleSearch = useCallback( debounce((search: string) => {
+    let params: UrlParams = {
+      board: board.slug,
+      sort: searchUrlParam.sort,
+      search: search,
+    };
+    if (search.length === 0) {
+      delete params['search'];
+    }
+    router.visit(
+      route('board.show', params),
+      {
+        replace: true
+      });
+  }, 500), []);
 
   return (
     <div>
@@ -77,7 +110,7 @@ const ShowBoard = ({ auth, posts, board }: PageProps<Props>) => {
                   <select
                     className="px-2 text-sm py-1.5 rounded border border-gray-200 dark:border-gray-700 dark:bg-gray-800"
                     onChange={handleSortChange}
-                    value={sortKey}
+                    value={searchUrlParam.sort}
                   >
                     <option value="latest">Latest</option>
                     <option value="oldest">Oldest</option>
@@ -88,18 +121,51 @@ const ShowBoard = ({ auth, posts, board }: PageProps<Props>) => {
                 <div className="">posts</div>
               </div>
 
-              <div className="">
+              <div className="flex">
                 <div className="relative">
                   <input
                     type="search"
                     placeholder="Search"
-                    disabled
-                    className="px-4 pl-9 py-2 dark:bg-gray-800 rounded border-0 text-sm ring-1 ring-indigo-50 dark:ring-gray-700 focus:outline-none focus:ring-1"
+                    value={searchUrlParam.search}
+                    onChange={(e) => {
+                      setSearchUrlParam({
+                        ...searchUrlParam,
+                        search: e.target.value,
+                      });
+                      handleSearch(e.target.value);
+                    }}
+                    className="px-4 pl-9 py-2 dark:bg-gray-800 rounded border-0 text-sm ring-1 ring-indigo-50 dark:ring-gray-700 focus:outline-none focus:ring-1 dark:text-gray-300"
+                    autoFocus={searchUrlParam.search.length > 0}
                   />
                   <div className="absolute inset-y-0 left-2 flex items-center pr-3 pointer-events-none">
                     <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
                   </div>
                 </div>
+                {(search || searchUrlParam.search.length > 0) || (searchUrlParam.sort !== 'voted') ? (
+                  <div className="flex items-center gap-1 ml-2">
+                    <button
+                      onClick={() => {
+                        setSearchUrlParam({
+                          ...searchUrlParam,
+                          search: '',
+                          sort: '',
+                        });
+                        router.visit(
+                          route('board.show', {
+                            board: board.slug,
+                          }),
+                          {
+                            replace: true,
+                          }
+                        );
+                      }}
+                      className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-300"
+                    >
+                      <ArrowPathIcon className="h-4 w-4" />
+                      <span>Clear</span>
+                    </button>
+                  </div>
+                ) : null}
               </div>
             </div>
 

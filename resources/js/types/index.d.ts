@@ -85,6 +85,7 @@ export interface PostType {
   board: BoardType;
   status?: StatusType;
   by: User | null;
+  merged_with_post?: PostType;
 }
 
 export interface CommentType {

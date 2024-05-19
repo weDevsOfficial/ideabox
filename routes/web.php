@@ -38,8 +38,10 @@ Route::prefix('admin')->middleware('auth', 'verified', 'admin')->group(function 
     Route::redirect('/', '/admin/feedbacks');
 
     Route::get('/feedbacks', [FeedbackController::class, 'index'])->name('admin.feedbacks.index');
+    Route::get('/feedbacks/search', [FeedbackController::class, 'search'])->name('admin.feedbacks.search');
     Route::get('/feedbacks/{post}', [FeedbackController::class, 'show'])->name('admin.feedbacks.show');
     Route::post('/feedbacks', [FeedbackController::class, 'store'])->name('admin.feedbacks.store');
+    Route::post( '/feedbacks/merge', [FeedbackController::class, 'merge'])->name('admin.feedbacks.merge');
     Route::post('/feedbacks/{post}', [FeedbackController::class, 'update'])->name('admin.feedbacks.update');
     Route::put('/feedbacks/{post}/update', [FeedbackController::class, 'updateContent'])->name('admin.feedbacks.update-content');
     Route::post('/feedbacks/{post}/vote', [FeedbackController::class, 'addVote'])->name('admin.feedbacks.vote');

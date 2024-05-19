@@ -201,7 +201,7 @@ const StatusPage = ({ statuses }: Props) => {
                       variant="danger"
                       style="outline"
                       size="small"
-                      className="ml-3"
+                      className="ml-3 dark:text-red-400 dark:hover:text-red-500 dark:bg-gray-900 dark:hover:bg-gray-800"
                       onClick={() => confirmDelete(status.id)}
                     >
                       Delete

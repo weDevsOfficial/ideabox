@@ -23,7 +23,8 @@ class Post extends Model
         'eta',
         'impact',
         'effort',
-        'created_by'
+        'created_by',
+        'merged_with_post',
     ];
 
     protected static function boot()
@@ -63,7 +64,7 @@ class Post extends Model
 
     public function status()
     {
-        return $this->hasOne(Status::class, 'id', 'status_id');
+        return $this->hasOne(Status::class, 'id', 'status_id')->withDefault();
     }
 
     public function votes()
@@ -98,7 +99,7 @@ class Post extends Model
                 'has_voted' => Vote::selectRaw('count(*)')
                     ->whereColumn('post_id', 'posts.id')
                     ->where('user_id', $userId)
-                    ->take(1)
+                    ->take(1),
             ]);
         }
     }

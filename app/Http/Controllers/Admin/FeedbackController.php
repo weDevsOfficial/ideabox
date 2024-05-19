@@ -53,9 +53,33 @@ class FeedbackController extends Controller
         ]);
     }
 
+    public function search(Request $request)
+    {
+        $search = $request->input('search');
+        $parent_id = $request->input('parent_id') ?? null;
+        if (!$request->has('search')) {
+            return response()->json([]);
+        }
+
+        $query = Post::where('merged_with_post', null);
+        $query->where('title', 'like', '%' . $search . '%');
+        if ($parent_id) {
+            $query->where('id', '!=', $parent_id);
+        }
+
+        $query->orderBy('vote', 'desc');
+
+        $response = $query->get();
+
+        return response()->json($response);
+    }
+
     public function show(Post $post)
     {
         $post->load('creator', 'board', 'status', 'by');
+        if ($post->merged_with_post) {
+            $post->merged_with_post = Post::find($post->merged_with_post);
+        }
 
         $boards = Board::select('id', 'name', 'posts', 'slug')->get();
         $statuses = Status::select('id', 'name', 'color')->get();
@@ -141,16 +165,16 @@ class FeedbackController extends Controller
                 'body'      => $request->input('comment') ?? '',
                 'status_id' => $request->input('status_id'),
             ]);
-
-            if ($request->input('notify') === true) {
-                $this->notify($post);
-            }
         }
 
         $post->update([
             'board_id' => $request->input('board_id'),
             'status_id' => $request->input('status_id'),
         ]);
+
+        if ($request->input('notify') === true) {
+            $this->notify($post);
+        }
 
         return redirect()->back()->with('success', 'Feedback updated successfully.');
     }
@@ -194,5 +218,33 @@ class FeedbackController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Vote added successfully.');
+    }
+
+    public function merge(Request $request)
+    {
+        $request->validate([
+            'post_id' => 'required|exists:posts,id',
+            'merge_ids' => 'required|array|exists:posts,id',
+            'status_id' => 'required|exists:statuses,id',
+        ]);
+
+        try {
+            $post = Post::where('id', $request->post_id);
+            $post->increment('comments', Post::whereIn('id', $request->merge_ids)->pluck( 'comments' )->sum() );
+            $post->increment('vote', Post::whereIn('id', $request->merge_ids)->pluck( 'vote' )->sum() );
+
+            Post::whereIn('id', $request->merge_ids)
+                ->update([
+                    'merged_with_post' => $request->post_id,
+                    'status_id' => $request->status_id,
+                    'comments' => 0,
+                    'vote' => 0,
+                ]);
+
+            return redirect()->back()->with('success', 'Posts merged successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Post not found.');
+
+        }
     }
 }
