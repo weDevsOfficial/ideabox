@@ -9,8 +9,11 @@ class Status extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'color', 'in_roadmap', 'order'];
-    protected $casts = ['in_roadmap' => 'boolean'];
+    protected $fillable = ['name', 'color', 'in_roadmap', 'order', 'in_frontend'];
+    protected $casts = [
+        'in_roadmap' => 'boolean',
+        'in_frontend' => 'boolean',
+    ];
     protected $hidden = ['created_at', 'updated_at'];
 
     public function posts()
@@ -26,5 +29,10 @@ class Status extends Model
     public function scopeInRoadmap($query)
     {
         return $query->where('in_roadmap', 1);
+    }
+
+    public function scopeInFrontend($query)
+    {
+        return $query->where('in_frontend', 1);
     }
 }
