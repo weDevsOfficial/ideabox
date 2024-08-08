@@ -19,17 +19,21 @@ class BoardController extends Controller
     {
         $orderBy = 'vote';
         $sortFields = [
-            'latest' => 'created_at',
-            'oldest' => 'created_at',
-            'voted' => 'vote',
+            'latest'    => 'created_at',
+            'oldest'    => 'created_at',
+            'voted'     => 'vote',
             'commented' => 'comments',
         ];
+
         $postsQuery = Post::where('board_id', $board->id);
         $statuses = Status::select('id')
-                          ->InFrontend()
+                          ->inFrontend()
                           ->get();
 
+        // Only show posts with statuses that are in the frontend
+        // or have no status (waiting to be reviewed)
         $postsQuery->whereIn('status_id', $statuses->pluck('id'));
+        $postsQuery->orWhere('status_id', null);
 
         // If the user is logged in, add the subquery to check for votes
         if (Auth::check()) {
