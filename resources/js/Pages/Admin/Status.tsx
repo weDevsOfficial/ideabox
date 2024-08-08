@@ -196,7 +196,9 @@ const StatusPage = ({ statuses }: Props) => {
                         updateItem(status.id, 'in_roadmap', checked)
                       }
                     />
-                    <div className="border-r border-gray-200 dark:border-gray-700 h-6 mx-3"></div>
+
+                    <div className="border-r border-gray-200 dark:border-gray-700 h-6 mx-3" />
+
                     <SwitchInput
                       label="Show in Frontend"
                       initialValue={status.in_frontend}
