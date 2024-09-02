@@ -49,7 +49,7 @@ class BoardController extends Controller
             'posts' => $posts,
         ];
 
-        if ($request->cursor) {
+        if ($request->wantsJson()) {
             return response()->json($data);
         }
 
