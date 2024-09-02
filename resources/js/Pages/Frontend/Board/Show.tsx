@@ -1,6 +1,9 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
-import { MagnifyingGlassIcon, ChatBubbleLeftIcon } from '@heroicons/react/24/outline';
+import {
+  MagnifyingGlassIcon,
+  ChatBubbleLeftIcon,
+} from '@heroicons/react/24/outline';
 
 import FrontendLayout from '@/Layouts/FrontendLayout';
 import { BoardType, PageProps, PostType } from '@/types';
@@ -19,7 +22,9 @@ type Props = {
 
 const ShowBoard = ({ auth, posts, board }: PageProps<Props>) => {
   const [allPosts, setAllPosts] = useState<PostType[]>(posts.data);
-  const [nextPageUrl, setNextPageUrl] = useState<string | null>(posts.next_page_url);
+  const [nextPageUrl, setNextPageUrl] = useState<string | null>(
+    posts.next_page_url
+  );
   const [loading, setLoading] = useState(false);
   const observer = useRef<IntersectionObserver | null>(null);
 
@@ -49,7 +54,9 @@ const ShowBoard = ({ auth, posts, board }: PageProps<Props>) => {
   const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
     setSortKey(value);
-    router.visit(route('board.show', { board: board.slug, sort: value }), { replace: true });
+    router.visit(route('board.show', { board: board.slug, sort: value }), {
+      replace: true,
+    });
   };
 
   const loadMorePosts = useCallback(() => {
@@ -67,16 +74,19 @@ const ShowBoard = ({ auth, posts, board }: PageProps<Props>) => {
     });
   }, [loading, nextPageUrl]);
 
-  const lastPostRef = useCallback((node: HTMLDivElement) => {
-    if (loading) return;
-    if (observer.current) observer.current.disconnect();
-    observer.current = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        loadMorePosts();
-      }
-    });
-    if (node) observer.current.observe(node);
-  }, [loading, loadMorePosts]);
+  const lastPostRef = useCallback(
+    (node: HTMLDivElement) => {
+      if (loading) return;
+      if (observer.current) observer.current.disconnect();
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          loadMorePosts();
+        }
+      });
+      if (node) observer.current.observe(node);
+    },
+    [loading, loadMorePosts]
+  );
 
   useEffect(() => {
     return () => {
@@ -203,7 +213,7 @@ const ShowBoard = ({ auth, posts, board }: PageProps<Props>) => {
           </div>
         </div>
       </div>
-        <BackToTop />
+      <BackToTop />
     </div>
   );
 };
