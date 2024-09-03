@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, useForm } from '@inertiajs/react';
 import { CirclePicker } from 'react-color';
 import * as Popover from '@radix-ui/react-popover';
 
-import { PageProps, StatusType } from '@/types';
+import { StatusType } from '@/types';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import {
   Button,
@@ -15,7 +15,6 @@ import {
   TextField,
 } from '@wedevs/tail-react';
 import { PlusIcon } from '@heroicons/react/24/outline';
-import useSearchParams from '@/hooks/useSearchParams';
 
 type Props = {
   statuses: StatusType[];
@@ -194,6 +193,16 @@ const StatusPage = ({ statuses }: Props) => {
                       initialValue={status.in_roadmap}
                       onChange={(checked) =>
                         updateItem(status.id, 'in_roadmap', checked)
+                      }
+                    />
+
+                    <div className="border-r border-gray-200 dark:border-gray-700 h-6 mx-3" />
+
+                    <SwitchInput
+                      label="Show in Frontend"
+                      initialValue={status.in_frontend}
+                      onChange={(checked) =>
+                        updateItem(status.id, 'in_frontend', checked)
                       }
                     />
 

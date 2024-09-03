@@ -39,6 +39,7 @@ export interface StatusType {
   id: number;
   name: string;
   in_roadmap: boolean;
+  in_frontend?: boolean;
   order: number;
 }
 
