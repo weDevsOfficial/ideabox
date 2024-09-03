@@ -27,8 +27,8 @@ class BoardController extends Controller
 
         $postsQuery = Post::where('board_id', $board->id);
         $statuses = Status::select('id')
-                          ->inFrontend()
-                          ->get();
+            ->inFrontend()
+            ->get();
 
         // Only show posts with statuses that are in the frontend
         // or have no status (waiting to be reviewed)
@@ -56,7 +56,7 @@ class BoardController extends Controller
         }
 
         $postsQuery->orderBy($orderBy, $request->sort === 'oldest' ? 'asc' : 'desc');
-        $posts = $postsQuery->cursorPaginate(20);
+        $posts = $postsQuery->paginate(20);
 
         $data = [
             'board' => $board,

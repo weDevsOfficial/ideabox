@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState, useEffect } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import {
   MagnifyingGlassIcon,
@@ -21,6 +21,7 @@ type Props = {
   };
   board: BoardType;
 };
+
 type UrlParams = {
   board: string;
   search?: string;
@@ -43,6 +44,7 @@ const ShowBoard = ({ auth, posts, board }: PageProps<Props>) => {
     search: search || '',
     sort: sort || 'voted',
   });
+
   const toggleVote = (post: PostType) => {
     if (!auth.user) return;
 
@@ -99,6 +101,46 @@ const ShowBoard = ({ auth, posts, board }: PageProps<Props>) => {
     }, 500),
     []
   );
+
+  const loadMorePosts = useCallback(() => {
+    if (loading || !nextPageUrl) return;
+    setLoading(true);
+
+    console.log('Loading more posts...', {
+      loading,
+      nextPageUrl,
+    });
+
+    const url = new URL(nextPageUrl);
+    // @TODO: Need to add search query later
+    // url.searchParams.set('sort', sortKey);
+
+    axios.get(url.toString()).then((response) => {
+      setAllPosts((prevPosts) => [...prevPosts, ...response.data.posts.data]);
+      setNextPageUrl(response.data.posts.next_page_url);
+      setLoading(false);
+    });
+  }, [loading, nextPageUrl]);
+
+  const lastPostRef = useCallback(
+    (node: HTMLDivElement) => {
+      if (loading) return;
+      if (observer.current) observer.current.disconnect();
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          loadMorePosts();
+        }
+      });
+      if (node) observer.current.observe(node);
+    },
+    [loading, loadMorePosts]
+  );
+
+  useEffect(() => {
+    return () => {
+      if (observer.current) observer.current.disconnect();
+    };
+  }, []);
 
   return (
     <div>
@@ -179,63 +221,34 @@ const ShowBoard = ({ auth, posts, board }: PageProps<Props>) => {
 
             <div className="divide-y dark:divide-gray-700">
               {allPosts.map((post, index) => {
-                if (allPosts.length === index + 1) {
-                  return (
-                    <div
-                      key={post.id}
-                      className="p-4 flex justify-between hover:bg-slate-50 dark:hover:bg-slate-800"
+                return (
+                  <div
+                    ref={index === allPosts.length - 1 ? lastPostRef : null}
+                    key={post.id}
+                    className="p-4 flex justify-between hover:bg-slate-50 dark:hover:bg-slate-800"
+                  >
+                    <Link
+                      href={route('post.show', [board.slug, post.slug])}
+                      className="flex flex-col flex-1"
                     >
-                      <Link
-                        href={route('post.show', [board.slug, post.slug])}
-                        className="flex flex-col flex-1"
-                      >
-                        <div className="text-sm font-semibold dark:text-gray-300 mb-1">
-                          {post.title}
-                        </div>
-                        <div className="text-sm text-gray-500 line-clamp-2">
-                          {post.body}
-                        </div>
-                        <div className="text-xs text-gray-500 flex mt-2">
-                          <ChatBubbleLeftIcon className="h-4 w-4 inline-block mr-1.5" />
-                          <span>{post.comments}</span>
-                        </div>
-                      </Link>
-                      <div className="text-sm text-gray-500">
-                        <div className="ml-4">
-                          <VoteButton post={post} />
-                        </div>
+                      <div className="text-sm font-semibold dark:text-gray-300 mb-1">
+                        {post.title}
+                      </div>
+                      <div className="text-sm text-gray-500 line-clamp-2">
+                        {post.body}
+                      </div>
+                      <div className="text-xs text-gray-500 flex mt-2">
+                        <ChatBubbleLeftIcon className="h-4 w-4 inline-block mr-1.5" />
+                        <span>{post.comments}</span>
+                      </div>
+                    </Link>
+                    <div className="text-sm text-gray-500">
+                      <div className="ml-4">
+                        <VoteButton post={post} />
                       </div>
                     </div>
-                  );
-                } else {
-                  return (
-                    <div
-                      key={post.id}
-                      className="p-4 flex justify-between hover:bg-slate-50 dark:hover:bg-slate-800"
-                    >
-                      <Link
-                        href={route('post.show', [board.slug, post.slug])}
-                        className="flex flex-col flex-1"
-                      >
-                        <div className="text-sm font-semibold dark:text-gray-300 mb-1">
-                          {post.title}
-                        </div>
-                        <div className="text-sm text-gray-500 line-clamp-2">
-                          {post.body}
-                        </div>
-                        <div className="text-xs text-gray-500 flex mt-2">
-                          <ChatBubbleLeftIcon className="h-4 w-4 inline-block mr-1.5" />
-                          <span>{post.comments}</span>
-                        </div>
-                      </Link>
-                      <div className="text-sm text-gray-500">
-                        <div className="ml-4">
-                          <VoteButton post={post} />
-                        </div>
-                      </div>
-                    </div>
-                  );
-                }
+                  </div>
+                );
               })}
 
               {allPosts.length === 0 && (
