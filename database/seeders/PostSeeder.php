@@ -26,5 +26,14 @@ class PostSeeder extends Seeder
                 'created_by' => User::inRandomOrder()->first()->id,
             ]);
         }
+
+        // foreach (range(1, 200) as $n) {
+        //     Post::factory()->create([
+        //         'title' => 'post-' . $n,
+        //         'board_id' => $boards->first()->id,
+        //     ]);
+
+        //     sleep(1);
+        // }
     }
 }
