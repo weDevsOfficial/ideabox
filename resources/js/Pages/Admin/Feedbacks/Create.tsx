@@ -81,8 +81,8 @@ const CreateModal = ({
       <form onSubmit={handleSubmit}>
         <ModalHeader>Create Feedback</ModalHeader>
         <ModalBody>
-          <div className="mb-4 border bg-slate-50 p-3 rounded">
-            <div className="block text-sm font-medium leading-6 text-gray-900 mb-2">
+          <div className="mb-4 border bg-slate-50 p-3 rounded dark:bg-slate-800 dark:border-gray-700 dark:text-gray-300">
+            <div className="block text-sm font-medium leading-6 text-gray-900 mb-2 dark:text-gray-200">
               Post on behalf of a user (optional)
             </div>
             <UserSearchDropdown

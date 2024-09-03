@@ -27,6 +27,8 @@ import classNames from 'classnames';
 import UserSearchDropdown from '@/Components/UserSearchDropdown';
 import CreateUserModal from '@/Components/CreateUserModal';
 import EditFeedback from './EditFeedback';
+import ActionMenu from '@/Components/ActionMenu';
+import MergeFeedback from '@/Pages/Admin/Feedbacks/MergeFeedback';
 
 type Props = {
   post: PostType;
@@ -43,6 +45,7 @@ type VoteProps = {
 
 const FeedbackShow = ({ post, statuses, boards, votes }: Props) => {
   const [showEditForm, setShowEditForm] = useState(false);
+  const [showMergeForm, setShowMergeForm] = useState(false);
   const [localPost, setLocalPost] = useState(post);
   const [showVoteModal, setShowVoteModal] = useState(false);
   const form = useForm({
@@ -96,6 +99,20 @@ const FeedbackShow = ({ post, statuses, boards, votes }: Props) => {
 
           <div className="text-xl font-semibold dark:text-gray-300 mb-4 ml-12">
             {localPost.title}
+            {post.merged_with_post && (
+              <span className="text-sm text-gray-500 ml-2">
+                (Merged with{' '}
+                <Link
+                  href={route('admin.feedbacks.show', {
+                    post: post.merged_with_post.slug,
+                  })}
+                  className="text-blue-500"
+                >
+                  {post.merged_with_post.title}
+                </Link>
+                )
+              </span>
+            )}
           </div>
 
           <div className="flex mb-6">
@@ -168,35 +185,34 @@ const FeedbackShow = ({ post, statuses, boards, votes }: Props) => {
             </div>
 
             <div className="flex items-center gap-2">
-              <Button
-                variant="secondary"
-                className="inline-flex"
-                onClick={() => setShowEditForm(true)}
-              >
-                <PencilSquareIcon className="h-5 w-5 mr-2" />
-                Edit
-              </Button>
-              <Button
-                variant="danger"
-                style="outline"
-                className="inline-flex"
-                onClick={() => {
-                  if (
-                    confirm(
-                      'Are you sure you want to delete this feedback? This action cannot be undone.'
-                    )
-                  ) {
-                    form.delete(
-                      route('admin.feedbacks.destroy', {
-                        post: post.slug,
-                      })
-                    );
-                  }
-                }}
-              >
-                <TrashIcon className="h-5 w-5 mr-2" />
-                <span>Delete</span>
-              </Button>
+              <ActionMenu
+                menuItems={[
+                  {
+                    label: 'Merge',
+                    onClick: () => setShowMergeForm(true),
+                  },
+                  {
+                    label: 'Edit',
+                    onClick: () => setShowEditForm(true),
+                  },
+                  {
+                    label: 'Delete',
+                    onClick: () => {
+                      if (
+                        confirm(
+                          'Are you sure you want to delete this feedback? This action cannot be undone.'
+                        )
+                      ) {
+                        form.delete(
+                          route('admin.feedbacks.destroy', {
+                            post: post.slug,
+                          })
+                        );
+                      }
+                    },
+                  },
+                ]}
+              />
             </div>
           </div>
 
@@ -295,6 +311,13 @@ const FeedbackShow = ({ post, statuses, boards, votes }: Props) => {
         show={showVoteModal}
         onClose={() => setShowVoteModal(false)}
         post={localPost}
+      />
+
+      <MergeFeedback
+        post={localPost}
+        statuses={statuses}
+        isOpen={showMergeForm}
+        onClose={() => setShowMergeForm(false)}
       />
 
       <EditFeedback

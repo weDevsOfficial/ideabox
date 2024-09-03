@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, useForm } from '@inertiajs/react';
 import { CirclePicker } from 'react-color';
 import * as Popover from '@radix-ui/react-popover';
 
-import { PageProps, StatusType } from '@/types';
+import { StatusType } from '@/types';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import {
   Button,
@@ -15,7 +15,6 @@ import {
   TextField,
 } from '@wedevs/tail-react';
 import { PlusIcon } from '@heroicons/react/24/outline';
-import useSearchParams from '@/hooks/useSearchParams';
 
 type Props = {
   statuses: StatusType[];
@@ -211,7 +210,7 @@ const StatusPage = ({ statuses }: Props) => {
                       variant="danger"
                       style="outline"
                       size="small"
-                      className="ml-3 dark:bg-transparent dark:text-red-500"
+                      className="ml-3 dark:text-red-400 dark:hover:text-red-500 dark:bg-gray-900 dark:hover:bg-gray-800"
                       onClick={() => confirmDelete(status.id)}
                     >
                       Delete

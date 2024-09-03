@@ -56,13 +56,13 @@ const UserSearchDropdown = ({
       {user === null && (
         <Combobox value={selectedUser} onChange={handleSelect}>
           <Combobox.Input
-            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700"
             placeholder="Search for a user by name or email"
             onKeyUp={handleSearch}
           />
-          <Combobox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+          <Combobox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm dark:bg-gray-800 dark:text-gray-300 dark:ring-gray-700">
             {users.length === 0 && query !== '' ? (
-              <div className="relative cursor-pointer select-none py-2 px-4 text-gray-700">
+              <div className="relative cursor-pointer select-none py-2 px-4 text-gray-700 dark:text-gray-300 dark:bg-gray-800">
                 <button
                   type="button"
                   className="inline-flex items-center"
@@ -78,7 +78,7 @@ const UserSearchDropdown = ({
                   key={user.id}
                   value={user}
                   className={({ active }) =>
-                    `relative cursor-pointer select-none py-2 pl-10 pr-4 ${
+                    `relative cursor-pointer select-none py-2 pl-10 pr-4 dark:bg-gray-800 dark:text-gray-300 ${
                       active ? 'bg-indigo-100 text-gray-700' : 'text-gray-900'
                     }`
                   }
@@ -89,11 +89,11 @@ const UserSearchDropdown = ({
                         <img
                           src={user.avatar}
                           alt={user.name}
-                          className="h-6 w-6 flex-shrink-0 rounded-full"
+                          className="h-6 w-6 flex-shrink-0 rounded-full dark:border-gray-700"
                         />
                         <span
                           className={classNames(
-                            'ml-3 truncate',
+                            'ml-3 truncate dark:text-gray-300',
                             selected && 'font-semibold'
                           )}
                         >
@@ -103,7 +103,7 @@ const UserSearchDropdown = ({
 
                       {selected ? (
                         <span
-                          className={`absolute inset-y-0 left-0 flex items-center pl-3 ${
+                          className={`absolute inset-y-0 left-0 flex items-center pl-3 dark:text-gray-300 dark:bg-gray-800${
                             active ? 'text-white' : 'text-indigo-600'
                           }`}
                         >
@@ -120,7 +120,7 @@ const UserSearchDropdown = ({
       )}
 
       {user && (
-        <div className="mt-2 flex items-center justify-between bg-indigo-100 px-2 py-2 rounded border border-indigo-200">
+        <div className="mt-2 flex items-center justify-between bg-indigo-100 px-2 py-2 rounded border border-indigo-200 dark:bg-gray-800 dark:border-gray-700">
           <div className="flex">
             <img
               src={user.avatar}

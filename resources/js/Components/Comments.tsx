@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 
 import CommentBox from './CommentBox';
@@ -16,29 +16,32 @@ const Comments: React.FC<CommentsProps> = ({ post }) => {
   const [sort, setSort] = useState<'latest' | 'oldest'>('oldest');
   const [isFetching, setIsFetching] = useState(false);
 
-  const fetchComments = async () => {
-    setIsFetching(true);
+  const fetchComments = useCallback( async () => {
+      setIsFetching(true);
 
-    try {
-      const response = await fetch(
-        route('post.comments.index', {
-          post: post.slug,
-          sort: sort,
-        })
-      );
+      if (post.merged_with_post){
+        return;
+      }
+      try {
+        const response = await fetch(
+          route('post.comments.index', {
+            post: post.slug,
+            sort: sort,
+          })
+        );
 
-      const data = await response.json();
-      setIsFetching(false);
-      setComments(data);
-    } catch (error) {
-      console.error('Error fetching comments:', error);
-      setIsFetching(false);
-    }
-  };
+        const data = await response.json();
+        setIsFetching(false);
+        setComments(data);
+      } catch (error) {
+        console.error('Error fetching comments:', error);
+        setIsFetching(false);
+      }
+    }, [sort, post]);
 
   useEffect(() => {
     fetchComments();
-  }, [sort]);
+  }, [sort, post]);
 
   const appendToComments = (comment: CommentType) => {
     setComments([...comments, comment]);
@@ -70,7 +73,7 @@ const Comments: React.FC<CommentsProps> = ({ post }) => {
           <div className="flex items-center">
             <div className="text-sm mr-2 dark:text-gray-400">Sort By</div>
             <select
-              className="px-2 min-w-28 text-sm py-1.5 rounded border border-gray-200"
+              className="px-2 min-w-28 text-sm py-1.5 rounded border border-gray-200 dark:border-gray-700 dark:bg-slate-800 dark:text-gray-300"
               value={sort}
               onChange={(e) => setSort(e.target.value as 'latest' | 'oldest')}
             >
