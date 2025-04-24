@@ -51,6 +51,7 @@ class FeedbackController extends Controller
             'posts' => $posts,
             'boards' => $boards,
             'statuses' => $statuses,
+            'hasOpenAIKey' => !empty(config('services.openai.api_key')),
         ]);
     }
 

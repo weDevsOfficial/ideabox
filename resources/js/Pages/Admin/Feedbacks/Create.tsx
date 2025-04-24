@@ -27,6 +27,7 @@ type Props = {
   onSubmit?: () => void;
   statuses: Option[];
   boards: Option[];
+  hasOpenAIKey?: boolean;
 };
 
 const CreateModal = ({
@@ -35,6 +36,7 @@ const CreateModal = ({
   onSubmit,
   statuses,
   boards,
+  hasOpenAIKey = false,
 }: Props) => {
   const [showUserForm, setShowUserForm] = useState(false);
   const [behalfUser, setBehalfUser] = useState<User | null>(null);
@@ -136,20 +138,22 @@ const CreateModal = ({
               onChange={(value) => form.setData('body', value)}
               error={form.errors.body}
             />
-            <div className="flex justify-end">
-              <Button
-                type="button"
-                variant="secondary"
-                size="small"
-                onClick={generateDescription}
-                disabled={isGenerating || !form.data.title}
-                loading={isGenerating}
-                className="flex items-center gap-1"
-              >
-                <SparklesIcon className="h-4 w-4" />
-                <span>Generate with AI</span>
-              </Button>
-            </div>
+            {hasOpenAIKey && (
+              <div className="flex justify-end">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="small"
+                  onClick={generateDescription}
+                  disabled={isGenerating || !form.data.title}
+                  loading={isGenerating}
+                  className="flex items-center gap-1"
+                >
+                  <SparklesIcon className="h-4 w-4" />
+                  <span>Generate with AI</span>
+                </Button>
+              </div>
+            )}
           </div>
 
           <SelectInput

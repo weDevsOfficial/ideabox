@@ -19,7 +19,7 @@ class OpenAIService
     public function generateFeatureDescription(string $title): string
     {
         $response = $this->client->chat()->create([
-            'model' => 'gpt-4.1-nano',
+            'model' => config('services.openai.model'),
             'messages' => [
                 [
                     'role' => 'system',
