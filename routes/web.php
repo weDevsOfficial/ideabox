@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\UserSearchController;
 use App\Http\Controllers\Frontend\CommentController;
 use App\Http\Controllers\Admin\BoardController as AdminBoardController;
 use App\Http\Controllers\Admin\CommentController as AdminCommentController;
+use App\Http\Controllers\FeatureDescriptionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -75,5 +76,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+Route::post('/api/generate-feature-description', [FeedbackController::class, 'generateDescription'])->name('api.generate-feature-description');
 
 require __DIR__ . '/auth.php';

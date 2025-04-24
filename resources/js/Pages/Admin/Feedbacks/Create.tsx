@@ -14,6 +14,7 @@ import { User } from '@/types';
 import axios from 'axios';
 import UserSearchDropdown from '@/Components/UserSearchDropdown';
 import CreateUserModal from '@/Components/CreateUserModal';
+import { SparklesIcon } from '@heroicons/react/24/outline';
 
 type Option = {
   value: string;
@@ -37,6 +38,7 @@ const CreateModal = ({
 }: Props) => {
   const [showUserForm, setShowUserForm] = useState(false);
   const [behalfUser, setBehalfUser] = useState<User | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [userForm, setUserForm] = useState({
     name: '',
     email: '',
@@ -76,6 +78,24 @@ const CreateModal = ({
     }
   };
 
+  const generateDescription = async () => {
+    if (!form.data.title) {
+      return;
+    }
+
+    setIsGenerating(true);
+    try {
+      const response = await axios.post(route('api.generate-feature-description'), {
+        title: form.data.title,
+      });
+      form.setData('body', response.data.description);
+    } catch (error) {
+      console.error('Failed to generate description:', error);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   return (
     <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
       <form onSubmit={handleSubmit}>
@@ -106,15 +126,31 @@ const CreateModal = ({
             error={form.errors.title}
           />
 
-          <Textarea
-            label="Details"
-            name="body"
-            placeholder="Enter the details of the feature"
-            required={true}
-            value={form.data.body}
-            onChange={(value) => form.setData('body', value)}
-            error={form.errors.body}
-          />
+          <div className="space-y-2">
+            <Textarea
+              label="Details"
+              name="body"
+              placeholder="Enter the details of the feature"
+              required={true}
+              value={form.data.body}
+              onChange={(value) => form.setData('body', value)}
+              error={form.errors.body}
+            />
+            <div className="flex justify-end">
+              <Button
+                type="button"
+                variant="secondary"
+                size="small"
+                onClick={generateDescription}
+                disabled={isGenerating || !form.data.title}
+                loading={isGenerating}
+                className="flex items-center gap-1"
+              >
+                <SparklesIcon className="h-4 w-4" />
+                <span>Generate with AI</span>
+              </Button>
+            </div>
+          </div>
 
           <SelectInput
             label="Status"

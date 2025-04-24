@@ -11,6 +11,7 @@ use App\Helpers\Formatting;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Notifications\FeedbackStatusChanged;
+use App\Services\OpenAIService;
 
 class FeedbackController extends Controller
 {
@@ -194,5 +195,19 @@ class FeedbackController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Vote added successfully.');
+    }
+
+    public function generateDescription(Request $request, OpenAIService $openAIService)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255'
+        ]);
+
+        try {
+            $description = $openAIService->generateFeatureDescription($request->title);
+            return response()->json(['description' => $description]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to generate description'], 500);
+        }
     }
 }
