@@ -16,9 +16,10 @@ type Props = {
   posts: PaginatedResponse<PostType>;
   boards: BoardType[];
   statuses: StatusType[];
+  hasOpenAIKey: boolean;
 };
 
-const Feedbacks = ({ posts, boards, statuses }: Props) => {
+const Feedbacks = ({ posts, boards, statuses, hasOpenAIKey }: Props) => {
   const urlParams = new URLSearchParams(window.location.search);
 
   const [showModal, setShowModal] = useState(false);
@@ -90,6 +91,7 @@ const Feedbacks = ({ posts, boards, statuses }: Props) => {
           setShowModal={setShowModal}
           statuses={statusOptions}
           boards={boardOptions}
+          hasOpenAIKey={hasOpenAIKey}
         />
 
         <div className="p-6 text-gray-900 dark:text-gray-100">

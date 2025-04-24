@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\UserSearchController;
 use App\Http\Controllers\Frontend\CommentController;
 use App\Http\Controllers\Admin\BoardController as AdminBoardController;
 use App\Http\Controllers\Admin\CommentController as AdminCommentController;
+use App\Http\Controllers\FeatureDescriptionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,6 +45,7 @@ Route::prefix('admin')->middleware('auth', 'verified', 'admin')->group(function 
     Route::put('/feedbacks/{post}/update', [FeedbackController::class, 'updateContent'])->name('admin.feedbacks.update-content');
     Route::post('/feedbacks/{post}/vote', [FeedbackController::class, 'addVote'])->name('admin.feedbacks.vote');
     Route::delete('/feedbacks/{post}', [FeedbackController::class, 'destroy'])->name('admin.feedbacks.destroy');
+    Route::post('/api/generate-feature-description', [FeedbackController::class, 'generateDescription'])->name('api.generate-feature-description');
 
     Route::delete('/comment/{comment}', [AdminCommentController::class, 'destroy'])->name('admin.comments.destroy');
 
