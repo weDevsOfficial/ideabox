@@ -28,12 +28,19 @@ const ShowBoard = ({ auth, posts, board, search }: PageProps<Props>) => {
   );
   const [loading, setLoading] = useState(false);
   const observer = useRef<IntersectionObserver | null>(null);
+  const loadingRef = useRef(false);
 
   // Get sort key from URL param
   const urlParams = new URLSearchParams(window.location.search);
   const sort = urlParams.get('sort');
   const [sortKey, setSortKey] = useState(sort || 'voted');
   const [searchQuery, setSearchQuery] = useState(search || '');
+
+  // Reset posts when props change (e.g. after sort/search changes)
+  useEffect(() => {
+    setAllPosts(posts.data);
+    setNextPageUrl(posts.next_page_url);
+  }, [posts]);
 
   const toggleVote = (post: PostType) => {
     if (!auth.user) return;
@@ -73,8 +80,10 @@ const ShowBoard = ({ auth, posts, board, search }: PageProps<Props>) => {
   };
 
   const loadMorePosts = useCallback(() => {
-    if (loading || !nextPageUrl) return;
+    if (loading || loadingRef.current || !nextPageUrl) return;
+
     setLoading(true);
+    loadingRef.current = true;
 
     const url = new URL(nextPageUrl);
     url.searchParams.set('sort', sortKey);
@@ -82,25 +91,50 @@ const ShowBoard = ({ auth, posts, board, search }: PageProps<Props>) => {
       url.searchParams.set('search', searchQuery.trim());
     }
 
-    axios.get(url.toString()).then((response) => {
-      setAllPosts((prevPosts) => [...prevPosts, ...response.data.posts.data]);
-      setNextPageUrl(response.data.posts.next_page_url);
-      setLoading(false);
-    });
-  }, [loading, nextPageUrl, sortKey, searchQuery]);
+    axios
+      .get(url.toString())
+      .then((response) => {
+        // Check for duplicate posts by ID
+        if (response.data.posts?.data) {
+          const newPostsData = response.data.posts.data;
+          const existingIds = new Set(allPosts.map((post) => post.id));
+          const uniqueNewPosts = newPostsData.filter(
+            (post: PostType) => !existingIds.has(post.id)
+          );
+
+          setAllPosts((prevPosts) => [...prevPosts, ...uniqueNewPosts]);
+          setNextPageUrl(response.data.posts.next_page_url);
+        }
+      })
+      .catch((error) => {
+        console.error('Error loading more posts:', error);
+      })
+      .finally(() => {
+        setLoading(false);
+        loadingRef.current = false;
+      });
+  }, [nextPageUrl, sortKey, searchQuery, allPosts]);
 
   const lastPostRef = useCallback(
     (node: HTMLDivElement) => {
       if (loading) return;
+
       if (observer.current) observer.current.disconnect();
-      observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting) {
-          loadMorePosts();
+
+      observer.current = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting && nextPageUrl) {
+            loadMorePosts();
+          }
+        },
+        {
+          rootMargin: '100px',
         }
-      });
+      );
+
       if (node) observer.current.observe(node);
     },
-    [loading, loadMorePosts]
+    [loading, loadMorePosts, nextPageUrl]
   );
 
   useEffect(() => {
