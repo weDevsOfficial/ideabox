@@ -30,10 +30,20 @@ class BoardController extends Controller
                           ->inFrontend()
                           ->get();
 
-        // Only show posts with statuses that are in the frontend
-        // or have no status (waiting to be reviewed)
-        $postsQuery->whereIn('status_id', $statuses->pluck('id'));
-        $postsQuery->orWhere('status_id', null);
+        // Group the status conditions
+        $postsQuery->where(function ($query) use ($statuses) {
+            $query->whereIn('status_id', $statuses->pluck('id'))
+                  ->orWhereNull('status_id');
+        });
+
+        // Handle search query if present
+        if ($request->has('search') && !empty($request->search)) {
+            $search = $request->search;
+            $postsQuery->where(function ($query) use ($search) {
+                $query->where('title', 'LIKE', "%{$search}%")
+                      ->orWhere('body', 'LIKE', "%{$search}%");
+            });
+        }
 
         // If the user is logged in, add the subquery to check for votes
         if (Auth::check()) {
@@ -57,6 +67,7 @@ class BoardController extends Controller
         $data = [
             'board' => $board,
             'posts' => $posts,
+            'search' => $request->search,
         ];
 
         if ($request->wantsJson()) {

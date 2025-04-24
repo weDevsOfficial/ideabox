@@ -18,9 +18,10 @@ type Props = {
     next_page_url: string | null;
   };
   board: BoardType;
+  search: string;
 };
 
-const ShowBoard = ({ auth, posts, board }: PageProps<Props>) => {
+const ShowBoard = ({ auth, posts, board, search }: PageProps<Props>) => {
   const [allPosts, setAllPosts] = useState<PostType[]>(posts.data);
   const [nextPageUrl, setNextPageUrl] = useState<string | null>(
     posts.next_page_url
@@ -32,6 +33,7 @@ const ShowBoard = ({ auth, posts, board }: PageProps<Props>) => {
   const urlParams = new URLSearchParams(window.location.search);
   const sort = urlParams.get('sort');
   const [sortKey, setSortKey] = useState(sort || 'voted');
+  const [searchQuery, setSearchQuery] = useState(search || '');
 
   const toggleVote = (post: PostType) => {
     if (!auth.user) return;
@@ -51,12 +53,23 @@ const ShowBoard = ({ auth, posts, board }: PageProps<Props>) => {
     });
   };
 
+  const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      router.visit(
+        route('board.show', {
+          board: board.slug,
+          search: searchQuery.trim(),
+          sort: sortKey,
+        })
+      );
+    }
+  };
+
   const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
     setSortKey(value);
-    router.visit(route('board.show', { board: board.slug, sort: value }), {
-      replace: true,
-    });
+    router.visit(route('board.show', { board: board.slug, sort: value }));
   };
 
   const loadMorePosts = useCallback(() => {
@@ -64,15 +77,17 @@ const ShowBoard = ({ auth, posts, board }: PageProps<Props>) => {
     setLoading(true);
 
     const url = new URL(nextPageUrl);
-    // @TODO: Need to add search query later
     url.searchParams.set('sort', sortKey);
+    if (searchQuery.trim()) {
+      url.searchParams.set('search', searchQuery.trim());
+    }
 
     axios.get(url.toString()).then((response) => {
       setAllPosts((prevPosts) => [...prevPosts, ...response.data.posts.data]);
       setNextPageUrl(response.data.posts.next_page_url);
       setLoading(false);
     });
-  }, [loading, nextPageUrl]);
+  }, [loading, nextPageUrl, sortKey, searchQuery]);
 
   const lastPostRef = useCallback(
     (node: HTMLDivElement) => {
@@ -126,7 +141,9 @@ const ShowBoard = ({ auth, posts, board }: PageProps<Props>) => {
                   <input
                     type="search"
                     placeholder="Search"
-                    disabled
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={handleSearch}
                     className="px-4 pl-9 py-2 dark:bg-gray-800 rounded border-0 text-sm ring-1 ring-indigo-50 dark:ring-gray-700 focus:outline-none focus:ring-1"
                   />
                   <div className="absolute inset-y-0 left-2 flex items-center pr-3 pointer-events-none">
