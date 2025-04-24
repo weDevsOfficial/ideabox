@@ -56,13 +56,13 @@ const UserSearchDropdown = ({
       {user === null && (
         <Combobox value={selectedUser} onChange={handleSelect}>
           <Combobox.Input
-            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            className="w-full px-3 py-2 text-sm border-0 ring-1 ring-inset ring-gray-300 dark:ring-gray-500 dark:bg-white/5 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
             placeholder="Search for a user by name or email"
             onKeyUp={handleSearch}
           />
-          <Combobox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+          <Combobox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white dark:bg-slate-800 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
             {users.length === 0 && query !== '' ? (
-              <div className="relative cursor-pointer select-none py-2 px-4 text-gray-700">
+              <div className="relative cursor-pointer select-none py-2 px-4 text-gray-700 dark:text-gray-300">
                 <button
                   type="button"
                   className="inline-flex items-center"

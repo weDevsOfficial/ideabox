@@ -87,9 +87,12 @@ const CreateModal = ({
 
     setIsGenerating(true);
     try {
-      const response = await axios.post(route('api.generate-feature-description'), {
-        title: form.data.title,
-      });
+      const response = await axios.post(
+        route('api.generate-feature-description'),
+        {
+          title: form.data.title,
+        }
+      );
       form.setData('body', response.data.description);
     } catch (error) {
       console.error('Failed to generate description:', error);
@@ -103,8 +106,8 @@ const CreateModal = ({
       <form onSubmit={handleSubmit}>
         <ModalHeader>Create Feedback</ModalHeader>
         <ModalBody>
-          <div className="mb-4 border bg-slate-50 p-3 rounded">
-            <div className="block text-sm font-medium leading-6 text-gray-900 mb-2">
+          <div className="mb-4 border bg-slate-50 dark:bg-gray-800 dark:border-slate-700 p-3 rounded">
+            <div className="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100 mb-2">
               Post on behalf of a user (optional)
             </div>
             <UserSearchDropdown
