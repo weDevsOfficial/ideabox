@@ -14,6 +14,7 @@ use App\Http\Controllers\Frontend\CommentController;
 use App\Http\Controllers\Admin\BoardController as AdminBoardController;
 use App\Http\Controllers\Admin\CommentController as AdminCommentController;
 use App\Http\Controllers\FeatureDescriptionController;
+use App\Http\Controllers\Admin\GitHubIntegrationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -66,6 +67,9 @@ Route::prefix('admin')->middleware('auth', 'verified', 'admin')->group(function 
     Route::put('/users/{user}', [UserController::class, 'update'])->name('admin.users.update');
 
     Route::get('/search-users', [UserSearchController::class, 'search'])->name('admin.users.search');
+
+    // Integrations main page
+    Route::get('/integrations', [App\Http\Controllers\Admin\IntegrationsController::class, 'index'])->name('admin.integrations.index');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -77,5 +81,28 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+// GitHub Integration Routes
+Route::middleware(['auth', 'admin'])->prefix('admin/integrations/github')->name('admin.integrations.github.')->group(function () {
+    Route::get('/', [GitHubIntegrationController::class, 'settings'])->name('settings');
+    Route::post('/connect', [GitHubIntegrationController::class, 'connect'])->name('connect');
+    Route::get('/callback', [GitHubIntegrationController::class, 'callback'])->name('callback');
+    Route::delete('/disconnect/{provider}', [GitHubIntegrationController::class, 'disconnect'])->name('disconnect');
+
+    // Repository management
+    Route::post('/search-repositories', [GitHubIntegrationController::class, 'searchRepositories'])->name('search-repositories');
+    Route::post('/add-repository', [GitHubIntegrationController::class, 'addRepository'])->name('add-repository');
+    Route::get('/list-repositories/{provider}', [GitHubIntegrationController::class, 'getRepositories'])->name('list-repositories');
+    Route::delete('/repositories/{repository}', [GitHubIntegrationController::class, 'removeRepository'])->name('repositories.remove');
+
+    // Issue management
+    Route::get('/search-issues', [GitHubIntegrationController::class, 'searchIssues'])->name('search-issues');
+    Route::post('/link-issue/{post}', [GitHubIntegrationController::class, 'linkIssue'])->name('link-issue');
+    Route::post('/create-issue/{post}', [GitHubIntegrationController::class, 'createIssue'])->name('create-issue');
+    Route::delete('/unlink-issue/{post}/{linkId}', [GitHubIntegrationController::class, 'unlinkIssue'])->name('unlink-issue');
+});
+
+// GitHub Webhook Route
+Route::post('/webhooks/github', [App\Http\Controllers\Webhooks\GitHubWebhookController::class, 'handle'])->name('webhooks.github');
 
 require __DIR__ . '/auth.php';

@@ -9,9 +9,11 @@ use App\Models\Status;
 use App\Models\Comment;
 use App\Helpers\Formatting;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Notifications\FeedbackStatusChanged;
 use App\Services\OpenAIService;
+use App\Models\PostIntegrationLink;
+use App\Http\Controllers\Controller;
+use App\Models\IntegrationRepository;
+use App\Notifications\FeedbackStatusChanged;
 
 class FeedbackController extends Controller
 {
@@ -45,7 +47,7 @@ class FeedbackController extends Controller
             }
         }
 
-        $posts = $query->paginate(30)->withQueryString();
+        $posts = $query->paginate(30);
 
         return inertia('Admin/Feedbacks/Index', [
             'posts' => $posts,
@@ -55,6 +57,9 @@ class FeedbackController extends Controller
         ]);
     }
 
+    /**
+     * Show the specified resource.
+     */
     public function show(Post $post)
     {
         $post->load('creator', 'board', 'status', 'by');
@@ -65,11 +70,28 @@ class FeedbackController extends Controller
         $post->raw_body = $post->body;
         $post->body = Formatting::transformBody($post->body);
 
+        // GitHub integration
+        $linkedIssues = [];
+
+        $repositories = IntegrationRepository::query()
+            ->whereHas('provider', function ($query) {
+                $query->where('type', 'github');
+            })
+            ->get();
+
+        if ($repositories->count()) {
+            $linkedIssues = PostIntegrationLink::query()
+                ->where('post_id', $post->id)
+                ->get();
+        }
+
         return inertia('Admin/Feedbacks/Show', [
             'post' => $post,
             'boards' => $boards,
             'statuses' => $statuses,
             'votes' => Vote::select('id', 'user_id')->onPost($post)->with('user')->take(10)->get(),
+            'repositories' => $repositories,
+            'linkedIssues' => $linkedIssues,
         ]);
     }
 

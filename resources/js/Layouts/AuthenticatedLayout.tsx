@@ -61,6 +61,13 @@ export default function Authenticated({
                 >
                   Users
                 </NavLink>
+
+                <NavLink
+                  href={route('admin.integrations.index')}
+                  active={route().current('admin.integrations.*')}
+                >
+                  Integrations
+                </NavLink>
               </div>
             </div>
 
@@ -181,6 +188,20 @@ export default function Authenticated({
             >
               Status
             </ResponsiveNavLink>
+
+            <ResponsiveNavLink
+              href={route('admin.users.index')}
+              active={route().current('admin.users.index')}
+            >
+              Users
+            </ResponsiveNavLink>
+
+            <ResponsiveNavLink
+              href={route('admin.integrations.index')}
+              active={route().current('admin.integrations.*')}
+            >
+              Integrations
+            </ResponsiveNavLink>
           </div>
 
           <div className="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
@@ -220,13 +241,18 @@ export default function Authenticated({
       <main className="max-w-7xl mx-auto sm:px-6 lg:px-8 py-12 ">
         {error && (
           <div className="max-w-7xl mx-auto">
-            <Notice type="error" label={error} className="mb-4" />
+            <Notice type="error" label={error} className="mb-4" dismissible />
           </div>
         )}
 
         {success && (
           <div className="max-w-7xl mx-auto">
-            <Notice type="success" label={success} className="mb-4" />
+            <Notice
+              type="success"
+              label={success}
+              className="mb-4"
+              dismissible
+            />
           </div>
         )}
         {children}

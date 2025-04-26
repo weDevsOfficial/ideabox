@@ -27,12 +27,15 @@ import classNames from 'classnames';
 import UserSearchDropdown from '@/Components/UserSearchDropdown';
 import CreateUserModal from '@/Components/CreateUserModal';
 import EditFeedback from './EditFeedback';
-
+import GitHubIssueLinker from '@/Components/GitHub/GitHubIssueLinker';
+import { IntegrationRepository, PostIntegrationLink } from '@/types';
 type Props = {
   post: PostType;
   statuses: StatusType[];
   boards: BoardType[];
   votes: VoteType[];
+  repositories: IntegrationRepository[];
+  linkedIssues: PostIntegrationLink[];
 };
 
 type VoteProps = {
@@ -41,7 +44,14 @@ type VoteProps = {
   post: PostType;
 };
 
-const FeedbackShow = ({ post, statuses, boards, votes }: Props) => {
+const FeedbackShow = ({
+  post,
+  statuses,
+  boards,
+  votes,
+  repositories,
+  linkedIssues,
+}: Props) => {
   const [showEditForm, setShowEditForm] = useState(false);
   const [localPost, setLocalPost] = useState(post);
   const [showVoteModal, setShowVoteModal] = useState(false);
@@ -74,11 +84,12 @@ const FeedbackShow = ({ post, statuses, boards, votes }: Props) => {
 
     form.post(route('admin.feedbacks.update', [post]), {
       onSuccess: (resp) => {
-        console.log(resp);
         form.reset();
       },
     });
   };
+
+  const hasGitHubIntegration = repositories.length > 0;
 
   return (
     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow sm:rounded-lg p-6">
@@ -243,6 +254,15 @@ const FeedbackShow = ({ post, statuses, boards, votes }: Props) => {
               </div>
             )}
           </form>
+
+          {/* GitHub Integration Section */}
+          {hasGitHubIntegration && (
+            <GitHubIssueLinker
+              post={post}
+              repositories={repositories}
+              linkedIssues={linkedIssues}
+            />
+          )}
 
           <div className="mt-8 py-4">
             <div className="flex items-center justify-between mb-3">
