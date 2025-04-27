@@ -11,17 +11,12 @@ import {
 } from '@wedevs/tail-react';
 import debounce from 'lodash/debounce';
 import { useForm } from '@inertiajs/react';
+import { Provider } from '@/types';
 
 interface Repository {
   id: number;
   name: string;
   full_name: string;
-}
-
-interface Provider {
-  id: number;
-  name: string;
-  access_token?: string;
 }
 
 interface ImprovedAddRepositoryModalProps {
@@ -53,7 +48,7 @@ export default function ImprovedAddRepositoryModal({
 
   // Get connected providers only
   const connectedProviders = providers.filter(
-    (provider) => provider.access_token
+    (provider) => provider.is_connected
   );
 
   // Set first provider as default when modal opens if not already selected
