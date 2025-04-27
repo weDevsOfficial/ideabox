@@ -159,12 +159,6 @@ class WebhookService
             // Calculate expected signature using raw payload
             $expectedSignature = 'sha256=' . hash_hmac('sha256', $payload, $secret);
 
-            Log::info('GitHub webhook signature', [
-                'expected' => $expectedSignature,
-                'actual' => $signature,
-                'repository' => $repositoryFullName
-            ]);
-
             return hash_equals($expectedSignature, $signature);
         } catch (\Exception $e) {
             Log::error('Webhook signature verification error', [
@@ -207,13 +201,6 @@ class WebhookService
 
             // Update the link status
             $link->update(['status' => $payload['issue']['state']]);
-
-            Log::info('GitHub issue status updated', [
-                'repository' => $repositoryFullName,
-                'issue' => $issueNumber,
-                'status' => $payload['issue']['state'],
-                'post_id' => $link->post->id
-            ]);
 
             // For closed issues, check if all linked issues are closed
             if ($action === 'closed') {
