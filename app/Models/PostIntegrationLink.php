@@ -59,8 +59,10 @@ class PostIntegrationLink extends Model
 
     /**
      * Get the repository name from settings when no repository is linked
+     *
+     * @return string|null
      */
-    public function getRepositoryName()
+    public function getRepositoryName(): ?string
     {
         // If we have a repository relation, use that
         if ($this->integration_repository_id && $this->repository) {

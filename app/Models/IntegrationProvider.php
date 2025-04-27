@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class IntegrationProvider extends Model
 {
@@ -23,6 +24,17 @@ class IntegrationProvider extends Model
     ];
 
     /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+        'access_token',
+        'refresh_token',
+        'settings',
+    ];
+
+    /**
      * The attributes that should be cast.
      *
      * @var array<string, string>
@@ -30,6 +42,25 @@ class IntegrationProvider extends Model
     protected $casts = [
         'settings' => 'array',
     ];
+
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = [
+        'is_connected',
+    ];
+
+    /**
+     * Get whether the integration is connected.
+     */
+    protected function isConnected(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => !empty($this->access_token),
+        );
+    }
 
     /**
      * Get the configuration settings for this provider.

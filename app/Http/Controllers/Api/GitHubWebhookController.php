@@ -25,12 +25,6 @@ class GitHubWebhookController extends Controller
         $repositoryName = $payload['repository']['full_name'] ?? 'unknown';
         $event = $request->header('X-GitHub-Event');
 
-        Log::info('GitHub webhook received', [
-            'event' => $event,
-            'action' => $payload['action'] ?? null,
-            'repository' => $repositoryName
-        ]);
-
         // Security check: Verify the GitHub signature for webhook
         if (!$this->verifyGitHubSignature($request, $repositoryName)) {
             Log::warning('GitHub webhook signature verification failed', [

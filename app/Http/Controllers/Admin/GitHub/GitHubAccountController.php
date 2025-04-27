@@ -30,7 +30,7 @@ class GitHubAccountController extends BaseGitHubController
 
         // Get provider ids with access tokens
         $providerIds = $providers->filter(function ($provider) {
-            return !empty($provider->access_token);
+            return $provider->is_connected;
         })->pluck('id');
 
         // Get all repositories in a single query, with provider information

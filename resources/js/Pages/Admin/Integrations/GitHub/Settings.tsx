@@ -6,6 +6,7 @@ import ConnectedAccountsList from './components/AccountsList';
 import ConnectAccountModal from './components/ConnectAccountModal';
 import AddRepositoryModal from './components/AddRepositoryModal';
 import RepositoriesList from './components/RepositoriesList';
+import { Provider } from '@/types';
 
 interface Repository {
   id: number;
@@ -18,27 +19,6 @@ interface Repository {
     id: number;
     name: string;
   };
-}
-
-interface Provider {
-  id: number;
-  name: string;
-  type: string;
-  tokens?: {
-    token: string;
-    token_type: string;
-    expires_at: string;
-  }[];
-  config?: {
-    client_id: string;
-    client_secret: string;
-  };
-  settings?: {
-    client_id: string;
-    client_secret: string;
-  };
-  repositories?: Repository[];
-  access_token?: string;
 }
 
 interface PageProps {
@@ -123,7 +103,7 @@ export default function GithubSettings({
         </div>
       </div>
 
-      {providers.some((p) => p.access_token) && (
+      {providers.some((p) => p.is_connected) && (
         <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg mt-8">
           <div className="p-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
             <div className="flex justify-between items-center mb-6">

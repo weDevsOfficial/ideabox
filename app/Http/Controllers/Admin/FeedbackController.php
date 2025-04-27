@@ -47,7 +47,7 @@ class FeedbackController extends Controller
             }
         }
 
-        $posts = $query->paginate(30);
+        $posts = $query->paginate(30)->withQueryString();
 
         return inertia('Admin/Feedbacks/Index', [
             'posts' => $posts,

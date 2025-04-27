@@ -84,7 +84,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 // GitHub Integration Routes - Updated to use the new controllers
-Route::middleware(['auth', 'admin'])->prefix('admin/integrations/github')->name('admin.integrations.github.')->group(function () {
+Route::middleware(['auth', 'admin', 'verified'])->prefix('admin/integrations/github')->name('admin.integrations.github.')->group(function () {
     // Account management
     Route::get('/', [GitHubAccountController::class, 'settings'])->name('settings');
     Route::post('/connect', [GitHubAccountController::class, 'connect'])->name('connect');

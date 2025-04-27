@@ -29,14 +29,17 @@ interface GitHubIssue {
 
 const LinkIssueModal = ({ post, repositories, isOpen, closeModal }: Props) => {
   const [selectedRepository, setSelectedRepository] =
-    useState<IntegrationRepository | null>(repositories[0]);
+    useState<IntegrationRepository | null>(
+      repositories.length > 0 ? repositories[0] : null
+    );
   const [selectedIssue, setSelectedIssue] = useState<GitHubIssue | null>(null);
   const [issues, setIssues] = useState<GitHubIssue[]>([]);
   const [query, setQuery] = useState('');
 
   const form = useForm({
-    repository_id: repositories[0].id.toString(),
-    integration_provider_id: repositories[0].integration_provider_id,
+    repository_id: repositories.length > 0 ? repositories[0].id.toString() : '',
+    integration_provider_id:
+      repositories.length > 0 ? repositories[0].integration_provider_id : 0,
     external_id: '',
   });
 

@@ -7,14 +7,7 @@ import {
   TrashIcon,
   ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline';
-
-interface Provider {
-  id: number;
-  name: string;
-  type: string;
-  access_token?: string | null;
-  authenticated_at?: string | null;
-}
+import { Provider } from '@/types';
 
 interface ConnectedAccountsListProps {
   providers: Provider[];
@@ -63,16 +56,13 @@ export default function ConnectedAccountsList({
 
   // Get connection status
   const getConnectionStatus = (provider: Provider) => {
-    if (provider.access_token && provider.authenticated_at) {
+    if (provider.is_connected && provider.authenticated_at) {
       return {
         icon: <CheckCircleIcon className="w-5 h-5 text-green-500 mr-2" />,
         text: 'Connected',
         textClass: 'text-green-600 dark:text-green-400',
       };
-    } else if (
-      provider.access_token === null &&
-      provider.authenticated_at === null
-    ) {
+    } else if (!provider.is_connected && provider.authenticated_at === null) {
       return {
         icon: (
           <ExclamationTriangleIcon className="w-5 h-5 text-yellow-500 mr-2" />
@@ -140,8 +130,7 @@ export default function ConnectedAccountsList({
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex space-x-2 justify-end">
-                      {provider.access_token === null &&
-                      !provider.authenticated_at ? (
+                      {!provider.is_connected && !provider.authenticated_at ? (
                         <a
                           href={route('admin.integrations.github.connect')}
                           className="inline-flex items-center px-3 py-1.5 border border-blue-600 text-sm font-medium rounded-md text-blue-600 bg-white hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"

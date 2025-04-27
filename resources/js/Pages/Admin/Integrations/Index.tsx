@@ -92,7 +92,11 @@ export default function IntegrationsIndex({ active_integrations }: Props) {
                     {integration.description}
                   </p>
                   {integration.status === 'available' ? (
-                    <Button as={Link} href={integration.route}>
+                    <Button
+                      variant="secondary"
+                      as={Link}
+                      href={integration.route}
+                    >
                       Configure
                     </Button>
                   ) : (

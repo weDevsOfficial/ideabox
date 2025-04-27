@@ -15,7 +15,9 @@ class IntegrationsController extends Controller
     public function index()
     {
         // Count active integrations by type
-        $githubCount = IntegrationProvider::where('type', 'github')->count();
+        $githubCount = IntegrationProvider::where('type', 'github')
+            ->whereNotNull('access_token')
+            ->count();
 
         return Inertia::render('Admin/Integrations/Index', [
             'active_integrations' => [

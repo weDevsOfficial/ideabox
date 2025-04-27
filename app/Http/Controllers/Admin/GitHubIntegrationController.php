@@ -2,22 +2,22 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Factories\IntegrationFactory;
-use App\Http\Controllers\Controller;
-use App\Models\IntegrationProvider;
-use App\Models\IntegrationRepository;
-use App\Models\PostIntegrationLink;
 use App\Models\Post;
-use App\Services\IntegrationRegistry;
-use App\Services\Integrations\GitHubIntegration;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
 use GuzzleHttp\Client;
+use Illuminate\Http\Request;
+use App\Models\IntegrationProvider;
+use App\Models\PostIntegrationLink;
+use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
+use App\Factories\IntegrationFactory;
+use App\Models\IntegrationRepository;
+use App\Services\IntegrationRegistry;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use App\Services\Integrations\GitHubIntegration;
 
 class GitHubIntegrationController extends Controller
 {
@@ -416,35 +416,24 @@ class GitHubIntegrationController extends Controller
             $integration = $factory->make('github');
             $integration->setProvider($provider);
 
-            $client = new Client([
-                'base_uri' => 'https://api.github.com/',
-                'headers' => [
-                    'Authorization' => 'Bearer ' . $provider->access_token,
-                    'Accept' => 'application/vnd.github.v3+json',
-                    'User-Agent' => 'IdeaBox GitHub Integration',
-                ],
-            ]);
-
             $issueBody = $request->body;
             $issueBody .= "\n\n---";
             $issueBody .= "\n\n*(This issue was created from a post on IdeaBox: ";
             $issueBody .= "[" . $post->title . "](" . route('post.show', [$post->board->slug, $post->slug]) . ")*)";
 
-            $response = $client->post("repos/{$repository->full_name}/issues", [
-                'json' => [
-                    'title' => $request->title,
-                    'body' => $issueBody,
-                ],
-            ]);
+            // Use the integration service to create the issue
+            $issue = $integration->createIssue($repository, $request->title, $issueBody);
 
-            $issue = json_decode($response->getBody()->getContents(), true);
+            if (!$issue) {
+                return redirect()->back()->with('error', 'Failed to create GitHub issue');
+            }
 
             PostIntegrationLink::create([
                 'post_id' => $post->id,
                 'integration_provider_id' => $provider->id,
                 'integration_repository_id' => $repository->id,
                 'external_id' => (string) $issue['number'],
-                'external_url' => $issue['html_url'],
+                'external_url' => $issue['url'],
                 'status' => 'active',
                 'settings' => [
                     'title' => $issue['title'],
@@ -461,7 +450,7 @@ class GitHubIntegrationController extends Controller
     /**
      * Link a GitHub issue to a post.
      */
-    public function linkIssue(Request $request, Post $post)
+    public function linkIssue(Request $request, Post $post, IntegrationFactory $factory)
     {
         try {
             $validated = $request->validate([
@@ -473,18 +462,17 @@ class GitHubIntegrationController extends Controller
             $repository = IntegrationRepository::findOrFail($validated['repository_id']);
             $provider = IntegrationProvider::findOrFail($repository->integration_provider_id);
 
-            // Get issue details from GitHub to verify it exists and get the URL
-            $client = new Client([
-                'base_uri' => 'https://api.github.com/',
-                'headers' => [
-                    'Authorization' => 'Bearer ' . $provider->access_token,
-                    'Accept' => 'application/vnd.github.v3+json',
-                    'User-Agent' => 'IdeaBox GitHub Integration',
-                ],
-            ]);
+            // Use the integration service
+            /** @var GitHubIntegration $integration */
+            $integration = $factory->make('github');
+            $integration->setProvider($provider);
 
-            $response = $client->get("repos/{$repository->full_name}/issues/{$validated['external_id']}");
-            $issue = json_decode($response->getBody()->getContents(), true);
+            // Get the issue details
+            $issue = $integration->getIssue($repository, (int)$validated['external_id']);
+
+            if (!$issue) {
+                return redirect()->back()->with('error', 'Failed to fetch issue details from GitHub.');
+            }
 
             // Check if the issue is already linked
             $existingLink = PostIntegrationLink::where('post_id', $post->id)
@@ -501,7 +489,7 @@ class GitHubIntegrationController extends Controller
                 'integration_provider_id' => $validated['integration_provider_id'],
                 'integration_repository_id' => $validated['repository_id'],
                 'external_id' => $validated['external_id'],
-                'external_url' => $issue['html_url'],
+                'external_url' => $issue['url'],
                 'status' => 'active',
                 'settings' => [
                     'title' => $issue['title'],

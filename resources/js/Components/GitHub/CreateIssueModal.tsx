@@ -23,14 +23,14 @@ const CreateIssueModal = ({ post, repositories, isOpen, onClose }: Props) => {
   const form = useForm({
     title: post.title,
     body: post.raw_body,
-    repository_id: repositories[0].id,
+    repository_id: repositories.length > 0 ? repositories[0].id : null,
   });
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     form.post(
       route('admin.integrations.github.create-issue', {
-        post: post,
+        post: post.slug,
       }),
       {
         onSuccess: () => onClose(),

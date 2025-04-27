@@ -132,3 +132,12 @@ export interface PostIntegrationLink {
   created_at: Date;
   updated_at: Date;
 }
+
+export interface Provider {
+  id: number;
+  name: string;
+  type: string;
+  repositories?: IntegrationRepository[];
+  is_connected?: boolean;
+  authenticated_at?: Date;
+}
