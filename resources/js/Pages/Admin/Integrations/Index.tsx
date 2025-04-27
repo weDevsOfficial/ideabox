@@ -60,7 +60,7 @@ export default function IntegrationsIndex({ active_integrations }: Props) {
           <h1 className="text-2xl font-semibold mb-6 text-gray-900 dark:text-white">
             Integrations
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 mb-8">
+          <p className="text-gray-600 dark:text-gray-400 text-sm mb-8">
             Connect IdeaBox to your favorite tools and services to streamline
             your workflow.
           </p>

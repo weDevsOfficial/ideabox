@@ -52,7 +52,7 @@ export default function GithubSettings({
           <h2 className="font-semibold text-xl text-gray-800 leading-tight flex items-center gap-2">
             <Link
               href={route('admin.integrations.index')}
-              className="text-indigo-600 hover:text-indigo-800"
+              className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-600"
             >
               Integrations
             </Link>
