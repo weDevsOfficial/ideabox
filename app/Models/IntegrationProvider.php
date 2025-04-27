@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Support\Facades\Log;
 
 class IntegrationProvider extends Model
 {
@@ -41,6 +43,7 @@ class IntegrationProvider extends Model
      */
     protected $casts = [
         'settings' => 'array',
+        'authenticated_at' => 'datetime',
     ];
 
     /**
@@ -89,7 +92,7 @@ class IntegrationProvider extends Model
      */
     public function repositories()
     {
-        return $this->hasMany(IntegrationRepository::class);
+        return $this->hasMany(IntegrationRepository::class, 'integration_provider_id');
     }
 
     /**
@@ -97,11 +100,113 @@ class IntegrationProvider extends Model
      */
     public function postLinks()
     {
-        return $this->hasMany(PostIntegrationLink::class);
+        return $this->hasMany(PostIntegrationLink::class, 'integration_provider_id');
     }
 
+    /**
+     * Scope query to GitHub integrations.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
     public function scopeGitHub($query)
     {
         return $query->where('type', 'github');
+    }
+
+    /**
+     * Scope query to connected integrations (with access token).
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeConnected($query)
+    {
+        return $query->whereNotNull('access_token');
+    }
+
+    /**
+     * Scope query to pending integrations (without access token).
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopePending($query)
+    {
+        return $query->whereNull('access_token')->whereNull('authenticated_at');
+    }
+
+    /**
+     * Update access token information for this provider.
+     *
+     * @param string $accessToken
+     * @param string|null $refreshToken
+     * @param array $config Additional config to store
+     * @return bool
+     */
+    public function updateTokens(string $accessToken, ?string $refreshToken = null, array $config = []): bool
+    {
+        try {
+            $this->access_token = $accessToken;
+
+            if ($refreshToken) {
+                $this->refresh_token = $refreshToken;
+            }
+
+            // Store the authenticated timestamp
+            $this->authenticated_at = Carbon::now();
+
+            // Update config if needed
+            if (!empty($config)) {
+                $currentConfig = $this->getConfig();
+                $this->setConfig(array_merge($currentConfig, $config));
+            }
+
+            return $this->save();
+        } catch (\Exception $e) {
+            Log::error('Failed to update integration provider tokens', [
+                'provider_id' => $this->id,
+                'provider_type' => $this->type,
+                'error' => $e->getMessage()
+            ]);
+            return false;
+        }
+    }
+
+    /**
+     * Disconnect this integration provider by removing tokens.
+     *
+     * @return bool
+     */
+    public function disconnect(): bool
+    {
+        try {
+            $this->access_token = null;
+            $this->refresh_token = null;
+            $this->authenticated_at = null;
+
+            // Keep configuration values like client ID/secret
+            return $this->save();
+        } catch (\Exception $e) {
+            Log::error('Failed to disconnect integration provider', [
+                'provider_id' => $this->id,
+                'provider_type' => $this->type,
+                'error' => $e->getMessage()
+            ]);
+            return false;
+        }
+    }
+
+    /**
+     * Get a specific config value by key.
+     *
+     * @param string $key
+     * @param mixed $default
+     * @return mixed
+     */
+    public function getConfigValue(string $key, $default = null)
+    {
+        $config = $this->getConfig();
+        return $config[$key] ?? $default;
     }
 }

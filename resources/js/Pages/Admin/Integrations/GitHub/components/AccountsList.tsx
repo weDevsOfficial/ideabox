@@ -60,7 +60,7 @@ export default function ConnectedAccountsList({
       return {
         icon: <CheckCircleIcon className="w-5 h-5 text-green-500 mr-2" />,
         text: 'Connected',
-        textClass: 'text-green-600 dark:text-green-400',
+        textClass: 'text-gray-600 dark:text-gray-400',
       };
     } else if (!provider.is_connected && provider.authenticated_at === null) {
       return {
@@ -104,7 +104,7 @@ export default function ConnectedAccountsList({
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 Status
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 Actions
               </th>
             </tr>

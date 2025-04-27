@@ -3,6 +3,7 @@ import { useForm } from '@inertiajs/react';
 import { Button, ConfirmModal } from '@wedevs/tail-react';
 import { PostIntegrationLink, PostType } from '@/types';
 import { useState } from 'react';
+import classNames from 'classnames';
 
 type Props = {
   links: PostIntegrationLink[];
@@ -46,15 +47,21 @@ function LinkedIssuesList({ links, post }: Props) {
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
               <span
-                className={`block w-4 h-4 rounded-full ${
-                  link.status === 'closed' ? 'bg-[#8250df]' : 'bg-[#16a34a]'
-                }`}
-              ></span>
+                className={classNames(
+                  'inline-block px-2 py-1 text-xs font-medium rounded-full text-white',
+                  {
+                    'bg-[#8250df]': link.status === 'closed',
+                    'bg-[#16a34a]': link.status !== 'closed',
+                  }
+                )}
+              >
+                {link.status === 'closed' ? 'Closed' : 'Open'}
+              </span>
               <a
                 href={link.external_url}
                 target="_blank"
                 rel="noreferrer"
-                className="text-sm text-indigo-600 hover:underline"
+                className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline"
               >
                 #{link.external_id}: {link.settings.title}
               </a>

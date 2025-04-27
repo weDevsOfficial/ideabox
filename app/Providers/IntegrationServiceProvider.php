@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Factories\IntegrationFactory;
+use App\Services\GitHub\WebhookService;
 use App\Services\IntegrationRegistry;
 use App\Services\Integrations\GitHubIntegration;
 use Illuminate\Support\ServiceProvider;
@@ -27,6 +29,14 @@ class IntegrationServiceProvider extends ServiceProvider
             // $registry->register('freshdesk', FreshdeskIntegration::class);
 
             return $registry;
+        });
+
+        // Register GitHub services
+        $this->app->singleton(WebhookService::class, function ($app) {
+            $factory = $app->make(IntegrationFactory::class);
+            $gitHubIntegration = $factory->make('github');
+
+            return new WebhookService($gitHubIntegration);
         });
     }
 

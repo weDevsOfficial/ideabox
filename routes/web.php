@@ -11,11 +11,12 @@ use App\Http\Controllers\Admin\FeedbackController;
 use App\Http\Controllers\Frontend\BoardController;
 use App\Http\Controllers\Admin\UserSearchController;
 use App\Http\Controllers\Frontend\CommentController;
-use App\Http\Controllers\Admin\BoardController as AdminBoardController;
-use App\Http\Controllers\Admin\CommentController as AdminCommentController;
+use App\Http\Controllers\Admin\IntegrationsController;
+use App\Http\Controllers\Admin\GitHub\GitHubIssueController;
 use App\Http\Controllers\Admin\GitHub\GitHubAccountController;
 use App\Http\Controllers\Admin\GitHub\GitHubRepositoryController;
-use App\Http\Controllers\Admin\GitHub\GitHubIssueController;
+use App\Http\Controllers\Admin\BoardController as AdminBoardController;
+use App\Http\Controllers\Admin\CommentController as AdminCommentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -70,7 +71,7 @@ Route::prefix('admin')->middleware('auth', 'verified', 'admin')->group(function 
     Route::get('/search-users', [UserSearchController::class, 'search'])->name('admin.users.search');
 
     // Integrations main page
-    Route::get('/integrations', [App\Http\Controllers\Admin\IntegrationsController::class, 'index'])->name('admin.integrations.index');
+    Route::get('/integrations', [IntegrationsController::class, 'index'])->name('admin.integrations.index');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
