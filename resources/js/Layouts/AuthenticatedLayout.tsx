@@ -191,7 +191,7 @@ export default function Authenticated({
 
             <ResponsiveNavLink
               href={route('admin.users.index')}
-              active={route().current('admin.users.index')}
+              active={route().current('admin.users.*')}
             >
               Users
             </ResponsiveNavLink>

@@ -1,35 +1,56 @@
-import React, { useState } from 'react';
-import { Head, Link, useForm } from '@inertiajs/react';
+import React, { useState, useEffect } from 'react';
+import { Head, useForm, router } from '@inertiajs/react';
 import {
   Button,
   Modal,
   ModalActions,
   ModalBody,
   ModalHeader,
-  SwitchInput,
-  Table,
-  TableHeader,
   TextField,
+  SelectInput,
 } from '@wedevs/tail-react';
-import { PlusIcon } from '@heroicons/react/24/outline';
+import {
+  PlusIcon,
+  MagnifyingGlassIcon,
+  KeyIcon,
+} from '@heroicons/react/24/outline';
+import debounce from 'lodash/debounce';
 
 import Authenticated from '@/Layouts/AuthenticatedLayout';
+import UserTabs from '@/Components/UserTabs';
 import { User } from '@/types';
+import { generateRandomPassword } from '@/utils';
 
 type Props = {
   users: User[];
+  filters: {
+    search: string;
+  };
 };
 
-const UserIndex = ({ users }: Props) => {
+const UserIndex = ({ users, filters }: Props) => {
+  // Determine current tab based on the route
+  const isAdminTab = route().current('admin.users.index');
+  const currentTab = isAdminTab ? 'admins' : 'users';
+  const defaultRole = isAdminTab ? 'admin' : 'user';
+  const searchRoute = isAdminTab
+    ? route('admin.users.index')
+    : route('admin.users.all');
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingUserId, setEditingUserId] = useState<number | null>(null);
+  const [searchTerm, setSearchTerm] = useState(filters.search || '');
   const form = useForm({
     name: '',
     email: '',
+    role: defaultRole,
+    password: '',
   });
   const updateForm = useForm({
     name: '',
+    role: '',
+    password: '',
   });
 
   const submitForm = (e: React.FormEvent<HTMLFormElement>) => {
@@ -46,7 +67,11 @@ const UserIndex = ({ users }: Props) => {
 
   const editUser = (user: User) => {
     setEditingUserId(user.id);
-    updateForm.setData('name', user.name);
+    updateForm.setData({
+      name: user.name,
+      role: user.role,
+      password: '',
+    });
     setIsEditModalOpen(true);
   };
 
@@ -75,6 +100,65 @@ const UserIndex = ({ users }: Props) => {
     }
   };
 
+  // Generate password for add form
+  const generateAddPassword = () => {
+    form.setData('password', generateRandomPassword());
+  };
+
+  // Generate password for edit form
+  const generateEditPassword = () => {
+    updateForm.setData('password', generateRandomPassword());
+  };
+
+  // Create a debounced search function
+  const debouncedSearch = React.useCallback(
+    debounce((search: string) => {
+      router.get(
+        searchRoute,
+        { search },
+        {
+          preserveState: true,
+          replace: true,
+          only: ['users'],
+        }
+      );
+    }, 300),
+    [searchRoute]
+  );
+
+  // Handle search input change
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    debouncedSearch(value);
+  };
+
+  // Update the search term when the filters change
+  useEffect(() => {
+    setSearchTerm(filters.search || '');
+  }, [filters.search]);
+
+  // Cleanup debounce on unmount
+  useEffect(() => {
+    return () => {
+      debouncedSearch.cancel();
+    };
+  }, [debouncedSearch]);
+
+  // Generate button for trailing addon
+  const generateButton = (onClickHandler: () => void) => (
+    <button
+      type="button"
+      onClick={onClickHandler}
+      className="inline-flex items-center text-sm text-gray-700 dark:text-gray-300 px-2 rounded-md"
+    >
+      <KeyIcon className="h-4 w-4 mr-1" />
+      Generate
+    </button>
+  );
+
+  const pageTitle = isAdminTab ? 'Admins' : 'Users';
+
   return (
     <Authenticated
       header={
@@ -94,11 +178,28 @@ const UserIndex = ({ users }: Props) => {
         </div>
       }
     >
-      <Head title="Users" />
+      <Head title={pageTitle} />
 
       <div className="bg-white dark:bg-gray-800 overflow-hidden shadow sm:rounded-lg">
+        <UserTabs currentTab={currentTab} />
+
+        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <MagnifyingGlassIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+            </div>
+            <input
+              type="text"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
+              placeholder="Search by name or email..."
+              value={searchTerm}
+              onChange={handleSearchChange}
+            />
+          </div>
+        </div>
+
         <div className="space-y-4 p-6 text-gray-900 dark:text-gray-100">
-          {users.length > 0 &&
+          {users.length > 0 ? (
             users.map((user) => (
               <div className="flex items-center" key={user.id}>
                 <div className="flex-1 items-center justify-between">
@@ -141,7 +242,12 @@ const UserIndex = ({ users }: Props) => {
                   </Button>
                 </div>
               </div>
-            ))}
+            ))
+          ) : (
+            <div className="text-center text-sm py-4 text-gray-500 dark:text-gray-400">
+              No users found
+            </div>
+          )}
         </div>
       </div>
 
@@ -165,6 +271,27 @@ const UserIndex = ({ users }: Props) => {
               value={form.data.email}
               onChange={(value) => form.setData('email', value)}
               error={form.errors.email}
+            />
+
+            <SelectInput
+              label="Role"
+              selectedKey={form.data.role}
+              options={[
+                { value: 'Admin', key: 'admin' },
+                { value: 'User', key: 'user' },
+              ]}
+              onChange={(option) => form.setData('role', option.key)}
+              error={form.errors.role}
+            />
+
+            <TextField
+              label="Password"
+              type="text"
+              placeholder="Password"
+              value={form.data.password}
+              onChange={(value) => form.setData('password', value)}
+              error={form.errors.password}
+              trailingAddon={generateButton(generateAddPassword)}
             />
           </ModalBody>
 
@@ -196,6 +323,27 @@ const UserIndex = ({ users }: Props) => {
               value={updateForm.data.name}
               onChange={(value) => updateForm.setData('name', value)}
               error={updateForm.errors.name}
+            />
+
+            <SelectInput
+              label="Role"
+              selectedKey={updateForm.data.role}
+              options={[
+                { value: 'Admin', key: 'admin' },
+                { value: 'User', key: 'user' },
+              ]}
+              onChange={(option) => updateForm.setData('role', option.key)}
+              error={updateForm.errors.role}
+            />
+
+            <TextField
+              label="New Password"
+              type="text"
+              placeholder="Leave blank to keep current password"
+              value={updateForm.data.password}
+              onChange={(value) => updateForm.setData('password', value)}
+              error={updateForm.errors.password}
+              trailingAddon={generateButton(generateEditPassword)}
             />
           </ModalBody>
 
