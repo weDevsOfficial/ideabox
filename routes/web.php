@@ -64,6 +64,7 @@ Route::prefix('admin')->middleware('auth', 'verified', 'admin')->group(function 
     Route::put('/statuses/update', [StatusController::class, 'update'])->name('admin.statuses.update');
 
     Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
+    Route::get('/users/all', [UserController::class, 'allUsers'])->name('admin.users.all');
     Route::post('/users', [UserController::class, 'store'])->name('admin.users.store');
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
     Route::put('/users/{user}', [UserController::class, 'update'])->name('admin.users.update');
