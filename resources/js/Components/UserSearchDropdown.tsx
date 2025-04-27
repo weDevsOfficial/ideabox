@@ -56,7 +56,7 @@ const UserSearchDropdown = ({
       {user === null && (
         <Combobox value={selectedUser} onChange={handleSelect}>
           <Combobox.Input
-            className="w-full px-3 py-2 text-sm border-0 ring-1 ring-inset ring-gray-300 dark:ring-gray-500 dark:bg-white/5 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            className="w-full px-3 py-2 text-sm border-0 ring-1 ring-inset ring-gray-300 dark:ring-gray-500 dark:bg-white/5 dark:text-white rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
             placeholder="Search for a user by name or email"
             onKeyUp={handleSearch}
           />
@@ -78,8 +78,10 @@ const UserSearchDropdown = ({
                   key={user.id}
                   value={user}
                   className={({ active }) =>
-                    `relative cursor-pointer select-none py-2 pl-10 pr-4 ${
-                      active ? 'bg-indigo-100 text-gray-700' : 'text-gray-900'
+                    `relative cursor-pointer select-none py-2 pl-4 pr-4 ${
+                      active
+                        ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white'
+                        : 'text-gray-900 dark:text-gray-300'
                     }`
                   }
                 >
@@ -104,7 +106,9 @@ const UserSearchDropdown = ({
                       {selected ? (
                         <span
                           className={`absolute inset-y-0 left-0 flex items-center pl-3 ${
-                            active ? 'text-white' : 'text-indigo-600'
+                            active
+                              ? 'text-gray-700 dark:text-white'
+                              : 'text-gray-600 dark:text-gray-400'
                           }`}
                         >
                           <CheckIcon className="h-5 w-5" aria-hidden="true" />
@@ -120,17 +124,23 @@ const UserSearchDropdown = ({
       )}
 
       {user && (
-        <div className="mt-2 flex items-center justify-between bg-indigo-100 px-2 py-2 rounded border border-indigo-200">
+        <div className="mt-2 flex items-center justify-between bg-gray-100 dark:bg-gray-700 px-2 py-2 rounded border border-gray-200 dark:border-gray-600">
           <div className="flex">
             <img
               src={user.avatar}
               alt={user.name}
               className="h-6 w-6 flex-shrink-0 rounded-full mr-2"
             />
-            <span className="block font-medium text-sm">{user.name}</span>
+            <span className="block font-medium text-sm text-gray-900 dark:text-white">
+              {user.name}
+            </span>
           </div>
 
-          <button className="" onClick={handleClear}>
+          <button
+            type="button"
+            className="text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-white"
+            onClick={handleClear}
+          >
             <XMarkIcon className="h-4 w-4" />
           </button>
         </div>

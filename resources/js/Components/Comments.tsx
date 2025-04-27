@@ -70,7 +70,7 @@ const Comments: React.FC<CommentsProps> = ({ post }) => {
           <div className="flex items-center">
             <div className="text-sm mr-2 dark:text-gray-400">Sort By</div>
             <select
-              className="px-2 min-w-28 text-sm py-1.5 rounded border border-gray-200"
+              className="px-2 text-gray-700 dark:text-gray-300 dark:bg-gray-800 min-w-28 text-sm py-1.5 rounded border border-gray-200 dark:border-gray-700"
               value={sort}
               onChange={(e) => setSort(e.target.value as 'latest' | 'oldest')}
             >

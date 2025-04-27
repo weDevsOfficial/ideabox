@@ -66,7 +66,7 @@ const Comment = ({
             {commentState.user?.name}
           </div>
           {commentState.status && (
-            <div className="text-sm text-gray-700 ml-2">
+            <div className="text-sm text-gray-700 dark:text-gray-300 ml-2">
               <span>marked this post as</span>
               <span
                 className="uppercase text-xs font-bold ml-2 text-white px-2 py-1 rounded"

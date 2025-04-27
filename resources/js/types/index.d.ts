@@ -112,3 +112,32 @@ export interface VoteType {
   user_id: number;
   user: User;
 }
+
+export interface IntegrationRepository {
+  id: number;
+  integration_provider_id: number;
+  name: string;
+  full_name: string;
+}
+
+export interface PostIntegrationLink {
+  id: number;
+  post_id: number;
+  integration_provider_id: number;
+  integration_repository_id: number;
+  external_id: string;
+  external_url: string;
+  status: string;
+  settings: Record<string, string>;
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface Provider {
+  id: number;
+  name: string;
+  type: string;
+  repositories?: IntegrationRepository[];
+  is_connected?: boolean;
+  authenticated_at?: Date;
+}

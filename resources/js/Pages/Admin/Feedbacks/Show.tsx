@@ -27,12 +27,15 @@ import classNames from 'classnames';
 import UserSearchDropdown from '@/Components/UserSearchDropdown';
 import CreateUserModal from '@/Components/CreateUserModal';
 import EditFeedback from './EditFeedback';
-
+import GitHubIssueLinker from '@/Components/GitHub/GitHubIssueLinker';
+import { IntegrationRepository, PostIntegrationLink } from '@/types';
 type Props = {
   post: PostType;
   statuses: StatusType[];
   boards: BoardType[];
   votes: VoteType[];
+  repositories: IntegrationRepository[];
+  linkedIssues: PostIntegrationLink[];
 };
 
 type VoteProps = {
@@ -41,7 +44,14 @@ type VoteProps = {
   post: PostType;
 };
 
-const FeedbackShow = ({ post, statuses, boards, votes }: Props) => {
+const FeedbackShow = ({
+  post,
+  statuses,
+  boards,
+  votes,
+  repositories,
+  linkedIssues,
+}: Props) => {
   const [showEditForm, setShowEditForm] = useState(false);
   const [localPost, setLocalPost] = useState(post);
   const [showVoteModal, setShowVoteModal] = useState(false);
@@ -74,11 +84,12 @@ const FeedbackShow = ({ post, statuses, boards, votes }: Props) => {
 
     form.post(route('admin.feedbacks.update', [post]), {
       onSuccess: (resp) => {
-        console.log(resp);
         form.reset();
       },
     });
   };
+
+  const hasGitHubIntegration = repositories.length > 0;
 
   return (
     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow sm:rounded-lg p-6">
@@ -244,7 +255,31 @@ const FeedbackShow = ({ post, statuses, boards, votes }: Props) => {
             )}
           </form>
 
-          <div className="mt-8 py-4">
+          {/* GitHub Integration Section */}
+          {hasGitHubIntegration && (
+            <GitHubIssueLinker
+              post={post}
+              repositories={repositories}
+              linkedIssues={linkedIssues}
+            />
+          )}
+
+          {!hasGitHubIntegration && (
+            <div className="mt-8">
+              <div className="text-sm text-gray-500 dark:text-gray-400 border border-dashed border-gray-200 dark:border-gray-700 rounded-md p-4">
+                Complete the{' '}
+                <Link
+                  href={route('admin.integrations.github.settings')}
+                  className="text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400"
+                >
+                  GitHub integration
+                </Link>{' '}
+                to link issues to feedbacks.
+              </div>
+            </div>
+          )}
+
+          <div className="mt-8">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-base font-semibold dark:text-gray-300">
                 Voters

@@ -102,4 +102,23 @@ class Post extends Model
             ]);
         }
     }
+
+    /**
+     * Get all integration links for the post.
+     */
+    public function integrationLinks()
+    {
+        return $this->hasMany(PostIntegrationLink::class);
+    }
+
+    /**
+     * Get GitHub integration links for the post.
+     */
+    public function githubLinks()
+    {
+        return $this->hasMany(PostIntegrationLink::class)
+            ->whereHas('provider', function ($query) {
+                $query->where('type', 'github');
+            });
+    }
 }
