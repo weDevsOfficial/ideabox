@@ -43,11 +43,11 @@ function LinkedIssuesList({ links, post }: Props) {
     <ul className="divide-y">
       {links.map((link) => (
         <li key={link.id} className="py-2">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
               <span
-                className={`inline-block w-2 h-2 rounded-full mr-2 ${
-                  link.status === 'closed' ? 'bg-red-500' : 'bg-green-500'
+                className={`block w-4 h-4 rounded-full ${
+                  link.status === 'closed' ? 'bg-[#8250df]' : 'bg-[#16a34a]'
                 }`}
               ></span>
               <a

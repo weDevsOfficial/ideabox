@@ -264,7 +264,22 @@ const FeedbackShow = ({
             />
           )}
 
-          <div className="mt-8 py-4">
+          {!hasGitHubIntegration && (
+            <div className="mt-8">
+              <div className="text-sm text-gray-500 dark:text-gray-400 border border-dashed border-gray-200 dark:border-gray-700 rounded-md p-4">
+                Complete the{' '}
+                <Link
+                  href={route('admin.integrations.github.settings')}
+                  className="text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400"
+                >
+                  GitHub integration
+                </Link>{' '}
+                to link issues to feedbacks.
+              </div>
+            </div>
+          )}
+
+          <div className="mt-8">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-base font-semibold dark:text-gray-300">
                 Voters

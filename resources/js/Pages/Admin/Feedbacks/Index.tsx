@@ -172,6 +172,12 @@ const Feedbacks = ({ posts, boards, statuses, hasOpenAIKey }: Props) => {
                   <Pagination links={posts.links} />
                 </div>
               )}
+
+              {posts.data.length === 0 && (
+                <div className="mt-4">
+                  <p className="text-gray-500">No feedbacks found.</p>
+                </div>
+              )}
             </div>
           </div>
         </div>

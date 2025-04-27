@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Board;
+use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -17,11 +19,20 @@ class PostFactory extends Factory
      */
     public function definition(): array
     {
+        $title = fake()->sentence();
+        
         return [
-            'title'    => fake()->sentence(),
-            'body'     => fake()->paragraph(),
-            'vote'     => fake()->randomNumber(2),
-            'comments' => fake()->randomNumber(2),
+            'title'      => $title,
+            'slug'       => Str::slug($title),
+            'body'       => fake()->paragraph(),
+            'vote'       => fake()->randomNumber(2),
+            'comments'   => fake()->randomNumber(2),
+            'board_id'   => function () {
+                return Board::factory()->create()->id;
+            },
+            'created_by' => function () {
+                return User::factory()->create()->id;
+            },
         ];
     }
 }

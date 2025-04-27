@@ -13,8 +13,9 @@ use App\Http\Controllers\Admin\UserSearchController;
 use App\Http\Controllers\Frontend\CommentController;
 use App\Http\Controllers\Admin\BoardController as AdminBoardController;
 use App\Http\Controllers\Admin\CommentController as AdminCommentController;
-use App\Http\Controllers\FeatureDescriptionController;
-use App\Http\Controllers\Admin\GitHubIntegrationController;
+use App\Http\Controllers\Admin\GitHub\GitHubAccountController;
+use App\Http\Controllers\Admin\GitHub\GitHubRepositoryController;
+use App\Http\Controllers\Admin\GitHub\GitHubIssueController;
 
 /*
 |--------------------------------------------------------------------------
@@ -82,27 +83,26 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// GitHub Integration Routes
+// GitHub Integration Routes - Updated to use the new controllers
 Route::middleware(['auth', 'admin'])->prefix('admin/integrations/github')->name('admin.integrations.github.')->group(function () {
-    Route::get('/', [GitHubIntegrationController::class, 'settings'])->name('settings');
-    Route::post('/connect', [GitHubIntegrationController::class, 'connect'])->name('connect');
-    Route::get('/callback', [GitHubIntegrationController::class, 'callback'])->name('callback');
-    Route::delete('/disconnect/{provider}', [GitHubIntegrationController::class, 'disconnect'])->name('disconnect');
+    // Account management
+    Route::get('/', [GitHubAccountController::class, 'settings'])->name('settings');
+    Route::post('/connect', [GitHubAccountController::class, 'connect'])->name('connect');
+    Route::get('/callback', [GitHubAccountController::class, 'callback'])->name('callback');
+    Route::delete('/disconnect/{provider}', [GitHubAccountController::class, 'disconnect'])->name('disconnect');
 
     // Repository management
-    Route::post('/search-repositories', [GitHubIntegrationController::class, 'searchRepositories'])->name('search-repositories');
-    Route::post('/add-repository', [GitHubIntegrationController::class, 'addRepository'])->name('add-repository');
-    Route::get('/list-repositories/{provider}', [GitHubIntegrationController::class, 'getRepositories'])->name('list-repositories');
-    Route::delete('/repositories/{repository}', [GitHubIntegrationController::class, 'removeRepository'])->name('repositories.remove');
+    Route::post('/search-repositories', [GitHubRepositoryController::class, 'search'])->name('search-repositories');
+    Route::post('/add-repository', [GitHubRepositoryController::class, 'add'])->name('add-repository');
+    Route::get('/list-repositories/{provider}', [GitHubRepositoryController::class, 'list'])->name('list-repositories');
+    Route::delete('/repositories/{repository}', [GitHubRepositoryController::class, 'remove'])->name('repositories.remove');
 
     // Issue management
-    Route::get('/search-issues', [GitHubIntegrationController::class, 'searchIssues'])->name('search-issues');
-    Route::post('/link-issue/{post}', [GitHubIntegrationController::class, 'linkIssue'])->name('link-issue');
-    Route::post('/create-issue/{post}', [GitHubIntegrationController::class, 'createIssue'])->name('create-issue');
-    Route::delete('/unlink-issue/{post}/{linkId}', [GitHubIntegrationController::class, 'unlinkIssue'])->name('unlink-issue');
+    Route::get('/search-issues', [GitHubIssueController::class, 'search'])->name('search-issues');
+    Route::get('/get-issue', [GitHubIssueController::class, 'get'])->name('get-issue');
+    Route::post('/link-issue/{post}', [GitHubIssueController::class, 'link'])->name('link-issue');
+    Route::post('/create-issue/{post}', [GitHubIssueController::class, 'create'])->name('create-issue');
+    Route::delete('/unlink-issue/{post}/{linkId}', [GitHubIssueController::class, 'unlink'])->name('unlink-issue');
 });
-
-// GitHub Webhook Route
-Route::post('/webhooks/github', [App\Http\Controllers\Webhooks\GitHubWebhookController::class, 'handle'])->name('webhooks.github');
 
 require __DIR__ . '/auth.php';

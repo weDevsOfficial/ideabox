@@ -118,7 +118,12 @@ export default function ConnectAccountModal({
           </div>
         </ModalBody>
         <ModalActions>
-          <Button type="submit" disabled={isSubmitting}>
+          <Button
+            type="submit"
+            disabled={
+              isSubmitting || !formData.client_id || !formData.client_secret
+            }
+          >
             {isSubmitting ? 'Connecting...' : 'Connect Account'}
           </Button>
           <Button variant="secondary" onClick={onClose} className="mr-2">
