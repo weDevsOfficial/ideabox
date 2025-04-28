@@ -74,4 +74,23 @@ class Formatting
 
         return $text;
     }
+
+    /**
+     * Create a short excerpt from a longer text
+     *
+     * @param string $text The text to create an excerpt from
+     * @param int $length The maximum length of the excerpt
+     * @param string $append The string to append if the text is truncated
+     * @return string The excerpt
+     */
+    public static function excerpt(string $text, int $length = 100, string $append = '...'): string
+    {
+        $text = strip_tags($text);
+
+        if (mb_strlen($text) <= $length) {
+            return $text;
+        }
+
+        return rtrim(mb_substr($text, 0, $length)) . $append;
+    }
 }

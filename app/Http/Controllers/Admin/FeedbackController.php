@@ -13,7 +13,7 @@ use App\Services\OpenAIService;
 use App\Models\PostIntegrationLink;
 use App\Http\Controllers\Controller;
 use App\Models\IntegrationRepository;
-use App\Notifications\FeedbackStatusChanged;
+use App\Jobs\SendStatusChangeNotifications;
 
 class FeedbackController extends Controller
 {
@@ -47,7 +47,7 @@ class FeedbackController extends Controller
             }
         }
 
-        $posts = $query->paginate(30)->withQueryString();
+        $posts = $query->paginate(30)->appends(request()->query());
 
         return inertia('Admin/Feedbacks/Index', [
             'posts' => $posts,
@@ -181,18 +181,17 @@ class FeedbackController extends Controller
 
     private function notify($post)
     {
-        // get all voters
-        $voters = $post->votes()->with('user')
+        // Get all voter IDs except the current user in a single query
+        $voterIds = Vote::where('post_id', $post->id)
             ->where('user_id', '!=', auth()->user()->id)
-            ->get();
+            ->pluck('user_id');
 
-        if (!$voters->count()) {
+        if ($voterIds->isEmpty()) {
             return;
         }
 
-        $voters->each(function ($voter) use ($post) {
-            $voter->user->notify(new FeedbackStatusChanged($post));
-        });
+        // Dispatch job to handle notifications with proper error handling
+        SendStatusChangeNotifications::dispatch($post, $voterIds);
     }
 
     public function destroy(Post $post)
