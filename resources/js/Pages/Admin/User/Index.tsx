@@ -18,11 +18,12 @@ import debounce from 'lodash/debounce';
 
 import Authenticated from '@/Layouts/AuthenticatedLayout';
 import UserTabs from '@/Components/UserTabs';
-import { User } from '@/types';
-import { generateRandomPassword } from '@/utils';
+import { User, PaginatedResponse } from '@/types';
+import { formatDate, generateRandomPassword } from '@/utils';
+import Pagination from '@/Components/Pagination';
 
 type Props = {
-  users: User[];
+  users: PaginatedResponse<User>;
   filters: {
     search: string;
   };
@@ -190,7 +191,7 @@ const UserIndex = ({ users, filters }: Props) => {
             </div>
             <input
               type="text"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
+              className="bg-gray-50 border-0 ring-1 ring-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-600 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500"
               placeholder="Search by name or email..."
               value={searchTerm}
               onChange={handleSearchChange}
@@ -199,25 +200,30 @@ const UserIndex = ({ users, filters }: Props) => {
         </div>
 
         <div className="space-y-4 p-6 text-gray-900 dark:text-gray-100">
-          {users.length > 0 ? (
-            users.map((user) => (
-              <div className="flex items-center" key={user.id}>
-                <div className="flex-1 items-center justify-between">
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0 h-10 w-10">
-                      <img
-                        className="h-10 w-10 rounded-full"
-                        src={user.avatar}
-                        alt=""
-                      />
+          {users.data.length > 0 ? (
+            users.data.map((user) => (
+              <div className="flex items-center justify-between" key={user.id}>
+                <div className="flex-1 items-center">
+                  <div className="flex flex-1 items-center justify-between">
+                    <div className="flex items-center">
+                      <div className="flex-shrink-0 h-10 w-10">
+                        <img
+                          className="h-10 w-10 rounded-full"
+                          src={user.avatar}
+                          alt=""
+                        />
+                      </div>
+                      <div className="ml-4">
+                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                          {user.name}
+                        </div>
+                        <div className="text-xs text-gray-500 pt-1">
+                          {user.email}
+                        </div>
+                      </div>
                     </div>
-                    <div className="ml-4">
-                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                        {user.name}
-                      </div>
-                      <div className="text-xs text-gray-500 pt-1">
-                        {user.email}
-                      </div>
+                    <div className="text-xs text-gray-500 pt-1 pr-4">
+                      {formatDate(new Date(user.created_at))}
                     </div>
                   </div>
                 </div>
@@ -250,6 +256,12 @@ const UserIndex = ({ users, filters }: Props) => {
           )}
         </div>
       </div>
+
+      {users.last_page > 1 && (
+        <div className="mt-4">
+          <Pagination links={users.links} />
+        </div>
+      )}
 
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <form onSubmit={submitForm}>

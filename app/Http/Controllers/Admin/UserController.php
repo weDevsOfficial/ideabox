@@ -16,14 +16,18 @@ class UserController extends Controller
         $search = $request->input('search', '');
 
         $users = User::admin()
+            ->select('id', 'name', 'email', 'role', 'created_at')
             ->when($search, function ($query, $search) {
                 return $query->where(function ($q) use ($search) {
                     $q->where('name', 'LIKE', '%' . $search . '%')
                       ->orWhere('email', 'LIKE', '%' . $search . '%');
                 });
             })
-            ->get()
-            ->makeVisible('email');
+            ->orderBy('created_at', 'desc')
+            ->paginate(30);
+
+        // Show email in the table
+        $users->getCollection()->each->makeVisible(['email', 'created_at']);
 
         return inertia('Admin/User/Index', [
             'users' => $users,
@@ -68,6 +72,15 @@ class UserController extends Controller
             return redirect()->route('admin.users.index')->with('error', 'User has created feedbacks, you can\'t delete the user..');
         }
 
+        if ($user->comments()->exists()) {
+            return redirect()->route('admin.users.index')->with('error', 'User has created comments, you can\'t delete the user..');
+        }
+
+        // Prevent self deletion
+        if (auth()->user()->id === $user->id) {
+            return redirect()->route('admin.users.index')->with('error', 'You can\'t delete yourself.');
+        }
+
         $user->delete();
 
         return redirect()->route('admin.users.index')->with('success', 'User deleted successfully.');
@@ -77,15 +90,20 @@ class UserController extends Controller
     {
         $search = $request->input('search', '');
 
-        $users = User::where('role', User::ROLE_USER)
+        $users = User::select('id', 'name', 'email', 'role', 'created_at')
+            ->where('role', User::ROLE_USER)
             ->when($search, function ($query, $search) {
                 return $query->where(function ($q) use ($search) {
                     $q->where('name', 'LIKE', '%' . $search . '%')
                       ->orWhere('email', 'LIKE', '%' . $search . '%');
                 });
             })
-            ->get()
-            ->makeVisible('email');
+            ->orderBy('created_at', 'desc')
+            ->paginate(30);
+
+
+        // Show email in the table
+        $users->getCollection()->each->makeVisible(['email', 'created_at']);
 
         return inertia('Admin/User/Index', [
             'users' => $users,

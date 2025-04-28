@@ -5,6 +5,7 @@ export interface User {
   avatar: string;
   email_verified_at: string;
   role: string;
+  created_at: string;
 }
 
 export type PageProps<

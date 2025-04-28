@@ -28,7 +28,7 @@ const UserTabs: React.FC<UserTabsProps> = ({ currentTab }) => {
 
   return (
     <div className="border-b border-gray-200 dark:border-gray-700">
-      <ul className="flex flex-wrap -mb-px text-sm font-medium text-center ml-4">
+      <ul className="flex flex-wrap -mb-px text-sm font-medium text-center ml-4 mt-2">
         {tabs.map((tab) => (
           <li className="mr-2" key={tab.name}>
             <Link

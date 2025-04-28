@@ -18,6 +18,9 @@ const Pagination = ({ links }: Props) => {
             : 'hover:bg-gray-50 ring-1 ring-inset ring-gray-300 text-gray-900',
           {
             'text-gray-400 border-gray-300': !link.url,
+            'rounded-l-md': index === 0,
+            'rounded-r-md': index === links.length - 1,
+            'cursor-not-allowed opacity-50': !link.url,
           }
         );
 
@@ -27,6 +30,7 @@ const Pagination = ({ links }: Props) => {
             href={link.url}
             className={linkClasses}
             dangerouslySetInnerHTML={{ __html: link.label }}
+            disabled={!link.url}
             onClick={(e) => {
               if (!link.url) e.preventDefault();
             }}
