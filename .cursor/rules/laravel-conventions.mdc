@@ -1,0 +1,101 @@
+---
+description: Laravel Conventions and Best Practices
+globs:
+  - "**/*.php"
+alwaysApply: true
+---
+
+# General Laravel Principles
+- Follow Laravel's MVC structure strictly.
+- Always use native Laravel features unless a clear, documented reason exists to deviate.
+- Consistency is mandatory: choose one standard way and stick to it.
+- Design for scalability and maintainability.
+
+# Code Style
+- PHP 8.3+ required. Use latest language features: typed properties, enums, readonly classes.
+- Always start files with `declare(strict_types=1);`.
+- Follow PSR-12 code style.
+- Naming conventions:
+  - Models: singular (`User`)
+  - Controllers: singular resource name (`UserController`)
+  - Directories: kebab-case (`user-profile`)
+  - Route parameters: camelCase (`{userId}`)
+
+# Laravel Specifics
+- Use `php artisan make:{type}` to generate models, migrations, controllers, etc.
+- Laravel 11+: if `Console/Kernel.php` doesn't exist, use `bootstrap/app.php` for console bindings.
+- Artisan commands are auto-registered in `Console/Commands/`.
+- Environment variables must **only** be accessed via `config()` calls inside application code.
+- Prefer service classes for business logic over fat controllers or models.
+- Controllers must be final and use dependency injection only inside methods (not constructor).
+- Prefer invokable Single Action Controllers.
+
+# Eloquent
+- Always use `Model::query()` instead of direct static methods.
+- Eager load relations to avoid N+1 queries.
+- Avoid magic methods like `whereName()`, prefer explicit `where()`.
+- Use custom EloquentBuilder classes for models with 3+ scopes.
+- Use explicit fill/assign properties instead of mass assignment.
+
+# Validation
+- Always use Form Request classes for validation.
+- Always use array notation for validation rules:
+  ```php
+  'email' => ['required', 'email']
+  ```
+
+# Routing
+- Do not use `Route::resource()`. Define routes manually.
+- Prefer tuple notation for controller bindings:
+  ```php
+  Route::get('about', [AboutController::class, 'index']);
+  ```
+- Always name routes.
+- Use kebab-case URLs, camelCase route parameters.
+
+# API Best Practices
+- Always version APIs (`/api/v1/...`).
+- Use Laravel API Resources for transforming data.
+- Use pagination for lists. No unbounded queries.
+
+# Artisan Commands
+- Use `handle()` method dependency injection, not constructor injection.
+- Name commands in kebab-case.
+- Use verbosity levels (`v`, `vv`, `vvv`) properly.
+- Exit with proper status codes.
+
+# Security
+- Mass Assignment: Always use `$fillable` and whitelist validated data.
+- SQL Injection: Never allow dynamic column names from user input.
+- Always escape Blade output unless explicitly verified (`{!! $value !!}` with HTML Purifier).
+- Use CSRF protection for all forms unless explicitly excluded.
+- Use Policies for authorization. Default action names: `view`, `create`, `update`, `delete`.
+
+# Testing
+- Mandatory testing coverage on critical business logic.
+- Use PestPHP or PHPUnit.
+- Factories should live in `tests/Factories`, not inside models.
+
+# Caching and Queues
+- Cache heavy queries using Laravel Cache.
+- Use jobs and queues for heavy or delayed tasks.
+- Use `dispatch()` helper, not static `::dispatch()` or Bus Facade.
+
+# Modules
+- For large apps, use modular structure inside `Modules/`.
+- No tight coupling between modules. Use interfaces or events.
+
+# Additional Tools
+- Use Laravel Horizon for monitoring queues.
+- Use Laravel Telescope for debugging in development.
+
+# Performance
+- Use chunking for large datasets (`chunk(100)`).
+- Use eager loading and indexed columns.
+- Cache configuration and routes in production.
+
+# Comments and Readability
+- Code should be self-explanatory.
+  If a comment is needed to explain "what", refactor the code.
+  Only comment the "why" if necessary.
+

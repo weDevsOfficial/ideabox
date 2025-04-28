@@ -1,0 +1,68 @@
+---
+description: PHP General Conventions and Best Practices
+globs:
+  - "**/*.php"
+alwaysApply: true
+---
+
+# General PHP Principles
+- Always start files with `declare(strict_types=1);`.
+- PHP 8.3+ features must be leveraged (readonly, typed properties, enums, etc.).
+- Follow PSR-12 strictly.
+- Prioritize clarity, type safety, and predictability over cleverness or shortcuts.
+- Avoid magic methods (`__get`, `__set`, `__call`) unless absolutely necessary.
+
+# Typing
+- All methods, functions, and properties must be fully typed.
+- Use `void` or `never` return types where appropriate.
+- Always prefer explicit type declarations over inferred types.
+
+# OOP Practices
+- Classes must be `final` unless proven otherwise necessary.
+- Prefer composition over inheritance.
+- Use dependency injection rather than static access (`new Something()` inside methods is discouraged).
+- Use named constructors for complex object creation.
+
+# Comments and Docblocks
+- Avoid comments that explain "what".
+  Express code meaning through naming and structure.
+- Use docblocks only for:
+  - Revealing array contents (`@var list<string>`)
+  - Describing complex structures (generics, traversables)
+  - Explaining *why* something is done.
+- Use fully qualified class names in docblocks.
+
+# String Handling
+- Prefer string interpolation with `{}` braces over concatenation.
+- Use `sprintf` when formatting multiple variables.
+
+# Error Handling
+- Always throw typed, domain-specific exceptions.
+- Avoid generic `Exception` wherever possible.
+- Differentiate between programmer errors (assertions) and user input errors (exceptions).
+
+# Dependency Management
+- Use Composer. Lock dependencies via `composer.lock`.
+- Keep `composer.json` normalized and audited.
+- Add `composer audit` to CI pipelines.
+
+# Performance
+- Typecast using native casting, not functions:
+  ```php
+  $id = (int) $id; // GOOD
+  ```
+- Prefer `isset()` and `array_key_exists()` checks for large arrays.
+- Optimize production servers with `opcache`.
+
+# Enums
+- Always use PHP 8.1+ native `enum` for fixed value sets.
+- Use PascalCase for enum cases.
+
+# Regular Expressions
+- Prioritize regex readability and performance.
+- Use named capture groups and reuse patterns properly.
+
+# Security
+- Always validate and sanitize external input.
+- Prevent SQL injection by whitelisting columns.
+- Escape or purify user-supplied HTML before rendering.

@@ -1,0 +1,109 @@
+---
+description: TailReact Component Library Usage
+globs:
+  - "resources/js/**/*.tsx"
+alwaysApply: true
+---
+
+# TailReact Component Library Usage Guidelines
+
+This rule enforces consistent use of the TailReact component library across all React + TypeScript projects.
+Always prefer using TailReact components over custom implementations when a matching component exists.
+
+## Available Components
+
+| Component         | Purpose                                     |
+|:------------------|:--------------------------------------------|
+| `Badge`           | Status indicators and labels                |
+| `Button`          | Primary and secondary actions               |
+| `Checkbox`        | Boolean selection inputs                    |
+| `ContextualHelp`  | Inline help or tooltips                     |
+| `Dropdown`, `DropdownItem` | Dropdown menus and selections         |
+| `Modal`, `ModalHeader`, `ModalBody`, `ModalActions` | Dialogs and popups |
+| `ConfirmModal`    | Simple yes/no confirmation dialogs          |
+| `Notice`          | Notifications and alerts                    |
+| `Popover`         | Hoverable information overlays              |
+| `RadioGroup`      | Single-selection radio options              |
+| `SelectCard`      | Card-based selectable options               |
+| `SelectInput`     | Dropdown selection input                    |
+| `SwitchInput`     | Toggle switches (on/off)                    |
+| `Table`, `TableHeader`, `TableBody` | Data tables                  |
+| `TextField`       | Single-line text inputs                     |
+| `Textarea`        | Multi-line text inputs                      |
+| `Tooltip`         | Simple hover tooltips                      |
+
+## General Principles
+
+- **Always use TailReact components** if an equivalent exists.
+- **Do not duplicate functionality** that is already available in TailReact.
+- **Maintain consistent styling** by using the design system provided by TailReact.
+- **Extend TailReact components** via props or composition if needed — do not override styles manually unless necessary.
+- **Type safety first**: Always use provided component props correctly and completely.
+
+## Usage Examples
+
+### Button Example
+```tsx
+import { Button } from 'tail-react';
+
+export function SaveButton() {
+  return (
+    <Button type="submit" variant="primary">
+      Save Changes
+    </Button>
+  );
+}
+```
+
+### Modal Example
+```tsx
+import { Modal, ModalHeader, ModalBody, ModalActions, Button } from 'tail-react';
+
+export function ExampleModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void; }) {
+  return (
+    <Modal open={isOpen} onClose={onClose}>
+      <ModalHeader>Confirm Action</ModalHeader>
+      <ModalBody>Are you sure you want to proceed?</ModalBody>
+      <ModalActions>
+        <Button variant="secondary" onClick={onClose}>Cancel</Button>
+        <Button variant="primary" onClick={() => {/* action */}}>Confirm</Button>
+      </ModalActions>
+    </Modal>
+  );
+}
+```
+
+### SelectInput Example
+```tsx
+import { SelectInput } from 'tail-react';
+
+export function CountrySelect() {
+  return (
+    <SelectInput
+      label="Country"
+      options={[
+        { label: 'United States', value: 'us' },
+        { label: 'Canada', value: 'ca' },
+      ]}
+      name="country"
+    />
+  );
+}
+```
+
+## Violations
+
+> Examples of **what NOT to do**:
+>
+> - Building your own `<button>` component with Tailwind classes manually if `Button` exists.
+> - Creating a custom `<select>` or `<dropdown>` when `SelectInput` or `Dropdown` is available.
+> - Implementing manual modals instead of using `Modal` and `ConfirmModal` components.
+> - Styling alerts manually instead of using `Notice`.
+
+
+## Special Notes
+
+- If a TailReact component is missing required behavior, extend it properly or suggest improvements.
+- Only build new components if absolutely necessary and after confirming TailReact doesn't offer it.
+- Prefer composition (wrapping existing components) over reimplementation.
+
