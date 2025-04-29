@@ -9,6 +9,7 @@ import {
 } from 'react';
 import { Link, InertiaLinkProps } from '@inertiajs/react';
 import { Transition } from '@headlessui/react';
+import classNames from 'classnames';
 
 const DropDownContext = createContext<{
   open: boolean;
@@ -20,7 +21,11 @@ const DropDownContext = createContext<{
   toggleOpen: () => {},
 });
 
-const Dropdown = ({ children }: PropsWithChildren) => {
+interface DropdownProps extends PropsWithChildren {
+  className?: string;
+}
+
+const Dropdown = ({ children, className }: DropdownProps) => {
   const [open, setOpen] = useState(false);
 
   const toggleOpen = () => {
@@ -29,17 +34,23 @@ const Dropdown = ({ children }: PropsWithChildren) => {
 
   return (
     <DropDownContext.Provider value={{ open, setOpen, toggleOpen }}>
-      <div className="relative">{children}</div>
+      <div className={classNames('relative', className)}>{children}</div>
     </DropDownContext.Provider>
   );
 };
 
-const Trigger = ({ children }: PropsWithChildren) => {
+interface TriggerProps extends PropsWithChildren {
+  className?: string;
+}
+
+const Trigger = ({ children, className }: TriggerProps) => {
   const { open, setOpen, toggleOpen } = useContext(DropDownContext);
 
   return (
     <>
-      <div onClick={toggleOpen}>{children}</div>
+      <div onClick={toggleOpen} className={className}>
+        {children}
+      </div>
 
       {open && (
         <div

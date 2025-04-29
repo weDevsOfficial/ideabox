@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Middleware;
 
+use App\Models\Board;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -38,6 +41,7 @@ class HandleInertiaRequests extends Middleware
             'appLogo' => config('app.logo'),
             'success' => fn () => $request->session()->get('success'),
             'error' => fn () => $request->session()->get('error'),
+            'boards' => fn () => Board::getCachedPublicBoards(),
         ];
     }
 }
