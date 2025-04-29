@@ -1,7 +1,6 @@
 ---
 description: PHP General Conventions and Best Practices
-globs:
-  - "**/*.php"
+globs: **/*.php
 alwaysApply: true
 ---
 
@@ -18,7 +17,6 @@ alwaysApply: true
 - Always prefer explicit type declarations over inferred types.
 
 # OOP Practices
-- Classes must be `final` unless proven otherwise necessary.
 - Prefer composition over inheritance.
 - Use dependency injection rather than static access (`new Something()` inside methods is discouraged).
 - Use named constructors for complex object creation.

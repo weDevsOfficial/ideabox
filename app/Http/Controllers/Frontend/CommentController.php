@@ -1,15 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Frontend;
 
-use App\Helpers\Formatting;
 use App\Models\Post;
-use App\Models\User;
 use App\Models\Comment;
+use App\Helpers\Formatting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-use App\Notifications\CommentNotification;
+use App\Jobs\SendCommentNotifications;
 
 class CommentController extends Controller
 {
@@ -25,7 +26,7 @@ class CommentController extends Controller
         $groupedComments = $comments->groupBy('parent_id');
 
         // Recursive function to build comment tree
-        $buildCommentTree = function ($parentId = null) use (&$buildCommentTree, &$groupedComments) {
+        $buildCommentTree = function ($parentId = null) use (&$buildCommentTree, &$groupedComments, $orderBy) {
             $result = [];
 
             if (isset($groupedComments[$parentId])) {
@@ -36,9 +37,10 @@ class CommentController extends Controller
                     $result[] = $comment;
                 }
 
-                // Sort comments by id
-                usort($result, function ($a, $b) {
-                    return $a->id - $b->id;
+                // Sort comments by creation date
+                usort($result, function ($a, $b) use ($orderBy) {
+                    $comparison = $a->created_at <=> $b->created_at;
+                    return $orderBy === 'desc' ? -$comparison : $comparison;
                 });
             }
             return $result;
@@ -66,30 +68,73 @@ class CommentController extends Controller
             'parent_id' => $parentId === 0 ? null : $parentId,
         ]);
 
-        $this->notifyUsers($post, $comment);
-
+        // Load required relationships immediately for both displaying and notifying
         $comment->load('user');
         $comment->children = [];
+
+        // Dispatch notifications in the background
+        $this->notifyUsers($post, $comment);
 
         return response()->json($comment);
     }
 
-    private function notifyUsers(Post $post, Comment $comment)
+    /**
+     * Notify all relevant users about a new comment.
+     *
+     * This includes:
+     * - The post creator (if not the commenter)
+     * - All users who commented on the post (except the commenter)
+     * - All users who voted on the post (except the commenter)
+     * - If replying to a comment, the parent comment author
+     */
+    private function notifyUsers(Post $post, Comment $comment): void
     {
-        $userIds = $post->comments()
-                    ->where('user_id', '!=', $comment->user_id)
+        try {
+            // Get the ID of the comment creator
+            $commenterId = $comment->user_id;
+
+            // Collect all user IDs that need to be notified, excluding the commenter
+            $userIdQuery = $post->comments()
+                ->where('user_id', '!=', $commenterId)
+                ->pluck('user_id');
+
+            // Add post creator if they're not the commenter
+            if ($post->created_by && $post->created_by != $commenterId) {
+                $userIdQuery = $userIdQuery->push($post->created_by);
+            }
+
+            // Add voters
+            $userIdQuery = $userIdQuery->merge(
+                $post->votes()
+                    ->where('user_id', '!=', $commenterId)
                     ->pluck('user_id')
-                    ->merge($post->votes()->where('user_id', '!=', $comment->user_id)->pluck('user_id'))
-                    ->unique();
+            );
 
-        if ($userIds->isEmpty()) {
-            return;
-        }
+            // If this is a reply, prioritize notifying the parent comment author
+            if ($comment->parent_id) {
+                $parentComment = Comment::find($comment->parent_id);
+                if ($parentComment && $parentComment->user_id != $commenterId) {
+                    $userIdQuery = $userIdQuery->prepend($parentComment->user_id);
+                }
+            }
 
-        $users = User::whereIn('id', $userIds)->get();
+            // Get unique IDs to avoid duplicate notifications
+            $userIds = $userIdQuery->unique()->values();
 
-        foreach ($users as $user) {
-            $user->notify(new CommentNotification($post, $comment));
+            if ($userIds->isEmpty()) {
+                return;
+            }
+
+            // Dispatch the job with batched processing of notifications
+            SendCommentNotifications::dispatch($post, $comment, $userIds);
+
+        } catch (\Throwable $e) {
+            // Log error but don't interrupt the user experience
+            Log::error('Failed to queue comment notifications', [
+                'error' => $e->getMessage(),
+                'post_id' => $post->id,
+                'comment_id' => $comment->id,
+            ]);
         }
     }
 }

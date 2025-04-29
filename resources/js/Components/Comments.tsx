@@ -50,7 +50,7 @@ const Comments: React.FC<CommentsProps> = ({ post }) => {
         {auth.user && <CommentBox post={post} onComment={appendToComments} />}
 
         {!auth.user && (
-          <div className="border rounded bg-gray-50 py-4 text-sm text-center text-gray-700 dark:text-gray-300">
+          <div className="border dark:border-gray-700 rounded bg-gray-50 dark:bg-gray-800 py-4 text-sm text-center text-gray-700 dark:text-gray-300">
             <Link href={route('login')} className="underline">
               Log in
             </Link>{' '}
