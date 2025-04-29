@@ -26,7 +26,7 @@ class CommentController extends Controller
         $groupedComments = $comments->groupBy('parent_id');
 
         // Recursive function to build comment tree
-        $buildCommentTree = function ($parentId = null) use (&$buildCommentTree, &$groupedComments) {
+        $buildCommentTree = function ($parentId = null) use (&$buildCommentTree, &$groupedComments, $orderBy) {
             $result = [];
 
             if (isset($groupedComments[$parentId])) {
@@ -37,9 +37,10 @@ class CommentController extends Controller
                     $result[] = $comment;
                 }
 
-                // Sort comments by id
-                usort($result, function ($a, $b) {
-                    return $a->id - $b->id;
+                // Sort comments by creation date
+                usort($result, function ($a, $b) use ($orderBy) {
+                    $comparison = $a->created_at <=> $b->created_at;
+                    return $orderBy === 'desc' ? -$comparison : $comparison;
                 });
             }
             return $result;
