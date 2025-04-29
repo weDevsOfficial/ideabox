@@ -1,6 +1,6 @@
 ---
 description: TailReact Component Library Usage
-globs: *.tsx
+globs: resources/js/**/*.tsx
 alwaysApply: true
 ---
 
