@@ -50,16 +50,17 @@ class FeedbackStatusChanged extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         try {
+            $postTitle = htmlspecialchars($this->post->title, ENT_QUOTES, 'UTF-8');
             $statusName = $this->post->status->name;
             $statusColor = $this->post->status->color ?? '#4f46e5';
 
             $bodyExcerpt = '';
             if (!empty($this->post->body)) {
-                $bodyExcerpt = Formatting::excerpt($this->post->body, 150);
+                $bodyExcerpt = Formatting::excerpt(strip_tags($this->post->body), 150);
             }
 
             // Customize subject line with post title
-            $subject = "Feedback Status Updated: {$this->post->title}";
+            $subject = "Feedback Status Updated: {$postTitle}";
 
             // Prepare status badge HTML
             $statusBadge = "<span style=\"display: inline-block; background-color: {$statusColor}; color: white; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 12px;\">{$statusName}</span>";
@@ -71,7 +72,7 @@ class FeedbackStatusChanged extends Notification implements ShouldQueue
 
                 // Feedback details panel
                 ->line(new HtmlString("<div style=\"border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; margin-top: 16px; margin-bottom: 16px; background-color: #f9fafb;\">
-                    <h2 style=\"margin-top: 0; font-size: 18px; color: #111827;\">{$this->post->title}</h2>
+                    <h2 style=\"margin-top: 0; font-size: 18px; color: #111827;\">{$postTitle}</h2>
                     <div style=\"margin-bottom: 12px; color: #4b5563; font-size: 14px;\">{$bodyExcerpt}</div>
                     <div style=\"margin-top: 16px;\">
                         <p style=\"font-size: 14px; color: #6b7280; margin: 0;\">Status: {$statusBadge}</p>

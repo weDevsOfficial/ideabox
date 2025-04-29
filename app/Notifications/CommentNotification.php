@@ -57,11 +57,12 @@ class CommentNotification extends Notification implements ShouldQueue
         try {
             $statusColor = $this->post->status->color ?? '#4f46e5';
             $statusName = $this->post->status->name ?? 'Open';
-            $title = $this->post->title;
+            $title = htmlspecialchars($this->post->title, ENT_QUOTES, 'UTF-8');
             $titleExcerpt = Formatting::excerpt($title, 70);
             $commentBody = nl2br(htmlspecialchars(strip_tags($this->comment->body)));
             $statusBadge = "<span style=\"display: inline-block; background-color: {$statusColor}; color: white; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 12px;\">{$statusName}</span>";
-            $avatarUrl = "https://www.gravatar.com/avatar/" . md5($this->comment->user->email ?? 'unknown') . "?s=56&d=mp";
+            $emailHash = md5(strtolower(trim($this->comment->user->email ?? 'unknown')));
+            $avatarUrl = "https://www.gravatar.com/avatar/{$emailHash}?s=56&d=mp";
 
             return (new MailMessage())
                 ->subject("New Comment on: {$titleExcerpt}")

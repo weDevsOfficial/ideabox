@@ -77,25 +77,25 @@ class CommentController extends Controller
     public function destroy(Comment $comment)
     {
         try {
-            // Get post before deleting comment to update comment count
-            $post = $comment->post;
+            // Get post ID before deleting comment
+            $postId = $comment->post_id;
 
-            // Determine if we need to handle child comments
-            $childComments = Comment::where('parent_id', $comment->id)->get();
-
-            if ($childComments->count() > 0) {
-                // Option: Set children parent_id to null or reparent to grandparent
-                foreach ($childComments as $child) {
-                    $child->update(['parent_id' => $comment->parent_id]);
-                }
-            }
+            // Bulk update all child comments in a single query
+            Comment::query()
+                ->where('parent_id', $comment->id)
+                ->update(['parent_id' => $comment->parent_id]);
 
             $comment->delete();
 
-            // Update post comment count
-            if ($post) {
-                $post->comments = $post->comments()->count();
-                $post->save();
+            // Update post comment count directly in database if post exists
+            if ($postId) {
+                Post::query()
+                    ->where('id', $postId)
+                    ->update([
+                        'comments' => Comment::query()
+                            ->where('post_id', $postId)
+                            ->count()
+                    ]);
             }
 
             return response()->json(['message' => 'Comment deleted successfully']);
@@ -109,31 +109,4 @@ class CommentController extends Controller
         }
     }
 
-    /**
-     * Get comment statistics for admin dashboard
-     */
-    public function statistics()
-    {
-        $today = Comment::whereDate('created_at', today())->count();
-        $week = Comment::whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])->count();
-        $month = Comment::whereMonth('created_at', now()->month)->count();
-        $total = Comment::count();
-
-        $recentComments = Comment::with(['user', 'post'])
-            ->orderBy('created_at', 'desc')
-            ->limit(5)
-            ->get();
-
-        foreach ($recentComments as $comment) {
-            $comment->body_excerpt = Formatting::excerpt($comment->body, 100);
-        }
-
-        return response()->json([
-            'today' => $today,
-            'this_week' => $week,
-            'this_month' => $month,
-            'total' => $total,
-            'recent' => $recentComments,
-        ]);
-    }
 }
