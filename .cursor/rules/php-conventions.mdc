@@ -1,7 +1,6 @@
 ---
 description: PHP General Conventions and Best Practices
-globs:
-  - "**/*.php"
+globs: *.php
 alwaysApply: true
 ---
 
