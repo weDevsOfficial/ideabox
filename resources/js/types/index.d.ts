@@ -4,20 +4,19 @@ export interface User {
   email: string;
   avatar: string;
   email_verified_at: string;
-  role: string;
+  role: 'admin' | 'user';
   created_at: string;
 }
 
-export type PageProps<
-  T extends Record<string, unknown> = Record<string, unknown>
-> = T & {
+export type PageProps = {
   auth: {
-    user: User;
+    user: User | null;
   };
   appName: string;
-  appLogo: string;
-  error: string;
-  success: string;
+  appLogo: string | null;
+  boards: BoardType[];
+  success?: string;
+  error?: string;
 };
 
 export interface PaginatedLink {

@@ -2,13 +2,17 @@ import React, { PropsWithChildren } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import classNames from 'classnames';
 import { Button } from '@wedevs/tail-react';
-import { LightBulbIcon, MapIcon } from '@heroicons/react/24/outline';
+import {
+  ChevronDownIcon,
+  LightBulbIcon,
+  MapIcon,
+} from '@heroicons/react/24/outline';
 
 import Dropdown from '@/Components/Dropdown';
 import { PageProps } from '@/types';
 
 const FrontendLayout = ({ children }: PropsWithChildren) => {
-  const { auth, appName, appLogo } = usePage<PageProps>().props;
+  const { auth, appName, appLogo, boards } = usePage<PageProps>().props;
 
   return (
     <div className="dark:bg-gray-900">
@@ -103,11 +107,11 @@ const FrontendLayout = ({ children }: PropsWithChildren) => {
           </div>
 
           <div className="flex justify-between items-center">
-            <div className="flex -mb-[1px]">
+            <div className="flex items-center gap-3 -mb-[1px]">
               <Link
                 href={route('home')}
                 className={classNames(
-                  'inline-flex items-center text-sm mr-3 px-3 py-3',
+                  'inline-flex items-center text-sm px-3 py-3',
                   route().current('home')
                     ? 'text-indigo-600 dark:text-indigo-300 font-semibold hover:text-indigo-700 border-b border-indigo-500'
                     : 'dark:text-gray-400'
@@ -116,18 +120,55 @@ const FrontendLayout = ({ children }: PropsWithChildren) => {
                 <MapIcon className="h-5 w-5 mr-1.5" />
                 <span>Roadmap</span>
               </Link>
-              <Link
-                href={route('board.show', 'feature-requests')}
-                className={classNames(
-                  'inline-flex items-center text-sm mr-3 px-3 py-2',
-                  route().current('board.show')
-                    ? 'text-indigo-600 dark:text-indigo-300 font-semibold hover:text-indigo-700 border-b border-indigo-500'
-                    : 'dark:text-gray-400'
-                )}
-              >
-                <LightBulbIcon className="h-5 w-5 mr-1.5" />
-                <span>Feature Requests</span>
-              </Link>
+
+              {boards.length === 1 ? (
+                <Link
+                  href={route('board.show', boards[0].slug)}
+                  className={classNames(
+                    'inline-flex items-center text-sm mr-3 px-3 py-2',
+                    route().current('board.show', boards[0].slug)
+                      ? 'text-indigo-600 dark:text-indigo-300 font-semibold hover:text-indigo-700 border-b border-indigo-500'
+                      : 'dark:text-gray-400'
+                  )}
+                >
+                  <LightBulbIcon className="h-5 w-5 mr-1.5" />
+                  <span>{boards[0].name}</span>
+                </Link>
+              ) : (
+                <Dropdown>
+                  <Dropdown.Trigger>
+                    <button
+                      type="button"
+                      className={classNames(
+                        'inline-flex items-center text-sm px-3 py-3',
+                        route().current('board.show')
+                          ? 'text-indigo-600 dark:text-indigo-300 font-semibold hover:text-indigo-700 border-b border-indigo-500'
+                          : 'dark:text-gray-400'
+                      )}
+                    >
+                      <LightBulbIcon className="h-5 w-5 mr-1.5" />
+                      <span>Boards</span>
+                      <ChevronDownIcon className="h-4 w-4 ml-2 text-gray-400" />
+                    </button>
+                  </Dropdown.Trigger>
+
+                  <Dropdown.Content>
+                    {boards.map((board) => (
+                      <Dropdown.Link
+                        key={board.id}
+                        href={route('board.show', board.slug)}
+                        className={classNames(
+                          route().current('board.show', board.slug)
+                            ? 'text-indigo-600 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-900/20'
+                            : ''
+                        )}
+                      >
+                        {board.name}
+                      </Dropdown.Link>
+                    ))}
+                  </Dropdown.Content>
+                </Dropdown>
+              )}
             </div>
 
             {/* <div className="relative">
