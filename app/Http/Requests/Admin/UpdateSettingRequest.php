@@ -6,16 +6,8 @@ namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-final class UpdateSettingRequest extends FormRequest
+class UpdateSettingRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
-    public function authorize(): bool
-    {
-        return true; // Authorization is handled via middleware
-    }
-
     /**
      * Get the validation rules that apply to the request.
      *

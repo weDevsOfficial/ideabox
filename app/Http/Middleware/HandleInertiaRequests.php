@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Middleware;
 
+use App\Models\Board;
 use Inertia\Middleware;
+use App\Facades\Settings;
 use Illuminate\Http\Request;
-use App\Services\SettingService;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -32,18 +33,17 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-        $settingService = app()->make(SettingService::class);
-
         return [
             ...parent::share($request),
             'auth' => [
                 'user' => $request->user(),
             ],
-            'appName' => $settingService->get('app_name'),
-            'appLogo' => $settingService->get('app_logo'),
+            'appName' => Settings::get('app_name'),
+            'appLogo' => Settings::get('app_logo'),
             'success' => fn () => $request->session()->get('success'),
             'error' => fn () => $request->session()->get('error'),
-            'siteSettings' => $settingService->all(),
+            'siteSettings' => Settings::all(),
+            'boards' => Board::getCachedPublicBoards(),
         ];
     }
 }

@@ -31,9 +31,11 @@
     "dependencies": {
         "@heroicons/react": "^2.1.1",
         "@radix-ui/react-popover": "^1.0.7",
+        "@types/react-beautiful-dnd": "^13.1.8",
         "@wedevs/tail-react": "^1.1.0",
         "classnames": "^2.5.1",
         "lodash.debounce": "^4.0.8",
+        "react-beautiful-dnd": "^13.1.1",
         "react-color": "^2.19.3"
     },
     "config": {

@@ -15,32 +15,40 @@ class SettingService
     private string $cacheKey = 'settings_all';
 
     /**
-     * Cache duration in seconds.
-     */
-    private int $cacheDuration = 3600; // 1 hour
-
-    /**
      * Get all settings with values from the database or defaults from definitions.
      *
-     * @param bool $useCache Whether to use cache
+     * @param bool $useCache Whether to use cache (defaults to true)
      * @return array
      */
     public function all(bool $useCache = true): array
     {
-        if ($useCache && Cache::has($this->cacheKey)) {
-            return Cache::get($this->cacheKey);
+        // If cache shouldn't be used or is being rebuilt, fetch from DB
+        if (!$useCache) {
+            return $this->loadAllFromDatabase();
         }
 
-        // Get all settings from database
+        // Otherwise use rememberForever to maintain cache until explicitly cleared
+        return Cache::rememberForever($this->cacheKey, function () {
+            return $this->loadAllFromDatabase();
+        });
+    }
+
+    /**
+     * Load all settings from database and merge with defaults.
+     *
+     * @return array
+     */
+    private function loadAllFromDatabase(): array
+    {
         $dbSettings = Setting::all()->keyBy('key')->toArray();
         $result = [];
 
         // Go through all defined settings
-        foreach (SettingDefinitions::all() as $groupKey => $group) {
+        foreach (Setting::definitions() as $groupKey => $group) {
             foreach ($group['settings'] as $key => $definition) {
                 // If setting exists in DB, use that value
                 if (isset($dbSettings[$key])) {
-                    $value = $this->castValue($dbSettings[$key]['value'], $dbSettings[$key]['type']);
+                    $value = $dbSettings[$key]['value']; // Value is already cast through the model accessor
                 } else {
                     // Otherwise use default value from definition
                     $value = $definition['default'];
@@ -48,10 +56,6 @@ class SettingService
 
                 $result[$key] = $value;
             }
-        }
-
-        if ($useCache) {
-            Cache::put($this->cacheKey, $result, $this->cacheDuration);
         }
 
         return $result;
@@ -74,7 +78,7 @@ class SettingService
         }
 
         // If not found, return provided default or definition default
-        return $default !== null ? $default : SettingDefinitions::getDefault($key);
+        return $default !== null ? $default : Setting::getDefaultValue($key);
     }
 
     /**
@@ -87,7 +91,7 @@ class SettingService
     public function set(string $key, $value): bool
     {
         // Check if the setting is defined
-        $definition = SettingDefinitions::get($key);
+        $definition = Setting::getDefinition($key);
         if (!$definition) {
             return false;
         }
@@ -99,20 +103,13 @@ class SettingService
         $type = $definition['type'] ?? 'string';
         $setting->type = $type;
 
-        // Handle JSON values
-        if ($type === 'json' && is_string($value)) {
-            try {
-                $value = json_decode($value, true, 512, JSON_THROW_ON_ERROR);
-            } catch (\JsonException $e) {
-                // Keep as string if not valid JSON
-            }
-        }
-
+        // The model's mutator will handle proper conversion of the value
         $setting->value = $value;
         $result = $setting->save();
 
-        // Clear cache on update
+        // Clear cache on update and warm it again immediately
         $this->clearCache();
+        $this->warmCache();
 
         return $result;
     }
@@ -121,11 +118,14 @@ class SettingService
      * Process template variables in text values.
      *
      * @param string $text
-     * @param array $settings
+     * @param array|null $settings Pass settings array if already retrieved, otherwise null to use cache
      * @return string
      */
-    public function processTemplateVariables(string $text, array $settings): string
+    public function processTemplateVariables(string $text, ?array $settings = null): string
     {
+        // Use provided settings or get from cache
+        $settings = $settings ?? $this->all();
+
         return preg_replace_callback('/\{([a-z_]+)\}/', function ($matches) use ($settings) {
             $key = $matches[1];
             return $settings[$key] ?? $matches[0];
@@ -135,26 +135,27 @@ class SettingService
     /**
      * Get all settings with their full definitions for admin UI.
      *
-     * @param string $group Filter by group
+     * @param string|null $group Filter by group
      * @return array
      */
-    public function getForAdmin(string $group = null): array
+    public function getForAdmin(?string $group = null): array
     {
-        // Get all settings from DB
+        // Get all settings from DB - using the same cache mechanism as regular settings
         $dbSettings = Setting::all()->keyBy('key')->toArray();
-        $result = [];
 
         if ($group) {
-            $definitions = SettingDefinitions::getGroup($group);
+            $definitions = Setting::getGroupDefinitions($group);
         } else {
-            $definitions = $this->getAllDefinitions();
+            $definitions = Setting::getAllDefinitions();
         }
+
+        $result = [];
 
         // Merge DB values with definitions
         foreach ($definitions as $key => $definition) {
             // Use DB value if exists, otherwise use default
             $value = isset($dbSettings[$key])
-                ? $this->castValue($dbSettings[$key]['value'], $dbSettings[$key]['type'])
+                ? $dbSettings[$key]['value'] // Value is already cast through the model accessor
                 : $definition['default'];
 
             $result[] = array_merge(
@@ -174,7 +175,7 @@ class SettingService
      */
     public function getGroups(): array
     {
-        return SettingDefinitions::getGroups();
+        return Setting::getGroups();
     }
 
     /**
@@ -184,11 +185,11 @@ class SettingService
      */
     public function getGroupLabels(): array
     {
-        return SettingDefinitions::getGroupLabels();
+        return Setting::getGroupLabels();
     }
 
     /**
-     * Clear settings cache.
+     * Clear all settings cache.
      *
      * @return void
      */
@@ -198,50 +199,12 @@ class SettingService
     }
 
     /**
-     * Get flat array of all setting definitions.
+     * Warm the settings cache if it doesn't exist.
      *
-     * @return array
+     * @return void
      */
-    private function getAllDefinitions(): array
+    public function warmCache(): void
     {
-        $result = [];
-        foreach (SettingDefinitions::all() as $groupKey => $group) {
-            foreach ($group['settings'] as $key => $definition) {
-                $result[$key] = array_merge(
-                    ['key' => $key],
-                    $definition,
-                    ['group' => $groupKey]
-                );
-            }
-        }
-        return $result;
-    }
-
-    /**
-     * Cast a value based on type.
-     *
-     * @param mixed $value
-     * @param string $type
-     * @return mixed
-     */
-    private function castValue($value, string $type)
-    {
-        switch ($type) {
-            case 'boolean':
-                return (bool) $value;
-            case 'integer':
-                return (int) $value;
-            case 'json':
-                if (is_string($value)) {
-                    try {
-                        return json_decode($value, true, 512, JSON_THROW_ON_ERROR);
-                    } catch (\JsonException $e) {
-                        return $value;
-                    }
-                }
-                return $value;
-            default:
-                return $value;
-        }
+        $this->all(true);
     }
 }
