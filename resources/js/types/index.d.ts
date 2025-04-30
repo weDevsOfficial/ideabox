@@ -8,6 +8,20 @@ export interface User {
   created_at: string;
 }
 
+export interface SiteSettings {
+  app_name?: string;
+  company_legal_name?: string;
+  copyright_text?: string;
+  footer_text?: string;
+  app_logo?: string;
+  app_logo_dark?: string;
+  meta_title?: string;
+  meta_description?: string;
+  footer_links?: Array<{ label: string; href: string; is_external: boolean }>;
+  header_links?: Array<{ label: string; href: string; is_external: boolean }>;
+  [key: string]: any;
+}
+
 export type PageProps = {
   auth: {
     user: User | null;
@@ -15,6 +29,7 @@ export type PageProps = {
   appName: string;
   appLogo: string | null;
   boards: BoardType[];
+  siteSettings?: SiteSettings;
   success?: string;
   error?: string;
 };

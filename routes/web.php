@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\GitHub\GitHubAccountController;
 use App\Http\Controllers\Admin\GitHub\GitHubRepositoryController;
 use App\Http\Controllers\Admin\BoardController as AdminBoardController;
 use App\Http\Controllers\Admin\CommentController as AdminCommentController;
+use App\Http\Controllers\Admin\SettingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,6 +41,10 @@ Route::get('/p/{post}/comments', [CommentController::class, 'index'])->name('pos
 // route group with 'admin' prefix
 Route::prefix('admin')->middleware('auth', 'verified', 'admin')->group(function () {
     Route::redirect('/', '/admin/feedbacks');
+
+    // Settings management
+    Route::get('/settings', [SettingController::class, 'index'])->name('admin.settings.index');
+    Route::post('/settings', [SettingController::class, 'update'])->name('admin.settings.update');
 
     Route::get('/feedbacks', [FeedbackController::class, 'index'])->name('admin.feedbacks.index');
     Route::get('/feedbacks/{post}', [FeedbackController::class, 'show'])->name('admin.feedbacks.show');
