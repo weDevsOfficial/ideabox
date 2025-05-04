@@ -99,7 +99,7 @@ const Post = ({ post, status, board, votes }: Props) => {
             </div>
 
             <div className="flex flex-1 flex-col">
-              <div className="mb-2 text-xl font-semibold dark:text-gray-300">
+              <div className="mb-2 max-w-full overflow-hidden whitespace-normal break-words break-all text-xl font-semibold dark:text-gray-300">
                 {post.title}
               </div>
               <div className="flex text-sm text-gray-500">
@@ -138,7 +138,7 @@ const Post = ({ post, status, board, votes }: Props) => {
                 {post.creator?.name}
               </div>
               <div
-                className="mb-3 text-sm text-gray-800 dark:text-gray-300"
+                className="mb-3 max-w-full overflow-hidden whitespace-normal break-words break-all text-sm text-gray-800 dark:text-gray-300"
                 dangerouslySetInnerHTML={{ __html: post.body }}
               ></div>
               <div className="text-xs text-gray-500">

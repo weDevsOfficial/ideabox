@@ -241,10 +241,10 @@ const ShowBoard = ({
                         href={route('post.show', [board.slug, post.slug])}
                         className="flex flex-1 flex-col"
                       >
-                        <div className="mb-1 text-sm font-semibold dark:text-gray-300">
+                        <div className="mb-1 max-w-full overflow-hidden break-words break-all text-sm font-semibold dark:text-gray-300">
                           {post.title}
                         </div>
-                        <div className="line-clamp-2 text-sm text-gray-500">
+                        <div className="line-clamp-2 max-w-full overflow-hidden whitespace-normal break-words break-all text-sm text-gray-500">
                           {post.body}
                         </div>
                         <div className="mt-2 flex text-xs text-gray-500">
@@ -269,10 +269,10 @@ const ShowBoard = ({
                         href={route('post.show', [board.slug, post.slug])}
                         className="flex flex-1 flex-col"
                       >
-                        <div className="mb-1 text-sm font-semibold dark:text-gray-300">
+                        <div className="mb-1 max-w-full overflow-hidden break-words break-all text-sm font-semibold dark:text-gray-300">
                           {post.title}
                         </div>
-                        <div className="line-clamp-2 text-sm text-gray-500">
+                        <div className="line-clamp-2 max-w-full overflow-hidden whitespace-normal break-words break-all text-sm text-gray-500">
                           {post.body}
                         </div>
                         <div className="mt-2 flex text-xs text-gray-500">
