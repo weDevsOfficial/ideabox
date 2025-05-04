@@ -22,12 +22,14 @@ export interface SiteSettings {
   [key: string]: any;
 }
 
-export type PageProps = {
+export type PageProps<
+  T extends Record<string, unknown> = Record<string, unknown>,
+> = T & {
   auth: {
     user: User | null;
   };
   appName: string;
-  appLogo: string | null;
+  appLogo: string;
   boards: BoardType[];
   siteSettings?: SiteSettings;
   success?: string;
@@ -62,6 +64,7 @@ export interface BoardType {
   id: number;
   name: string;
   slug: string;
+  description?: string;
   posts: number;
   allow_posts: boolean;
   privacy: 'public' | 'private';

@@ -16,3 +16,20 @@ export const generateRandomPassword = (length = 20) => {
   }
   return password;
 };
+
+// Create a clean excerpt from the post body for meta description
+export const getExcerpt = (text: string, maxLength = 160) => {
+  // Remove HTML tags and HTML entities
+  const cleanText = text.replace(/<[^>]*>?/g, '').replace(/&[^;]+;/g, '');
+
+  // Normalize whitespace (remove extra spaces, newlines, etc.)
+  const normalizedText = cleanText.replace(/\s+/g, ' ').trim();
+
+  if (normalizedText.length <= maxLength) return normalizedText;
+
+  // Find the last space before maxLength to avoid cutting words
+  const lastSpace = normalizedText.lastIndexOf(' ', maxLength);
+  const breakPoint = lastSpace > maxLength / 2 ? lastSpace : maxLength;
+
+  return normalizedText.substring(0, breakPoint).trim() + '...';
+};

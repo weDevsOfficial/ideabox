@@ -10,7 +10,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens;
+    use HasFactory;
+    use Notifiable;
 
     public const ROLE_ADMIN = 'admin';
     public const ROLE_USER = 'user';
@@ -78,5 +80,10 @@ class User extends Authenticatable implements MustVerifyEmail
     public function posts()
     {
         return $this->hasMany(Post::class, 'created_by');
+    }
+
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
     }
 }

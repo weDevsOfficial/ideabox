@@ -5,7 +5,7 @@ import { Link, useForm } from '@inertiajs/react';
 
 type Props = {
   board: BoardType;
-  user: User;
+  user: User | null;
 };
 
 const PostForm = ({ board, user }: Props) => {
@@ -27,19 +27,19 @@ const PostForm = ({ board, user }: Props) => {
   };
 
   return (
-    <div className="w-72">
+    <div className="w-72 min-w-72">
       <form
-        className="px-4 py-4 border dark:border-gray-700 rounded text-center"
+        className="rounded border px-4 py-4 text-center dark:border-gray-700"
         onSubmit={createPost}
       >
         {board.allow_posts && (
-          <h3 className="text-base font-semibold dark:text-gray-300 mb-3">
+          <h3 className="mb-3 text-base font-semibold dark:text-gray-300">
             {board.settings?.form.heading || 'Create a post'}
           </h3>
         )}
 
         {board.settings?.form.description && (
-          <div className="text-sm text-gray-500 mb-3">
+          <div className="mb-3 text-sm text-gray-500">
             {board.settings.form.description}
           </div>
         )}
@@ -85,8 +85,8 @@ const PostForm = ({ board, user }: Props) => {
       </form>
 
       {!user && (
-        <div className="text-center mt-3">
-          <div className="text-sm text-gray-500 mb-3">
+        <div className="mt-3 text-center">
+          <div className="mb-3 text-sm text-gray-500">
             Want to post?{' '}
             <Link href={route('login')} className="ml-1 font-semibold">
               Log in

@@ -17,7 +17,7 @@ import {
 } from 'react-beautiful-dnd';
 import { Bars3Icon } from '@heroicons/react/24/outline';
 
-interface Link {
+export interface Link {
   label: string;
   href: string;
   is_external: boolean;

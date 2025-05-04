@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { TextField, Textarea } from '@wedevs/tail-react';
-import LinkManager from './LinkManager';
+import LinkManager, { Link } from './LinkManager';
 
 interface Setting {
   id: number | null;
@@ -65,7 +65,9 @@ export default function SettingInput({
     case 'json':
       // Special handling for links
       if (setting.key === 'footer_links' || setting.key === 'header_links') {
-        return <LinkManager value={value} onChange={onChange} />;
+        return (
+          <LinkManager value={value as Link[] | null} onChange={onChange} />
+        );
       }
 
       return (

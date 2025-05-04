@@ -7,6 +7,7 @@ namespace App\Http\Middleware;
 use App\Models\Board;
 use Inertia\Middleware;
 use App\Facades\Settings;
+use Tightenco\Ziggy\Ziggy;
 use Illuminate\Http\Request;
 
 class HandleInertiaRequests extends Middleware
@@ -44,6 +45,10 @@ class HandleInertiaRequests extends Middleware
             'error' => fn () => $request->session()->get('error'),
             'siteSettings' => Settings::all(),
             'boards' => Board::getCachedPublicBoards(),
+            'ziggy' => fn () => [
+                ...(new Ziggy())->toArray(),
+                'location' => $request->url(),
+            ],
         ];
     }
 }
