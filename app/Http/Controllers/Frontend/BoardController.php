@@ -67,7 +67,10 @@ class BoardController extends Controller
         $data = [
             'board' => $board,
             'posts' => $posts,
-            'search' => $request->search,
+            'filters' => [
+                'sort' => $request->sort,
+                'search' => $request->search,
+            ],
         ];
 
         if ($request->wantsJson()) {

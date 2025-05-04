@@ -8,13 +8,30 @@ export interface User {
   created_at: string;
 }
 
-export type PageProps = {
+export interface SiteSettings {
+  app_name?: string;
+  company_legal_name?: string;
+  copyright_text?: string;
+  footer_text?: string;
+  app_logo?: string;
+  app_logo_dark?: string;
+  meta_title?: string;
+  meta_description?: string;
+  footer_links?: Array<{ label: string; href: string; is_external: boolean }>;
+  header_links?: Array<{ label: string; href: string; is_external: boolean }>;
+  [key: string]: any;
+}
+
+export type PageProps<
+  T extends Record<string, unknown> = Record<string, unknown>,
+> = T & {
   auth: {
     user: User | null;
   };
   appName: string;
-  appLogo: string | null;
+  appLogo: string;
   boards: BoardType[];
+  siteSettings?: SiteSettings;
   success?: string;
   error?: string;
 };
@@ -47,6 +64,7 @@ export interface BoardType {
   id: number;
   name: string;
   slug: string;
+  description?: string;
   posts: number;
   allow_posts: boolean;
   privacy: 'public' | 'private';

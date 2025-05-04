@@ -6,7 +6,7 @@ import {
 } from '@heroicons/react/24/outline';
 
 import FrontendLayout from '@/Layouts/FrontendLayout';
-import { BoardType, PageProps, PostType } from '@/types';
+import { BoardType, PageProps, PostType, User } from '@/types';
 import PostForm from './PostForm';
 import axios from 'axios';
 import VoteButton from '@/Components/VoteButton';
@@ -18,23 +18,30 @@ type Props = {
     next_page_url: string | null;
   };
   board: BoardType;
-  search: string;
+  filters: {
+    sort: string;
+    search: string;
+  };
 };
 
-const ShowBoard = ({ auth, posts, board, search }: PageProps<Props>) => {
+const ShowBoard = ({
+  auth,
+  posts,
+  board,
+  filters,
+  siteSettings,
+}: PageProps<Props>) => {
   const [allPosts, setAllPosts] = useState<PostType[]>(posts.data);
   const [nextPageUrl, setNextPageUrl] = useState<string | null>(
-    posts.next_page_url
+    posts.next_page_url,
   );
   const [loading, setLoading] = useState(false);
   const observer = useRef<IntersectionObserver | null>(null);
   const loadingRef = useRef(false);
 
   // Get sort key from URL param
-  const urlParams = new URLSearchParams(window.location.search);
-  const sort = urlParams.get('sort');
-  const [sortKey, setSortKey] = useState(sort || 'voted');
-  const [searchQuery, setSearchQuery] = useState(search || '');
+  const [sortKey, setSortKey] = useState(filters.sort || 'voted');
+  const [searchQuery, setSearchQuery] = useState(filters.search || '');
 
   // Reset posts when props change (e.g. after sort/search changes)
   useEffect(() => {
@@ -68,7 +75,7 @@ const ShowBoard = ({ auth, posts, board, search }: PageProps<Props>) => {
           board: board.slug,
           search: searchQuery.trim(),
           sort: sortKey,
-        })
+        }),
       );
     }
   };
@@ -99,7 +106,7 @@ const ShowBoard = ({ auth, posts, board, search }: PageProps<Props>) => {
           const newPostsData = response.data.posts.data;
           const existingIds = new Set(allPosts.map((post) => post.id));
           const uniqueNewPosts = newPostsData.filter(
-            (post: PostType) => !existingIds.has(post.id)
+            (post: PostType) => !existingIds.has(post.id),
           );
 
           setAllPosts((prevPosts) => [...prevPosts, ...uniqueNewPosts]);
@@ -129,12 +136,12 @@ const ShowBoard = ({ auth, posts, board, search }: PageProps<Props>) => {
         },
         {
           rootMargin: '100px',
-        }
+        },
       );
 
       if (node) observer.current.observe(node);
     },
-    [loading, loadMorePosts, nextPageUrl]
+    [loading, loadMorePosts, nextPageUrl],
   );
 
   useEffect(() => {
@@ -145,19 +152,53 @@ const ShowBoard = ({ auth, posts, board, search }: PageProps<Props>) => {
 
   return (
     <div>
-      <Head title={board.name} />
+      <Head>
+        <title>{`${board.name} - ${siteSettings?.meta_title}`}</title>
+        <meta
+          name="description"
+          content={board.description || siteSettings?.meta_description}
+        />
 
-      <div className="flex gap-8 mb-8">
+        {/* OpenGraph */}
+        <meta
+          property="og:title"
+          content={`${board.name} - ${siteSettings?.meta_title}`}
+        />
+        <meta
+          property="og:description"
+          content={board.description || siteSettings?.meta_description}
+        />
+        <meta property="og:type" content="website" />
+        {siteSettings?.og_image && (
+          <meta property="og:image" content={siteSettings.og_image} />
+        )}
+
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta
+          name="twitter:title"
+          content={`${board.name} - ${siteSettings?.meta_title}`}
+        />
+        <meta
+          name="twitter:description"
+          content={board.description || siteSettings?.meta_description}
+        />
+        {siteSettings?.og_image && (
+          <meta name="twitter:image" content={siteSettings.og_image} />
+        )}
+      </Head>
+
+      <div className="mb-8 flex w-full gap-8">
         <PostForm board={board} user={auth.user} />
 
         <div className="flex-1">
-          <div className="border dark:border-gray-700 rounded">
-            <div className="flex border-b dark:border-gray-700 px-3 py-3 bg-gray-50 dark:bg-gray-800 justify-between">
-              <div className="flex gap-2 items-center dark:text-gray-300">
+          <div className="rounded border dark:border-gray-700">
+            <div className="flex justify-between border-b bg-gray-50 px-3 py-3 dark:border-gray-700 dark:bg-gray-800">
+              <div className="flex items-center gap-2 dark:text-gray-300">
                 <div className="">Showing</div>
                 <div className="">
                   <select
-                    className="px-2 text-sm py-1.5 rounded border border-gray-200 dark:border-gray-700 dark:bg-gray-800"
+                    className="rounded border border-gray-200 px-2 py-1.5 text-sm dark:border-gray-700 dark:bg-gray-800"
                     onChange={handleSortChange}
                     value={sortKey}
                   >
@@ -178,9 +219,9 @@ const ShowBoard = ({ auth, posts, board, search }: PageProps<Props>) => {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onKeyDown={handleSearch}
-                    className="px-4 pl-9 py-2 dark:bg-gray-800 rounded border-0 text-sm ring-1 ring-indigo-50 dark:ring-gray-700 focus:outline-none focus:ring-1"
+                    className="rounded border-0 px-4 py-2 pl-9 text-sm ring-1 ring-indigo-50 focus:outline-none focus:ring-1 dark:bg-gray-800 dark:ring-gray-700"
                   />
-                  <div className="absolute inset-y-0 left-2 flex items-center pr-3 pointer-events-none">
+                  <div className="pointer-events-none absolute inset-y-0 left-2 flex items-center pr-3">
                     <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
                   </div>
                 </div>
@@ -194,20 +235,20 @@ const ShowBoard = ({ auth, posts, board, search }: PageProps<Props>) => {
                     <div
                       key={post.id}
                       ref={lastPostRef}
-                      className="p-4 flex justify-between hover:bg-slate-50 dark:hover:bg-slate-800"
+                      className="flex justify-between p-4 hover:bg-slate-50 dark:hover:bg-slate-800"
                     >
                       <Link
                         href={route('post.show', [board.slug, post.slug])}
-                        className="flex flex-col flex-1"
+                        className="flex flex-1 flex-col"
                       >
-                        <div className="text-sm font-semibold dark:text-gray-300 mb-1">
+                        <div className="mb-1 max-w-full overflow-hidden break-words break-all text-sm font-semibold dark:text-gray-300">
                           {post.title}
                         </div>
-                        <div className="text-sm text-gray-500 line-clamp-2">
+                        <div className="line-clamp-2 max-w-full overflow-hidden whitespace-normal break-words break-all text-sm text-gray-500">
                           {post.body}
                         </div>
-                        <div className="text-xs text-gray-500 flex mt-2">
-                          <ChatBubbleLeftIcon className="h-4 w-4 inline-block mr-1.5" />
+                        <div className="mt-2 flex text-xs text-gray-500">
+                          <ChatBubbleLeftIcon className="mr-1.5 inline-block h-4 w-4" />
                           <span>{post.comments}</span>
                         </div>
                       </Link>
@@ -222,20 +263,20 @@ const ShowBoard = ({ auth, posts, board, search }: PageProps<Props>) => {
                   return (
                     <div
                       key={post.id}
-                      className="p-4 flex justify-between hover:bg-slate-50 dark:hover:bg-slate-800"
+                      className="flex justify-between p-4 hover:bg-slate-50 dark:hover:bg-slate-800"
                     >
                       <Link
                         href={route('post.show', [board.slug, post.slug])}
-                        className="flex flex-col flex-1"
+                        className="flex flex-1 flex-col"
                       >
-                        <div className="text-sm font-semibold dark:text-gray-300 mb-1">
+                        <div className="mb-1 max-w-full overflow-hidden break-words break-all text-sm font-semibold dark:text-gray-300">
                           {post.title}
                         </div>
-                        <div className="text-sm text-gray-500 line-clamp-2">
+                        <div className="line-clamp-2 max-w-full overflow-hidden whitespace-normal break-words break-all text-sm text-gray-500">
                           {post.body}
                         </div>
-                        <div className="text-xs text-gray-500 flex mt-2">
-                          <ChatBubbleLeftIcon className="h-4 w-4 inline-block mr-1.5" />
+                        <div className="mt-2 flex text-xs text-gray-500">
+                          <ChatBubbleLeftIcon className="mr-1.5 inline-block h-4 w-4" />
                           <span>{post.comments}</span>
                         </div>
                       </Link>
@@ -250,14 +291,14 @@ const ShowBoard = ({ auth, posts, board, search }: PageProps<Props>) => {
               })}
 
               {allPosts.length === 0 && (
-                <div className="p-4 text-sm text-center dark:text-gray-300">
+                <div className="p-4 text-center text-sm dark:text-gray-300">
                   No posts found.
                 </div>
               )}
             </div>
 
             {loading && (
-              <div className="p-4 text-sm text-center dark:text-gray-300">
+              <div className="p-4 text-center text-sm dark:text-gray-300">
                 Loading more posts...
               </div>
             )}

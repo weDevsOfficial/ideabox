@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Http\Middleware;
 
 use App\Models\Board;
-use Illuminate\Http\Request;
 use Inertia\Middleware;
+use App\Facades\Settings;
+use Tightenco\Ziggy\Ziggy;
+use Illuminate\Http\Request;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -37,11 +39,16 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
-            'appName' => config('app.name'),
-            'appLogo' => config('app.logo'),
+            'appName' => Settings::get('app_name'),
+            'appLogo' => Settings::get('app_logo'),
             'success' => fn () => $request->session()->get('success'),
             'error' => fn () => $request->session()->get('error'),
-            'boards' => fn () => Board::getCachedPublicBoards(),
+            'siteSettings' => Settings::all(),
+            'boards' => Board::getCachedPublicBoards(),
+            'ziggy' => fn () => [
+                ...(new Ziggy())->toArray(),
+                'location' => $request->url(),
+            ],
         ];
     }
 }

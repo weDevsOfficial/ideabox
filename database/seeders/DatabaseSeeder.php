@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             StatusSeeder::class,
             BoardSeeder::class,
             // PostSeeder::class,
+            SettingsSeeder::class,
         ]);
     }
 }
