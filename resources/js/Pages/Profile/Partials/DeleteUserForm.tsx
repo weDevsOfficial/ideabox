@@ -10,7 +10,6 @@ import { Button, TextField } from '@wedevs/tail-react';
 
 export default function DeleteUserForm() {
   const [confirmingUserDeletion, setConfirmingUserDeletion] = useState(false);
-  const passwordInput = useRef<HTMLInputElement>();
 
   const {
     data,
@@ -33,7 +32,6 @@ export default function DeleteUserForm() {
     destroy(route('profile.destroy'), {
       preserveScroll: true,
       onSuccess: () => closeModal(),
-      onError: () => passwordInput.current?.focus(),
       onFinish: () => reset(),
     });
   };
