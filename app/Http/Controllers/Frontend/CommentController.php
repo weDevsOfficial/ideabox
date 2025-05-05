@@ -73,68 +73,8 @@ class CommentController extends Controller
         $comment->children = [];
 
         // Dispatch notifications in the background
-        $this->notifyUsers($post, $comment);
+        SendCommentNotifications::dispatch($post, $comment);
 
         return response()->json($comment);
-    }
-
-    /**
-     * Notify all relevant users about a new comment.
-     *
-     * This includes:
-     * - The post creator (if not the commenter)
-     * - All users who commented on the post (except the commenter)
-     * - All users who voted on the post (except the commenter)
-     * - If replying to a comment, the parent comment author
-     */
-    private function notifyUsers(Post $post, Comment $comment): void
-    {
-        try {
-            // Get the ID of the comment creator
-            $commenterId = $comment->user_id;
-
-            // Collect all user IDs that need to be notified, excluding the commenter
-            $userIdQuery = $post->comments()
-                ->where('user_id', '!=', $commenterId)
-                ->pluck('user_id');
-
-            // Add post creator if they're not the commenter
-            if ($post->created_by && $post->created_by != $commenterId) {
-                $userIdQuery = $userIdQuery->push($post->created_by);
-            }
-
-            // Add voters
-            $userIdQuery = $userIdQuery->merge(
-                $post->votes()
-                    ->where('user_id', '!=', $commenterId)
-                    ->pluck('user_id')
-            );
-
-            // If this is a reply, prioritize notifying the parent comment author
-            if ($comment->parent_id) {
-                $parentComment = Comment::find($comment->parent_id);
-                if ($parentComment && $parentComment->user_id != $commenterId) {
-                    $userIdQuery = $userIdQuery->prepend($parentComment->user_id);
-                }
-            }
-
-            // Get unique IDs to avoid duplicate notifications
-            $userIds = $userIdQuery->unique()->values();
-
-            if ($userIds->isEmpty()) {
-                return;
-            }
-
-            // Dispatch the job with batched processing of notifications
-            SendCommentNotifications::dispatch($post, $comment, $userIds);
-
-        } catch (\Throwable $e) {
-            // Log error but don't interrupt the user experience
-            Log::error('Failed to queue comment notifications', [
-                'error' => $e->getMessage(),
-                'post_id' => $post->id,
-                'comment_id' => $comment->id,
-            ]);
-        }
     }
 }

@@ -1,21 +1,62 @@
-import React from 'react';
-import { Head, Link, usePage } from '@inertiajs/react';
+import React, { useEffect, useState } from 'react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
+import axios from 'axios';
+import classNames from 'classnames';
+import { BellIcon, BellSlashIcon } from '@heroicons/react/24/outline';
 
 import FrontendLayout from '@/Layouts/FrontendLayout';
 import VoteButton from '@/Components/VoteButton';
 import { BoardType, PageProps, PostType, StatusType, VoteType } from '@/types';
 import Comments from '@/Components/Comments';
 import { formatDate, getExcerpt } from '@/utils';
+import { Button, Notice } from '@wedevs/tail-react';
 
-interface Props {
+type Props = {
   post: PostType;
   status: StatusType | null;
   board: BoardType;
   votes: VoteType[];
-}
+};
 
-const Post = ({ post, status, board, votes }: Props) => {
-  const { siteSettings } = usePage<PageProps>().props;
+const Post = ({ post, status, board, votes, success }: PageProps<Props>) => {
+  const { siteSettings, auth } = usePage<PageProps>().props;
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubscribing, setisSubscribing] = useState(false);
+
+  useEffect(() => {
+    if (auth.user) {
+      checkSubscriptionStatus();
+    } else {
+      setIsLoading(false);
+    }
+  }, [post.id]);
+
+  const checkSubscriptionStatus = async () => {
+    try {
+      const response = await axios.get(
+        route('post.subscription.status', post.slug),
+      );
+      setIsSubscribed(response.data.subscribed);
+    } catch (error) {
+      console.error('Error checking subscription status:', error);
+    }
+    setIsLoading(false);
+  };
+
+  const toggleSubscription = async () => {
+    try {
+      setisSubscribing(true);
+      const response = await axios.post(
+        route('post.subscription.toggle', post.slug),
+      );
+      setIsSubscribed(response.data.subscribed);
+    } catch (error) {
+      console.error('Error toggling subscription:', error);
+    } finally {
+      setisSubscribing(false);
+    }
+  };
 
   const postExcerpt = getExcerpt(post.body);
   const pageTitle = `${post.title} - ${siteSettings?.meta_title}`;
@@ -89,10 +130,43 @@ const Post = ({ post, status, board, votes }: Props) => {
             ) : (
               <div className="text-sm text-gray-500">No voters yet.</div>
             )}
+
+            {auth.user && !isLoading && (
+              <div className="mt-4 border-t pt-4 dark:border-gray-700">
+                <Button
+                  variant="secondary"
+                  className="inline-flex w-full items-center justify-center gap-2"
+                  onClick={toggleSubscription}
+                  disabled={isLoading || isSubscribing}
+                  loading={isSubscribing}
+                >
+                  {isSubscribed ? (
+                    <>
+                      <BellSlashIcon className="h-5 w-5" />
+                      <span>Unfollow Post</span>
+                    </>
+                  ) : (
+                    <>
+                      <BellIcon className="h-5 w-5" />
+                      <span>Follow Post</span>
+                    </>
+                  )}
+                </Button>
+              </div>
+            )}
           </div>
         </div>
 
         <div className="flex-1">
+          {success && (
+            <Notice
+              type="success"
+              label="You have been unsubscribed from this post."
+              className="mb-4"
+              dismissible
+            />
+          )}
+
           <div className="mb-6 flex items-center">
             <div className="mr-3">
               <VoteButton post={post} />

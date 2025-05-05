@@ -19,6 +19,7 @@ class ProfileController extends Controller
     public function edit(Request $request): Response
     {
         return Inertia::render('Profile/Edit', [
+            'email_preference' => $request->user()->email_preferences,
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => session('status'),
         ]);
@@ -37,7 +38,7 @@ class ProfileController extends Controller
 
         $request->user()->save();
 
-        return Redirect::route('profile.edit');
+        return Redirect::route('profile.edit')->with('success', 'Profile updated successfully.');
     }
 
     /**
@@ -59,5 +60,22 @@ class ProfileController extends Controller
         $request->session()->regenerateToken();
 
         return Redirect::to('/');
+    }
+
+    public function updateEmailPreferences(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'comments' => ['required', 'boolean'],
+            'status_updates' => ['required', 'boolean'],
+        ]);
+
+        $request->user()->update([
+            'email_preferences' => [
+                'comments' => $request->input('comments'),
+                'status_updates' => $request->input('status_updates'),
+            ],
+        ]);
+
+        return Redirect::route('profile.edit')->with('success', 'Email preferences updated successfully.');
     }
 }

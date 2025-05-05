@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use App\Http\Controllers\Frontend\SubscriptionController;
 
 class CommentNotification extends Notification implements ShouldQueue
 {
@@ -70,8 +71,8 @@ class CommentNotification extends Notification implements ShouldQueue
                 ->line("A new comment has been added to a feedback you're following:")
                 ->line(new HtmlString($this->generateCommentHtml($statusBadge, $avatarUrl, $commentBody)))
                 ->action('View Discussion', route('post.show', [$this->post->board, $this->post]))
-                ->line("Reply to continue the conversation.");
-
+                ->line(new HtmlString('If you no longer wish to receive notifications for this feedback, <a href="' . SubscriptionController::generateUnsubscribeUrl($this->post, $notifiable->id) . '">click here to unsubscribe</a>.'))
+                ->line("Thank you for your engagement!");
         } catch (\Throwable $e) {
             Log::error('Error creating comment notification email', [
                 'error' => $e->getMessage(),
@@ -135,6 +136,7 @@ class CommentNotification extends Notification implements ShouldQueue
             'post_title' => $this->post->title,
             'comment_id' => $this->comment->id,
             'commenter_name' => $this->comment->user->name ?? 'Unknown User',
+            'unsubscribeUrl' => SubscriptionController::generateUnsubscribeUrl($this->post, $notifiable->id),
         ];
     }
 }

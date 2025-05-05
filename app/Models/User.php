@@ -27,6 +27,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'email',
         'password',
         'role',
+        'email_preferences',
     ];
 
     /**
@@ -37,7 +38,6 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $hidden = [
         'password',
         'remember_token',
-        'email',
         'email_verified_at',
         'created_at',
         'updated_at',
@@ -51,6 +51,7 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'email_preferences' => 'array',
     ];
 
     /**
@@ -85,5 +86,15 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isAdmin()
     {
         return $this->role === 'admin';
+    }
+
+    public function isSubscribedToComments()
+    {
+        return $this->email_preferences['comments'] ?? false;
+    }
+
+    public function isSubscribedToStatusUpdates()
+    {
+        return $this->email_preferences['status_updates'] ?? false;
     }
 }

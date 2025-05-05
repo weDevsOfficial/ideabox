@@ -167,7 +167,7 @@ class FeedbackController extends Controller
             ]);
 
             if ($request->input('notify') === true) {
-                $this->notify($post);
+                SendStatusChangeNotifications::dispatch($post);
             }
         }
 
@@ -177,21 +177,6 @@ class FeedbackController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Feedback updated successfully.');
-    }
-
-    private function notify($post)
-    {
-        // Get all voter IDs except the current user in a single query
-        $voterIds = Vote::where('post_id', $post->id)
-            ->where('user_id', '!=', auth()->user()->id)
-            ->pluck('user_id');
-
-        if ($voterIds->isEmpty()) {
-            return;
-        }
-
-        // Dispatch job to handle notifications with proper error handling
-        SendStatusChangeNotifications::dispatch($post, $voterIds);
     }
 
     public function destroy(Post $post)

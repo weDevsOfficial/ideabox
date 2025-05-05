@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use App\Http\Controllers\Frontend\SubscriptionController;
 
 class FeedbackStatusChanged extends Notification implements ShouldQueue
 {
@@ -81,7 +82,8 @@ class FeedbackStatusChanged extends Notification implements ShouldQueue
                 </div>"))
 
                 ->action('View Feedback Details', route('post.show', [$this->post->board, $this->post]))
-                ->line("Thank you for your contributions to our feedback system!");
+                ->line(new HtmlString('If you no longer wish to receive notifications for this feedback, <a href="' . SubscriptionController::generateUnsubscribeUrl($this->post, $notifiable->id) . '">click here to unsubscribe</a>.'))
+                ->line("Thank you for your engagement!");
         } catch (\Throwable $e) {
             Log::error('Error creating mail notification', [
                 'error' => $e->getMessage(),
