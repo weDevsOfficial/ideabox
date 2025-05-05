@@ -9,16 +9,16 @@ import VoteButton from '@/Components/VoteButton';
 import { BoardType, PageProps, PostType, StatusType, VoteType } from '@/types';
 import Comments from '@/Components/Comments';
 import { formatDate, getExcerpt } from '@/utils';
-import { Button } from '@wedevs/tail-react';
+import { Button, Notice } from '@wedevs/tail-react';
 
-interface Props {
+type Props = {
   post: PostType;
   status: StatusType | null;
   board: BoardType;
   votes: VoteType[];
-}
+};
 
-const Post = ({ post, status, board, votes }: Props) => {
+const Post = ({ post, status, board, votes, success }: PageProps<Props>) => {
   const { siteSettings, auth } = usePage<PageProps>().props;
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -158,6 +158,15 @@ const Post = ({ post, status, board, votes }: Props) => {
         </div>
 
         <div className="flex-1">
+          {success && (
+            <Notice
+              type="success"
+              label="You have been unsubscribed from this post."
+              className="mb-4"
+              dismissible
+            />
+          )}
+
           <div className="mb-6 flex items-center">
             <div className="mr-3">
               <VoteButton post={post} />

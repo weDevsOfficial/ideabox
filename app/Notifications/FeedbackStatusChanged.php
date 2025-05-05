@@ -82,8 +82,8 @@ class FeedbackStatusChanged extends Notification implements ShouldQueue
                 </div>"))
 
                 ->action('View Feedback Details', route('post.show', [$this->post->board, $this->post]))
-                ->line("Thank you for your contributions to our feedback system!")
-                ->line(new HtmlString("<div style=\"margin-top: 20px; font-size: 12px; color: #6b7280;\">Don't want to receive notifications for this post? <a href=\"" . SubscriptionController::generateUnsubscribeUrl($this->post, $notifiable->id) . "\" style=\"color: #4f46e5;\">Unsubscribe</a></div>"));
+                ->line(new HtmlString('If you no longer wish to receive notifications for this feedback, <a href="' . SubscriptionController::generateUnsubscribeUrl($this->post, $notifiable->id) . '">click here to unsubscribe</a>.'))
+                ->line("Thank you for your engagement!");
         } catch (\Throwable $e) {
             Log::error('Error creating mail notification', [
                 'error' => $e->getMessage(),
