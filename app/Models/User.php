@@ -63,6 +63,20 @@ class User extends Authenticatable implements MustVerifyEmail
         'avatar'
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($user) {
+            if (is_null($user->email_preferences)) {
+                $user->email_preferences = [
+                    'comments' => true,
+                    'status_updates' => true,
+                ];
+            }
+        });
+    }
+
     /**
      * Get the user's avatar.
      *

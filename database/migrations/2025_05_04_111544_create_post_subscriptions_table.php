@@ -1,9 +1,10 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
 return new class() extends Migration {
     /**
@@ -21,11 +22,16 @@ return new class() extends Migration {
         });
 
         Schema::table('users', function (Blueprint $table) {
-            $table->json('email_preferences')->default(json_encode([
+            $table->json('email_preferences')->nullable()->after('role');
+        });
+
+        // Set default values for all existing users
+        DB::statement("UPDATE users SET email_preferences = ? WHERE email_preferences IS NULL", [
+            json_encode([
                 'comments' => true,
                 'status_updates' => true,
-            ]))->nullable()->after('role');
-        });
+            ])
+        ]);
 
         // Migrate existing subscriptions
         Artisan::call('subscriptions:migrate-existing');
