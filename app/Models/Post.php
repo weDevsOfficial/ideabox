@@ -89,6 +89,14 @@ class Post extends Model
         return $this->hasMany(Comment::class);
     }
 
+    /**
+     * Get all of the subscriptions for the post.
+     */
+    public function subscriptions()
+    {
+        return $this->hasMany(PostSubscription::class);
+    }
+
     public function scopeWithVote($query)
     {
         if (auth()->check()) {

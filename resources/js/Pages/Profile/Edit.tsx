@@ -1,44 +1,55 @@
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import DeleteUserForm from './Partials/DeleteUserForm';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm';
 import { Head } from '@inertiajs/react';
 import { PageProps } from '@/types';
+import FrontendLayout from '@/Layouts/FrontendLayout';
+import UpdateEmailPreference from './Partials/UpdateEmailPreference';
+
+export interface EmailPreference {
+  comments: boolean;
+  status_updates: boolean;
+}
+
+type Props = {
+  mustVerifyEmail: boolean;
+  email_preference: EmailPreference;
+  status?: string;
+};
 
 export default function Edit({
-  auth,
+  email_preference,
   mustVerifyEmail,
   status,
-}: PageProps<{ mustVerifyEmail: boolean; status?: string }>) {
+}: PageProps<Props>) {
   return (
-    <AuthenticatedLayout
-      header={
-        <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-          Profile
-        </h2>
-      }
-    >
+    <FrontendLayout>
       <Head title="Profile" />
 
-      <div className="py-12">
-        <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-          <div className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-            <UpdateProfileInformationForm
-              mustVerifyEmail={mustVerifyEmail}
-              status={status}
-              className="max-w-xl"
-            />
-          </div>
+      <h2 className="mb-8 text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
+        Update Profile
+      </h2>
 
-          <div className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-            <UpdatePasswordForm className="max-w-xl" />
-          </div>
+      <div className="space-y-6">
+        <div className="border border-gray-200 bg-white p-4 shadow sm:rounded-lg sm:p-8 dark:border-gray-700 dark:bg-gray-800">
+          <UpdateProfileInformationForm
+            mustVerifyEmail={mustVerifyEmail}
+            status={status}
+          />
+        </div>
 
-          <div className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-            <DeleteUserForm className="max-w-xl" />
-          </div>
+        <div className="border border-gray-200 bg-white p-4 shadow sm:rounded-lg sm:p-8 dark:border-gray-700 dark:bg-gray-800">
+          <UpdateEmailPreference preference={email_preference} />
+        </div>
+
+        <div className="border border-gray-200 bg-white p-4 shadow sm:rounded-lg sm:p-8 dark:border-gray-700 dark:bg-gray-800">
+          <UpdatePasswordForm />
+        </div>
+
+        <div className="border border-red-500 bg-white p-4 shadow sm:rounded-lg sm:p-8 dark:border-red-600 dark:bg-gray-800">
+          <DeleteUserForm />
         </div>
       </div>
-    </AuthenticatedLayout>
+    </FrontendLayout>
   );
 }

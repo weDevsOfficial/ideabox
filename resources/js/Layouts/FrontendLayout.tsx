@@ -82,6 +82,13 @@ const FrontendLayout = ({ children }: PropsWithChildren) => {
 
                       <Dropdown.Content>
                         <Dropdown.Link
+                          href={route('profile.edit')}
+                          className="font-medium"
+                        >
+                          Profile
+                        </Dropdown.Link>
+
+                        <Dropdown.Link
                           href={route('logout')}
                           method="post"
                           as="button"
@@ -135,7 +142,7 @@ const FrontendLayout = ({ children }: PropsWithChildren) => {
                 <Link
                   href={route('board.show', boards[0].slug)}
                   className={classNames(
-                    'mr-3 inline-flex items-center px-3 py-2 text-sm',
+                    'mr-3 inline-flex items-center px-3 py-3 text-sm',
                     route().current('board.show', boards[0].slug)
                       ? 'border-b border-indigo-500 font-semibold text-indigo-600 hover:text-indigo-700 dark:text-indigo-300'
                       : 'dark:text-gray-400',

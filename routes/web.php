@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\GitHub\GitHubRepositoryController;
 use App\Http\Controllers\Admin\BoardController as AdminBoardController;
 use App\Http\Controllers\Admin\CommentController as AdminCommentController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Frontend\SubscriptionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -85,10 +86,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/p/{post}/vote', [PostController::class, 'vote'])->name('post.vote');
     Route::post('/p/{post}/comments', [CommentController::class, 'store'])->name('post.comments.store');
 
+    Route::post('posts/{post}/subscription', [SubscriptionController::class, 'toggle'])->name('post.subscription.toggle');
+    Route::get('posts/{post}/subscription', [SubscriptionController::class, 'status'])->name('post.subscription.status');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::post('/profile/email-preferences', [ProfileController::class, 'updateEmailPreferences'])->name('profile.email-preferences');
 });
+
+Route::get('posts/{post}/unsubscribe', [SubscriptionController::class, 'unsubscribe'])->name('post.unsubscribe');
 
 // GitHub Integration Routes - Updated to use the new controllers
 Route::middleware(['auth', 'admin', 'verified'])->prefix('admin/integrations/github')->name('admin.integrations.github.')->group(function () {

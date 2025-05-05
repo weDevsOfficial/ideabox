@@ -18,7 +18,7 @@
         @if (auth()->user() && auth()->user()->isAdmin())
             @routes
         @else
-            @routes(['frontend', 'auth'])
+            @routes(['frontend', 'auth', 'profile'])
         @endif
         @viteReactRefresh
         @vite(['resources/js/app.tsx', "resources/js/Pages/{$page['component']}.tsx"])
