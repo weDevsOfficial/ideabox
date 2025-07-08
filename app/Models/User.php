@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -82,7 +83,7 @@ class User extends Authenticatable implements MustVerifyEmail
      *
      * @return string
      */
-    public function getAvatarAttribute()
+    public function getAvatarAttribute(): string
     {
         return 'https://www.gravatar.com/avatar/' . md5($this->email) . '?s=56&d=mm';
     }
@@ -92,12 +93,17 @@ class User extends Authenticatable implements MustVerifyEmail
         return $query->where('role', 'admin');
     }
 
-    public function posts()
+    public function posts(): HasMany
     {
         return $this->hasMany(Post::class, 'created_by');
     }
 
-    public function isAdmin()
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class, 'user_id');
+    }
+
+    public function isAdmin(): bool
     {
         return $this->role === 'admin';
     }
