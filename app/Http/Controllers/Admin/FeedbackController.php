@@ -22,6 +22,7 @@ class FeedbackController extends Controller
         $board = $request->input('board');
         $status = $request->input('status');
         $sort = $request->input('sort') ?? 'voted';
+        $search = $request->input('search');
 
         $boards = Board::select('id', 'name', 'posts', 'slug')->get();
         $statuses = Status::select('id', 'name', 'color')->get();
@@ -33,6 +34,13 @@ class FeedbackController extends Controller
 
         if ($status && $status !== 'all') {
             $query->where('status_id', $status);
+        }
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('body', 'like', "%{$search}%");
+            });
         }
 
         if ($sort) {

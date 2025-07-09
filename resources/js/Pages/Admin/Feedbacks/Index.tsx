@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
-import { Button, SelectInput } from '@wedevs/tail-react';
+import { Button, SelectInput, TextField } from '@wedevs/tail-react';
 import {
   ChevronUpIcon,
   ChatBubbleLeftIcon,
@@ -24,12 +24,13 @@ const Feedbacks = ({ posts, boards, statuses, hasOpenAIKey }: Props) => {
 
   const [showModal, setShowModal] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState(
-    urlParams.get('status') || 'all'
+    urlParams.get('status') || 'all',
   );
   const [selectedBoard, setSelectedBoard] = useState(
-    urlParams.get('board') || 'all'
+    urlParams.get('board') || 'all',
   );
   const [sortKey, setSortKey] = useState(urlParams.get('sort') || 'voted');
+  const [search, setSearch] = useState(urlParams.get('search') || '');
 
   const sortOptions = [
     { value: 'Latest', key: 'latest' },
@@ -60,7 +61,8 @@ const Feedbacks = ({ posts, boards, statuses, hasOpenAIKey }: Props) => {
         status: selectedStatus,
         board: selectedBoard,
         sort: sortKey,
-      })
+        search: search || undefined,
+      }),
     );
   };
 
@@ -68,7 +70,7 @@ const Feedbacks = ({ posts, boards, statuses, hasOpenAIKey }: Props) => {
     <AuthenticatedLayout
       header={
         <div className="flex items-center justify-between">
-          <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+          <h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
             Feedback
           </h2>
 
@@ -77,13 +79,13 @@ const Feedbacks = ({ posts, boards, statuses, hasOpenAIKey }: Props) => {
             variant="primary"
             className="inline-flex items-center"
           >
-            <PlusIcon className="h-4 w-4 inline-block mr-1.5" />
+            <PlusIcon className="mr-1.5 inline-block h-4 w-4" />
             Create Feedback
           </Button>
         </div>
       }
     >
-      <div className="bg-white dark:bg-gray-800 overflow-hidden shadow sm:rounded-lg">
+      <div className="overflow-hidden bg-white shadow sm:rounded-lg dark:bg-gray-800">
         <Head title="Feedbacks" />
 
         <CreateModal
@@ -95,13 +97,23 @@ const Feedbacks = ({ posts, boards, statuses, hasOpenAIKey }: Props) => {
         />
 
         <div className="p-6 text-gray-900 dark:text-gray-100">
-          <div className="sm:flex gap-6">
-            <div className="sm:w-52 sm:border-r sm:pr-5 border-gray-100 dark:border-gray-700">
+          <div className="gap-6 sm:flex">
+            <div className="border-gray-100 sm:w-52 sm:border-r sm:pr-5 dark:border-gray-700">
               <SelectInput
                 label="Sort By"
                 selectedKey={sortKey}
                 options={sortOptions}
                 onChange={(option) => setSortKey(option.key)}
+              />
+
+              <TextField
+                label="Search"
+                value={search}
+                placeholder="Search feedbacks..."
+                onChange={(value) => setSearch(value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') filterRequest();
+                }}
               />
 
               <SelectInput
@@ -131,24 +143,24 @@ const Feedbacks = ({ posts, boards, statuses, hasOpenAIKey }: Props) => {
               {posts.data.map((post) => (
                 <div
                   key={post.id}
-                  className="p-4 flex justify-between hover:bg-slate-50 hover:dark:bg-slate-900 rounded"
+                  className="flex justify-between rounded p-4 hover:bg-slate-50 hover:dark:bg-slate-900"
                 >
                   <Link
                     href={route('admin.feedbacks.show', [post])}
-                    className="flex flex-col flex-1"
+                    className="flex flex-1 flex-col"
                     playsInline
                   >
-                    <div className="text-sm font-semibold mb-1">
+                    <div className="mb-1 text-sm font-semibold">
                       {post.title}
                     </div>
-                    <div className="flex text-xs text-gray-500 mt-2 gap-4 items-center">
+                    <div className="mt-2 flex items-center gap-4 text-xs text-gray-500">
                       <div>
-                        <ChevronUpIcon className="h-4 w-4 inline-block mr-1.5" />
+                        <ChevronUpIcon className="mr-1.5 inline-block h-4 w-4" />
                         <span>{post.vote}</span>
                       </div>
 
                       <div>
-                        <ChatBubbleLeftIcon className="h-4 w-4 inline-block mr-1.5" />
+                        <ChatBubbleLeftIcon className="mr-1.5 inline-block h-4 w-4" />
                         <span>{post.comments}</span>
                       </div>
 
@@ -156,7 +168,7 @@ const Feedbacks = ({ posts, boards, statuses, hasOpenAIKey }: Props) => {
 
                       {post.status_id && (
                         <div
-                          className="uppercase text-xs font-bold text-white px-1.5 py-0.5 rounded"
+                          className="rounded px-1.5 py-0.5 text-xs font-bold uppercase text-white"
                           style={{ backgroundColor: post.status?.color }}
                         >
                           {post.status?.name}
