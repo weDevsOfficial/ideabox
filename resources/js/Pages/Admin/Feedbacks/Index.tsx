@@ -41,6 +41,8 @@ const Feedbacks = ({ posts, boards, statuses, hasOpenAIKey }: Props) => {
 
   const statusOptions = [
     { value: 'All', key: 'all' },
+    { value: 'Open', key: 'open' },
+    { value: 'No Status', key: 'none' },
     ...statuses.map((status) => ({
       value: status.name,
       key: status.id.toString(),

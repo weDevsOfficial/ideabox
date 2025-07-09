@@ -33,7 +33,17 @@ class FeedbackController extends Controller
         }
 
         if ($status && $status !== 'all') {
-            $query->where('status_id', $status);
+            if ($status === 'open') {
+                $openStatusIds = Status::query()->inFrontend()->pluck('id');
+                $query->where(function ($q) use ($openStatusIds) {
+                    $q->whereIn('status_id', $openStatusIds)
+                      ->orWhereNull('status_id');
+                });
+            } elseif ($status === 'none') {
+                $query->whereNull('status_id');
+            } else {
+                $query->where('status_id', $status);
+            }
         }
 
         if ($search) {
