@@ -2,7 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import axios from 'axios';
 import classNames from 'classnames';
-import { BellIcon, BellSlashIcon } from '@heroicons/react/24/outline';
+import {
+  BellIcon,
+  BellSlashIcon,
+  ArrowTopRightOnSquareIcon,
+} from '@heroicons/react/24/outline';
 
 import FrontendLayout from '@/Layouts/FrontendLayout';
 import VoteButton from '@/Components/VoteButton';
@@ -135,7 +139,7 @@ const Post = ({ post, status, board, votes, success }: PageProps<Props>) => {
             {auth.user && !isLoading && (
               <div className="mt-4 border-t pt-4 dark:border-gray-700">
                 <Button
-                  variant="secondary"
+                  variant={isSubscribed ? 'secondary' : 'primary'}
                   className="inline-flex w-full items-center justify-center gap-2"
                   onClick={toggleSubscription}
                   disabled={isLoading || isSubscribing}
@@ -174,6 +178,19 @@ const Post = ({ post, status, board, votes, success }: PageProps<Props>) => {
             </div>
 
             <div className="min-w-0 flex-1">
+              {/* Admin Button: Only visible to admin users */}
+              {auth.user?.role === 'admin' && (
+                <Button
+                  as={'a'}
+                  href={route('admin.feedbacks.show', [post.slug])}
+                  variant="secondary"
+                  className="float-right mb-2 inline-flex items-center gap-2"
+                  target="_blank"
+                >
+                  <ArrowTopRightOnSquareIcon className="h-5 w-5" />
+                  Admin View
+                </Button>
+              )}
               <div className="mb-2 max-w-full overflow-hidden whitespace-normal break-words text-xl font-semibold dark:text-gray-300">
                 {post.title}
               </div>
