@@ -12,9 +12,8 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $boards = Board::select('id', 'name', 'posts', 'slug')->where('privacy', 'public')
-            ->orderBy('order')
-            ->get();
+        $boards = Board::withOpenPostsCount();
+
         $statuses = Status::select('id', 'name', 'color')
             ->inRoadmap()
             ->get();

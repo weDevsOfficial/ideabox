@@ -73,4 +73,24 @@ class Board extends Model
             return static::publicBoards()->get();
         });
     }
+
+    /**
+     * Get all public boards with a count of posts visible in the frontend.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public static function withOpenPostsCount()
+    {
+        $frontendStatusIds = Status::inFrontend()->pluck('id');
+
+        return static::where('privacy', 'public')
+            ->orderBy('order')
+            ->withCount(['posts as posts' => function ($query) use ($frontendStatusIds) {
+                $query->where(function ($q) use ($frontendStatusIds) {
+                    $q->whereIn('status_id', $frontendStatusIds)
+                      ->orWhereNull('status_id');
+                });
+            }])
+            ->get(['id', 'name', 'slug']);
+    }
 }
