@@ -6,14 +6,14 @@ export default function Guest({ children }: PropsWithChildren) {
   const { appLogo } = usePage<PageProps>().props;
 
   return (
-    <div className="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100 dark:bg-gray-900">
+    <div className="flex min-h-screen flex-col items-center bg-gray-100 px-4 pt-6 sm:justify-center sm:px-6 sm:pt-0 dark:bg-gray-900">
       <div>
         <Link href="/">
-          <img src={appLogo} alt="logo" className="w-20 h-20" />
+          <img src={appLogo} alt="logo" className="h-20 w-20" />
         </Link>
       </div>
 
-      <div className="w-full sm:max-w-md mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
+      <div className="mt-6 w-full overflow-hidden rounded-lg bg-white px-6 py-4 shadow-md sm:max-w-md dark:bg-gray-800">
         {children}
       </div>
     </div>

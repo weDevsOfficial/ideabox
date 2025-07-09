@@ -16,7 +16,7 @@ const Home = ({ boards, roadmaps, posts, siteSettings }: PageProps<Props>) => {
   const [allPosts, setAllPosts] = useState<PostType[]>(posts);
 
   return (
-    <div className="mb-8">
+    <div className="mb-6 sm:mb-8">
       <Head>
         <title>{siteSettings?.meta_title}</title>
         <meta name="description" content={siteSettings?.meta_description} />
@@ -45,8 +45,10 @@ const Home = ({ boards, roadmaps, posts, siteSettings }: PageProps<Props>) => {
         )}
       </Head>
 
-      <HomeBoardList boards={boards} />
-      <HomeRoadmap boards={boards} roadmaps={roadmaps} posts={allPosts} />
+      <div className="space-y-6 sm:space-y-8">
+        <HomeBoardList boards={boards} />
+        <HomeRoadmap boards={boards} roadmaps={roadmaps} posts={allPosts} />
+      </div>
     </div>
   );
 };
