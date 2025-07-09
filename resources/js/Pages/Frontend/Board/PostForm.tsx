@@ -27,7 +27,7 @@ const PostForm = ({ board, user }: Props) => {
   };
 
   return (
-    <div className="w-72 min-w-72">
+    <div className="w-full lg:w-72 lg:min-w-72 lg:flex-shrink-0">
       <form
         className="rounded border px-4 py-4 text-center dark:border-gray-700"
         onSubmit={createPost}
@@ -88,11 +88,17 @@ const PostForm = ({ board, user }: Props) => {
         <div className="mt-3 text-center">
           <div className="mb-3 text-sm text-gray-500">
             Want to post?{' '}
-            <Link href={route('login')} className="ml-1 font-semibold">
+            <Link
+              href={route('login')}
+              className="ml-1 font-semibold text-indigo-600 hover:text-indigo-500"
+            >
               Log in
             </Link>{' '}
             or{' '}
-            <Link href={route('register')} className="ml-1 font-semibold">
+            <Link
+              href={route('register')}
+              className="ml-1 font-semibold text-indigo-600 hover:text-indigo-500"
+            >
               Sign up
             </Link>
           </div>

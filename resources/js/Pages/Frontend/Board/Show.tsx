@@ -3,6 +3,8 @@ import { Head, Link, router } from '@inertiajs/react';
 import {
   MagnifyingGlassIcon,
   ChatBubbleLeftIcon,
+  PlusIcon,
+  XMarkIcon,
 } from '@heroicons/react/24/outline';
 
 import FrontendLayout from '@/Layouts/FrontendLayout';
@@ -36,6 +38,7 @@ const ShowBoard = ({
     posts.next_page_url,
   );
   const [loading, setLoading] = useState(false);
+  const [showPostForm, setShowPostForm] = useState(false);
   const observer = useRef<IntersectionObserver | null>(null);
   const loadingRef = useRef(false);
 
@@ -188,12 +191,39 @@ const ShowBoard = ({
         )}
       </Head>
 
-      <div className="mb-8 flex w-full gap-8">
-        <PostForm board={board} user={auth.user} />
+      {/* Mobile Post Form Toggle Button */}
+      {board.allow_posts && (
+        <div className="mb-4 lg:hidden">
+          <button
+            onClick={() => setShowPostForm(!showPostForm)}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-md border border-indigo-300 bg-white px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:border-indigo-600 dark:bg-gray-800 dark:text-indigo-300 dark:hover:bg-gray-700"
+          >
+            {showPostForm ? (
+              <>
+                <XMarkIcon className="h-5 w-5" />
+                Close Form
+              </>
+            ) : (
+              <>
+                <PlusIcon className="h-5 w-5" />
+                {board.settings?.form.heading || 'Create a post'}
+              </>
+            )}
+          </button>
+        </div>
+      )}
 
-        <div className="flex-1">
+      <div className="mb-6 flex w-full flex-col gap-4 sm:mb-8 sm:gap-6 lg:flex-row lg:gap-8">
+        {/* PostForm - Always visible on desktop, toggleable on mobile */}
+        <div
+          className={`${showPostForm ? 'block' : 'hidden'} w-full lg:block lg:w-72 lg:min-w-72 lg:flex-shrink-0`}
+        >
+          <PostForm board={board} user={auth.user} />
+        </div>
+
+        <div className="min-w-0 flex-1">
           <div className="rounded border dark:border-gray-700">
-            <div className="flex justify-between border-b bg-gray-50 px-3 py-3 dark:border-gray-700 dark:bg-gray-800">
+            <div className="flex flex-col justify-between gap-3 border-b bg-gray-50 px-3 py-3 sm:flex-row sm:gap-0 dark:border-gray-700 dark:bg-gray-800">
               <div className="flex items-center gap-2 dark:text-gray-300">
                 <div className="">Showing</div>
                 <div className="">
@@ -219,7 +249,7 @@ const ShowBoard = ({
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onKeyDown={handleSearch}
-                    className="rounded border-0 px-4 py-2 pl-9 text-sm ring-1 ring-indigo-50 focus:outline-none focus:ring-1 dark:bg-gray-800 dark:ring-gray-700"
+                    className="w-full rounded border-0 px-4 py-2 pl-9 text-sm ring-1 ring-indigo-50 focus:outline-none focus:ring-1 sm:w-auto dark:bg-gray-800 dark:ring-gray-700"
                   />
                   <div className="pointer-events-none absolute inset-y-0 left-2 flex items-center pr-3">
                     <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
@@ -235,27 +265,25 @@ const ShowBoard = ({
                     <div
                       key={post.id}
                       ref={lastPostRef}
-                      className="flex justify-between p-4 hover:bg-slate-50 dark:hover:bg-slate-800"
+                      className="flex justify-between gap-3 p-4 hover:bg-slate-50 dark:hover:bg-slate-800"
                     >
                       <Link
                         href={route('post.show', [board.slug, post.slug])}
-                        className="flex flex-1 flex-col"
+                        className="flex min-w-0 flex-1 flex-col"
                       >
-                        <div className="mb-1 max-w-full overflow-hidden break-words break-all text-sm font-semibold dark:text-gray-300">
+                        <div className="mb-1 line-clamp-2 max-w-full overflow-hidden break-words text-sm font-semibold dark:text-gray-300">
                           {post.title}
                         </div>
-                        <div className="line-clamp-2 max-w-full overflow-hidden whitespace-normal break-words break-all text-sm text-gray-500">
+                        <div className="mb-2 line-clamp-2 max-w-full overflow-hidden whitespace-normal break-words text-sm text-gray-500">
                           {post.body}
                         </div>
-                        <div className="mt-2 flex text-xs text-gray-500">
+                        <div className="flex text-xs text-gray-500">
                           <ChatBubbleLeftIcon className="mr-1.5 inline-block h-4 w-4" />
                           <span>{post.comments}</span>
                         </div>
                       </Link>
-                      <div className="text-sm text-gray-500">
-                        <div className="ml-4">
-                          <VoteButton post={post} />
-                        </div>
+                      <div className="flex flex-shrink-0 items-start">
+                        <VoteButton post={post} />
                       </div>
                     </div>
                   );
@@ -263,27 +291,25 @@ const ShowBoard = ({
                   return (
                     <div
                       key={post.id}
-                      className="flex justify-between p-4 hover:bg-slate-50 dark:hover:bg-slate-800"
+                      className="flex justify-between gap-3 p-4 hover:bg-slate-50 dark:hover:bg-slate-800"
                     >
                       <Link
                         href={route('post.show', [board.slug, post.slug])}
-                        className="flex flex-1 flex-col"
+                        className="flex min-w-0 flex-1 flex-col"
                       >
-                        <div className="mb-1 max-w-full overflow-hidden break-words break-all text-sm font-semibold dark:text-gray-300">
+                        <div className="mb-1 line-clamp-2 max-w-full overflow-hidden break-words text-sm font-semibold dark:text-gray-300">
                           {post.title}
                         </div>
-                        <div className="line-clamp-2 max-w-full overflow-hidden whitespace-normal break-words break-all text-sm text-gray-500">
+                        <div className="mb-2 line-clamp-2 max-w-full overflow-hidden whitespace-normal break-words text-sm text-gray-500">
                           {post.body}
                         </div>
-                        <div className="mt-2 flex text-xs text-gray-500">
+                        <div className="flex text-xs text-gray-500">
                           <ChatBubbleLeftIcon className="mr-1.5 inline-block h-4 w-4" />
                           <span>{post.comments}</span>
                         </div>
                       </Link>
-                      <div className="text-sm text-gray-500">
-                        <div className="ml-4">
-                          <VoteButton post={post} />
-                        </div>
+                      <div className="flex flex-shrink-0 items-start">
+                        <VoteButton post={post} />
                       </div>
                     </div>
                   );

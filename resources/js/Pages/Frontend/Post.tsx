@@ -94,8 +94,8 @@ const Post = ({ post, status, board, votes, success }: PageProps<Props>) => {
         {status && <meta property="article:section" content={status.name} />}
       </Head>
 
-      <div className="mb-8 flex gap-8">
-        <div className="w-72 min-w-72">
+      <div className="mb-6 flex flex-col gap-4 sm:mb-8 sm:gap-6 md:flex-row md:gap-8">
+        <div className="order-2 w-full md:order-1 md:w-72 md:min-w-72 md:flex-shrink-0">
           <div className="rounded border px-4 py-4 dark:border-gray-700">
             <h3 className="mb-3 text-base font-semibold dark:text-gray-300">
               Voters
@@ -103,17 +103,18 @@ const Post = ({ post, status, board, votes, success }: PageProps<Props>) => {
 
             {votes.length > 0 ? (
               <>
-                <ul>
+                <ul className="space-y-2">
                   {votes.map((vote) => (
-                    <li key={vote.id} className="mb-2 flex items-center">
-                      <div className="mr-3">
+                    <li key={vote.id} className="flex items-center">
+                      <div className="mr-3 flex-shrink-0">
                         <img
                           src={vote.user.avatar}
                           className="h-7 w-7 rounded-full"
+                          alt={vote.user.name}
                         />
                       </div>
-                      <div className="flex-1">
-                        <div className="text-sm font-semibold dark:text-gray-300">
+                      <div className="min-w-0 flex-1">
+                        <div className="truncate text-sm font-semibold dark:text-gray-300">
                           {vote.user.name}
                         </div>
                       </div>
@@ -157,7 +158,7 @@ const Post = ({ post, status, board, votes, success }: PageProps<Props>) => {
           </div>
         </div>
 
-        <div className="flex-1">
+        <div className="order-1 min-w-0 flex-1 md:order-2">
           {success && (
             <Notice
               type="success"
@@ -167,16 +168,16 @@ const Post = ({ post, status, board, votes, success }: PageProps<Props>) => {
             />
           )}
 
-          <div className="mb-6 flex items-center">
-            <div className="mr-3">
+          <div className="mb-6 flex justify-between gap-3">
+            <div className="flex flex-shrink-0 items-start">
               <VoteButton post={post} />
             </div>
 
-            <div className="flex flex-1 flex-col">
-              <div className="mb-2 max-w-full overflow-hidden whitespace-normal break-words break-all text-xl font-semibold dark:text-gray-300">
+            <div className="min-w-0 flex-1">
+              <div className="mb-2 max-w-full overflow-hidden whitespace-normal break-words text-xl font-semibold dark:text-gray-300">
                 {post.title}
               </div>
-              <div className="flex text-sm text-gray-500">
+              <div className="flex flex-wrap text-sm text-gray-500">
                 {status && (
                   <>
                     <span
@@ -192,7 +193,7 @@ const Post = ({ post, status, board, votes, success }: PageProps<Props>) => {
                 )}{' '}
                 <Link
                   href={route('board.show', board.slug)}
-                  className="hover:text-gray-800"
+                  className="hover:text-gray-800 dark:hover:text-gray-200"
                 >
                   {board.name}
                 </Link>
@@ -201,18 +202,19 @@ const Post = ({ post, status, board, votes, success }: PageProps<Props>) => {
           </div>
 
           <div className="mb-6 flex">
-            <div className="mr-3 w-9">
+            <div className="mr-3 w-9 flex-shrink-0">
               <img
                 src={post.creator?.avatar}
                 className="h-7 w-7 rounded-full"
+                alt={post.creator?.name || 'Creator'}
               />
             </div>
-            <div className="flex-1">
+            <div className="min-w-0 flex-1">
               <div className="mb-3 text-sm font-semibold dark:text-gray-300">
                 {post.creator?.name}
               </div>
               <div
-                className="mb-3 max-w-full overflow-hidden whitespace-normal break-words break-all text-sm text-gray-800 dark:text-gray-300"
+                className="prose prose-sm dark:prose-invert mb-3 max-w-full max-w-none overflow-hidden whitespace-normal break-words text-sm text-gray-800 dark:text-gray-300"
                 dangerouslySetInnerHTML={{ __html: post.body }}
               ></div>
               <div className="text-xs text-gray-500">
