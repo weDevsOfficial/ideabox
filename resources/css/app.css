@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+    .comment-body a {
+        @apply text-indigo-600;
+    }
+
+    .comment-body a:hover {
+        @apply text-indigo-700;
+    }
+}

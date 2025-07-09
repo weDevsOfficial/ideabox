@@ -50,26 +50,26 @@ const Comment = ({
 
   return (
     <div className="flex py-3">
-      <div className="w-9 mr-3">
+      <div className="mr-3 w-9">
         <img
           src={commentState.user?.avatar}
           className={classNames(
-            'rounded-full h-7 w-7',
-            commentState.user?.role === 'admin' ? 'ring-2 ring-indigo-500' : ''
+            'h-7 w-7 rounded-full',
+            commentState.user?.role === 'admin' ? 'ring-2 ring-indigo-500' : '',
           )}
         />
       </div>
 
       <div className="flex-1">
-        <div className="flex items-center text-sm mb-2">
+        <div className="mb-2 flex items-center text-sm">
           <div className="font-semibold dark:text-gray-300">
             {commentState.user?.name}
           </div>
           {commentState.status && (
-            <div className="text-sm text-gray-700 dark:text-gray-300 ml-2">
+            <div className="ml-2 text-sm text-gray-700 dark:text-gray-300">
               <span>marked this post as</span>
               <span
-                className="uppercase text-xs font-bold ml-2 text-white px-2 py-1 rounded"
+                className="ml-2 rounded px-2 py-1 text-xs font-bold uppercase text-white"
                 style={{ backgroundColor: commentState.status.color }}
               >
                 {commentState.status.name}
@@ -78,7 +78,7 @@ const Comment = ({
           )}
         </div>
         <div
-          className="text-sm text-gray-800 dark:text-gray-300 mb-2"
+          className="comment-body mb-2 text-sm text-gray-800 dark:text-gray-300"
           dangerouslySetInnerHTML={{ __html: commentState.body }}
         ></div>
         <div className="flex text-xs text-gray-500">

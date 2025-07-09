@@ -214,7 +214,7 @@ const Post = ({ post, status, board, votes, success }: PageProps<Props>) => {
                 {post.creator?.name}
               </div>
               <div
-                className="prose prose-sm dark:prose-invert mb-3 max-w-full max-w-none overflow-hidden whitespace-normal break-words text-sm text-gray-800 dark:text-gray-300"
+                className="post-body prose prose-sm dark:prose-invert mb-3 max-w-full overflow-hidden whitespace-normal break-words text-sm text-gray-800 dark:text-gray-300"
                 dangerouslySetInnerHTML={{ __html: post.body }}
               ></div>
               <div className="text-xs text-gray-500">
