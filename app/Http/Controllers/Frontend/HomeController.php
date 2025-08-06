@@ -19,7 +19,6 @@ class HomeController extends Controller
             ->get();
 
         $posts = Post::whereIn('status_id', $statuses->pluck('id'))
-            ->notMerged()
             ->withVote()
             ->get();
 

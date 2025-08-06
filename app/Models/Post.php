@@ -11,13 +11,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-/**
- * @property int|null $merged_into_post_id
- * @property int|null $merged_by_user_id
- * @property \Illuminate\Support\Carbon|null $merged_at
- * @property-read \App\Models\Post|null $mergedIntoPost
- * @property-read \App\Models\User|null $mergedByUser
- */
 class Post extends Model
 {
     use HasFactory;
@@ -36,13 +29,6 @@ class Post extends Model
         'impact',
         'effort',
         'created_by',
-        'merged_into_post_id',
-        'merged_by_user_id',
-        'merged_at'
-    ];
-
-    protected $casts = [
-        'merged_at' => 'datetime',
     ];
 
     protected static function boot()
@@ -147,42 +133,6 @@ class Post extends Model
             ->whereHas('provider', function ($query) {
                 $query->where('type', 'github');
             });
-    }
-
-    /**
-     * The post this post was merged into.
-     */
-    public function mergedIntoPost(): BelongsTo
-    {
-        return $this->belongsTo(Post::class, 'merged_into_post_id');
-    }
-
-    /**
-     * The user who merged this post.
-     */
-    public function mergedByUser(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'merged_by_user_id');
-    }
-
-    public function mergedPosts(): HasMany
-    {
-        return $this->hasMany(Post::class, 'merged_into_post_id');
-    }
-
-    public function scopeMerged(Builder $query): void
-    {
-        $query->whereNotNull('merged_into_post_id');
-    }
-
-    public function scopeNotMerged(Builder $query): void
-    {
-        $query->whereNull('merged_into_post_id');
-    }
-
-    public function isMerged(): bool
-    {
-        return $this->merged_into_post_id !== null;
     }
 
     public function updateVotes(): void

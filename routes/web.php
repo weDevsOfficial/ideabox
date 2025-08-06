@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\StatusController;
 use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\PostController;
 use App\Http\Controllers\Admin\FeedbackController;
+use App\Http\Controllers\Admin\MergeController;
 use App\Http\Controllers\Frontend\BoardController;
 use App\Http\Controllers\Admin\UserSearchController;
 use App\Http\Controllers\Frontend\CommentController;
@@ -57,25 +58,25 @@ Route::prefix('admin')->middleware('auth', 'verified', 'admin')->group(function 
     Route::put('/feedbacks/{post}/update', [FeedbackController::class, 'updateContent'])->name('admin.feedbacks.update-content');
     Route::post('/feedbacks/{post}/vote', [FeedbackController::class, 'addVote'])->name('admin.feedbacks.vote');
     Route::delete('/feedbacks/{post}', [FeedbackController::class, 'destroy'])->name('admin.feedbacks.destroy');
+    Route::post('/feedbacks/{post}/merge', [MergeController::class, 'merge'])->name('admin.feedbacks.merge');
+
     Route::post('/api/generate-feature-description', [FeedbackController::class, 'generateDescription'])->name('api.generate-feature-description');
-
-    Route::post('/feedbacks/{post}/merge', [FeedbackController::class, 'merge'])->name('admin.feedbacks.merge');
-    Route::post('/feedbacks/{post}/unmerge', [FeedbackController::class, 'unmerge'])->name('admin.feedbacks.unmerge');
-
 
     Route::delete('/comment/{comment}', [AdminCommentController::class, 'destroy'])->name('admin.comments.destroy');
 
+    // Board management
     Route::put('/boards/{board}', [AdminBoardController::class, 'update'])->name('admin.boards.update');
     Route::post('/boards', [AdminBoardController::class, 'store'])->name('admin.boards.store');
     Route::delete('/boards/{board}', [AdminBoardController::class, 'destroy'])->name('admin.boards.destroy');
-
     Route::get('/boards', [AdminBoardController::class, 'index'])->name('admin.boards.index');
     Route::get('/boards/{board}', [AdminBoardController::class, 'show'])->name('admin.boards.show');
 
+    // Status management
     Route::get('/statuses', [StatusController::class, 'index'])->name('admin.statuses.index');
     Route::post('/statuses', [StatusController::class, 'store'])->name('admin.statuses.store');
     Route::put('/statuses/update', [StatusController::class, 'update'])->name('admin.statuses.update');
 
+    // User management
     Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
     Route::get('/users/all', [UserController::class, 'allUsers'])->name('admin.users.all');
     Route::post('/users', [UserController::class, 'store'])->name('admin.users.store');

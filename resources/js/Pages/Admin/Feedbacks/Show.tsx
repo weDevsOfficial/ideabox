@@ -3,13 +3,11 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import {
   Button,
   Checkbox,
-  Modal,
-  ModalActions,
-  ModalBody,
-  ModalHeader,
   SelectInput,
   Textarea,
+  Tooltip,
 } from '@wedevs/tail-react';
+import classNames from 'classnames';
 import {
   ArrowTopRightOnSquareIcon,
   ChevronUpIcon,
@@ -17,20 +15,19 @@ import {
   ChevronLeftIcon,
   TrashIcon,
   PencilSquareIcon,
-  DocumentDuplicateIcon,
+  ArrowsPointingInIcon,
 } from '@heroicons/react/24/outline';
 
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { formatDate } from '@/utils';
-import { PostType, StatusType, BoardType, VoteType, User } from '@/types';
+import { PostType, StatusType, BoardType, VoteType } from '@/types';
 import Comments from '@/Components/Comments';
-import classNames from 'classnames';
-import UserSearchDropdown from '@/Components/UserSearchDropdown';
-import CreateUserModal from '@/Components/CreateUserModal';
 import EditFeedback from './EditFeedback';
 import GitHubIssueLinker from '@/Components/GitHub/GitHubIssueLinker';
 import { IntegrationRepository, PostIntegrationLink } from '@/types';
 import MergePostModal from '@/Components/MergePostModal';
+import VoteModal from '@/Components/VoteModal';
+
 type Props = {
   post: PostType;
   statuses: StatusType[];
@@ -38,12 +35,6 @@ type Props = {
   votes: VoteType[];
   repositories: IntegrationRepository[];
   linkedIssues: PostIntegrationLink[];
-};
-
-type VoteProps = {
-  show: boolean;
-  onClose: () => void;
-  post: PostType;
 };
 
 const FeedbackShow = ({
@@ -164,42 +155,46 @@ const FeedbackShow = ({
         </div>
 
         <div className="border-gray-100 sm:w-96 sm:border-l sm:pl-5 dark:border-gray-700">
-          <div className="mb-4 flex items-center justify-between border-b border-gray-100 pb-4 dark:border-gray-700">
-            <div className="">
-              <Button
-                as="a"
-                href={route('post.show', {
-                  board: post.board?.slug,
-                  post: post.slug,
-                })}
-                variant="secondary"
-                className="inline-flex"
-                target="_blank"
-              >
-                <ArrowTopRightOnSquareIcon className="mr-2 h-5 w-5" />
-                View
-              </Button>
-            </div>
+          <div className="mb-4 border-b border-gray-100 pb-4 dark:border-gray-700">
+            <div className="flex justify-between gap-2">
+              {/* Edit and Merge Button Group */}
+              <div className="flex">
+                <Button
+                  as="a"
+                  href={route('post.show', {
+                    board: post.board?.slug,
+                    post: post.slug,
+                  })}
+                  variant="secondary"
+                  className="inline-flex gap-2 rounded-r-none border-r-0"
+                  target="_blank"
+                >
+                  <Tooltip content="View Feedback">
+                    <ArrowTopRightOnSquareIcon className="h-5 w-5" />
+                  </Tooltip>
+                </Button>
+                <Button
+                  variant="secondary"
+                  className="-ml-px inline-flex gap-2 rounded-l-none rounded-r-none"
+                  onClick={() => setShowEditForm(true)}
+                >
+                  <Tooltip content="Edit Feedback">
+                    <PencilSquareIcon className="h-5 w-5" />
+                  </Tooltip>
+                </Button>
 
-            <div className="flex items-center gap-2">
-              <Button
-                variant="secondary"
-                className="inline-flex"
-                onClick={() => setShowEditForm(true)}
-              >
-                <PencilSquareIcon className="mr-2 h-5 w-5" />
-                Edit
-              </Button>
+                <Button
+                  variant="secondary"
+                  className="-ml-px inline-flex gap-2 rounded-l-none"
+                  onClick={() => setShowMergeModal(true)}
+                >
+                  <Tooltip content="Merge Feedback">
+                    <ArrowsPointingInIcon className="h-5 w-5" />
+                  </Tooltip>
+                </Button>
+              </div>
 
-              <Button
-                variant="secondary"
-                className="inline-flex"
-                onClick={() => setShowMergeModal(true)}
-              >
-                <DocumentDuplicateIcon className="mr-2 h-5 w-5" />
-                Merge
-              </Button>
-
+              {/* Delete Button - Standalone */}
               <Button
                 variant="danger"
                 style="outline"
@@ -218,8 +213,9 @@ const FeedbackShow = ({
                   }
                 }}
               >
-                <TrashIcon className="mr-2 h-5 w-5" />
-                <span>Delete</span>
+                <Tooltip content="Delete Feedback">
+                  <TrashIcon className="h-5 w-5" />
+                </Tooltip>
               </Button>
             </div>
           </div>
@@ -373,71 +369,5 @@ FeedbackShow.layout = (page: React.ReactNode) => (
     }
   ></AuthenticatedLayout>
 );
-
-const VoteModal = ({ show, onClose, post }: VoteProps) => {
-  const [showUserModal, setShowUserModal] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<null | User>(null);
-  const form = useForm({
-    user_id: '',
-  });
-
-  const submitVote = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    form.post(route('admin.feedbacks.vote', [post]), {
-      onSuccess: () => {
-        onClose();
-        form.reset();
-        setSelectedUser(null);
-      },
-    });
-  };
-
-  const onSelect = (user: User) => {
-    form.setData('user_id', user.id.toString());
-    setSelectedUser(user);
-  };
-
-  const onUserCreate = (user: User) => {
-    form.setData('user_id', user.id.toString());
-    setSelectedUser(user);
-  };
-
-  return (
-    <Modal isOpen={show} onClose={onClose}>
-      <form onSubmit={submitVote}>
-        <ModalHeader>Add Voter</ModalHeader>
-
-        <ModalBody className="min-h-20">
-          <UserSearchDropdown
-            onSelect={onSelect}
-            onCreate={() => setShowUserModal(true)}
-            onClear={() => form.setData('user_id', '')}
-            selectedUser={selectedUser}
-          />
-        </ModalBody>
-
-        <ModalActions>
-          <Button
-            className="ml-2"
-            type="submit"
-            disabled={form.data.user_id === '' || form.processing}
-          >
-            Add Vote
-          </Button>
-          <Button variant="secondary" onClick={onClose}>
-            Cancel
-          </Button>
-        </ModalActions>
-      </form>
-
-      <CreateUserModal
-        show={showUserModal}
-        onClose={() => setShowUserModal(false)}
-        onSubmit={onUserCreate}
-      />
-    </Modal>
-  );
-};
 
 export default FeedbackShow;
