@@ -11,7 +11,7 @@ class Comment extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['post_id', 'parent_id', 'status_id', 'user_id', 'body', 'is_merge_comment'];
+    protected $fillable = ['post_id', 'parent_id', 'status_id', 'user_id', 'body'];
 
     protected static function boot()
     {

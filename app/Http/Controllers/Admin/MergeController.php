@@ -34,7 +34,6 @@ class MergeController extends Controller
             $targetPost->comments()->create([
                 'user_id' => $user->id,
                 'body' => "Merged feedback <strong>{$post->title}</strong>",
-                'is_merge_comment' => true,
             ]);
 
             // Delete the source post
