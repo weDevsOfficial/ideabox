@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Link, usePage } from '@inertiajs/react';
+import { Link, usePage, router } from '@inertiajs/react';
 
 import CommentBox from './CommentBox';
 import Comment from '@/Components/Comment';
 import { BoardType, CommentType, PageProps, PostType } from '@/types';
+import { Button } from '@wedevs/tail-react';
 
 type CommentsProps = {
   post: PostType;
@@ -24,7 +25,7 @@ const Comments: React.FC<CommentsProps> = ({ post }) => {
         route('post.comments.index', {
           post: post.slug,
           sort: sort,
-        })
+        }),
       );
 
       const data = await response.json();
@@ -44,13 +45,29 @@ const Comments: React.FC<CommentsProps> = ({ post }) => {
     setComments([...comments, comment]);
   };
 
+  const handleUnmerge = (comment: CommentType) => {
+    const sourcePostId = comment.body.match(/#(\d+)/)?.[1];
+
+    if (sourcePostId) {
+      router.post(
+        route('admin.feedbacks.unmerge', { post: sourcePostId }),
+        {},
+        {
+          onSuccess: () => {
+            // You might want to refresh the page or update the state accordingly
+          },
+        },
+      );
+    }
+  };
+
   return (
     <div className="mt-8">
       <div className="mb-8 ml-12">
         {auth.user && <CommentBox post={post} onComment={appendToComments} />}
 
         {!auth.user && (
-          <div className="border dark:border-gray-700 rounded bg-gray-50 dark:bg-gray-800 py-4 text-sm text-center text-gray-700 dark:text-gray-300">
+          <div className="rounded border bg-gray-50 py-4 text-center text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
             <Link href={route('login')} className="underline">
               Log in
             </Link>{' '}
@@ -64,13 +81,13 @@ const Comments: React.FC<CommentsProps> = ({ post }) => {
       </div>
 
       {comments.length > 0 && !isFetching && (
-        <div className="flex justify-between items-center text-gray-700 ml-12 mb-8 pb-4 border-b dark:border-gray-700">
+        <div className="mb-8 ml-12 flex items-center justify-between border-b pb-4 text-gray-700 dark:border-gray-700">
           <h3 className="text-lg font-semibold dark:text-gray-300">Comments</h3>
 
           <div className="flex items-center">
-            <div className="text-sm mr-2 dark:text-gray-400">Sort By</div>
+            <div className="mr-2 text-sm dark:text-gray-400">Sort By</div>
             <select
-              className="px-2 text-gray-700 dark:text-gray-300 dark:bg-gray-800 min-w-28 text-sm py-1.5 rounded border border-gray-200 dark:border-gray-700"
+              className="min-w-28 rounded border border-gray-200 px-2 py-1.5 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
               value={sort}
               onChange={(e) => setSort(e.target.value as 'latest' | 'oldest')}
             >

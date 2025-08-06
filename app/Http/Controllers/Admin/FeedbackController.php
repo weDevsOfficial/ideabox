@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Post;
@@ -10,13 +12,22 @@ use App\Models\Comment;
 use App\Helpers\Formatting;
 use Illuminate\Http\Request;
 use App\Services\OpenAIService;
+use App\Services\MergePostService;
 use App\Models\PostIntegrationLink;
 use App\Http\Controllers\Controller;
 use App\Models\IntegrationRepository;
 use App\Jobs\SendStatusChangeNotifications;
+use Illuminate\Http\JsonResponse;
 
 class FeedbackController extends Controller
 {
+    private MergePostService $mergePostService;
+
+    public function __construct(MergePostService $mergePostService)
+    {
+        $this->mergePostService = $mergePostService;
+    }
+
     public function index(Request $request)
     {
         $board = $request->input('board');
@@ -26,7 +37,7 @@ class FeedbackController extends Controller
 
         $boards = Board::select('id', 'name', 'posts', 'slug')->get();
         $statuses = Status::select('id', 'name', 'color')->get();
-        $query = Post::with('by', 'board', 'status');
+        $query = Post::with('by', 'board', 'status')->notMerged();
 
         if ($board && $board !== 'all') {
             $query->where('board_id', $board);
@@ -80,6 +91,10 @@ class FeedbackController extends Controller
      */
     public function show(Post $post)
     {
+        if ($post->isMerged()) {
+            return redirect()->route('admin.feedbacks.show', $post->mergedIntoPost);
+        }
+
         $post->load('creator', 'board', 'status', 'by');
 
         $boards = Board::select('id', 'name', 'posts', 'slug')->get();
@@ -234,5 +249,46 @@ class FeedbackController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => 'Failed to generate description'], 500);
         }
+    }
+
+    public function merge(Request $request, Post $post)
+    {
+        $request->validate([
+            'target_post_id' => ['required', 'exists:posts,id'],
+        ]);
+
+        $targetPost = Post::findOrFail($request->target_post_id);
+
+        $this->mergePostService->merge($post, $targetPost, auth()->user());
+
+        return redirect()->route('admin.feedbacks.show', $targetPost)->with('success', 'Post merged successfully.');
+    }
+
+    public function unmerge(Post $post)
+    {
+        $this->mergePostService->unmerge($post, auth()->user());
+
+        return redirect()->route('admin.feedbacks.show', $post)->with('success', 'Post unmerged successfully.');
+    }
+
+    public function search(Request $request): JsonResponse
+    {
+        $request->validate(['search' => 'string|nullable']);
+        $search = $request->input('search');
+
+        if (empty($search)) {
+            return response()->json([]);
+        }
+
+        $query = Post::query()->notMerged();
+
+        $query->where(function ($q) use ($search) {
+            $q->where('title', 'like', "%{$search}%")
+                ->orWhere('body', 'like', "%{$search}%");
+        });
+
+        $posts = $query->take(10)->get();
+
+        return response()->json($posts);
     }
 }

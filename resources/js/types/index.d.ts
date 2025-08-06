@@ -117,6 +117,7 @@ export interface CommentType {
   user?: User;
   children: CommentType[];
   status: null | StatusType;
+  is_merge_comment: boolean;
 }
 
 export interface RoadmapType {

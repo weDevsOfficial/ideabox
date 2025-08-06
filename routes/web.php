@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\ProfileController;
@@ -47,6 +49,7 @@ Route::prefix('admin')->middleware('auth', 'verified', 'admin')->group(function 
     Route::get('/settings', [SettingController::class, 'index'])->name('admin.settings.index');
     Route::post('/settings', [SettingController::class, 'update'])->name('admin.settings.update');
 
+    Route::get('/feedbacks/search', [FeedbackController::class, 'search'])->name('admin.feedbacks.search');
     Route::get('/feedbacks', [FeedbackController::class, 'index'])->name('admin.feedbacks.index');
     Route::get('/feedbacks/{post}', [FeedbackController::class, 'show'])->name('admin.feedbacks.show');
     Route::post('/feedbacks', [FeedbackController::class, 'store'])->name('admin.feedbacks.store');
@@ -55,6 +58,10 @@ Route::prefix('admin')->middleware('auth', 'verified', 'admin')->group(function 
     Route::post('/feedbacks/{post}/vote', [FeedbackController::class, 'addVote'])->name('admin.feedbacks.vote');
     Route::delete('/feedbacks/{post}', [FeedbackController::class, 'destroy'])->name('admin.feedbacks.destroy');
     Route::post('/api/generate-feature-description', [FeedbackController::class, 'generateDescription'])->name('api.generate-feature-description');
+
+    Route::post('/feedbacks/{post}/merge', [FeedbackController::class, 'merge'])->name('admin.feedbacks.merge');
+    Route::post('/feedbacks/{post}/unmerge', [FeedbackController::class, 'unmerge'])->name('admin.feedbacks.unmerge');
+
 
     Route::delete('/comment/{comment}', [AdminCommentController::class, 'destroy'])->name('admin.comments.destroy');
 
