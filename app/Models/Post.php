@@ -1,9 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Post extends Model
@@ -23,7 +28,7 @@ class Post extends Model
         'eta',
         'impact',
         'effort',
-        'created_by'
+        'created_by',
     ];
 
     protected static function boot()
@@ -56,7 +61,7 @@ class Post extends Model
         return 'slug';
     }
 
-    public function board()
+    public function board(): BelongsTo
     {
         return $this->belongsTo(Board::class);
     }
@@ -66,17 +71,17 @@ class Post extends Model
         return $this->hasOne(Status::class, 'id', 'status_id');
     }
 
-    public function votes()
+    public function votes(): HasMany
     {
         return $this->hasMany(Vote::class);
     }
 
-    public function by()
+    public function by(): BelongsTo
     {
         return $this->belongsTo(User::class, 'by');
     }
 
-    public function creator()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }
@@ -84,7 +89,7 @@ class Post extends Model
     /**
      * Get all of the comments for the post.
      */
-    public function comments()
+    public function comments(): HasMany
     {
         return $this->hasMany(Comment::class);
     }
@@ -92,12 +97,12 @@ class Post extends Model
     /**
      * Get all of the subscriptions for the post.
      */
-    public function subscriptions()
+    public function subscriptions(): HasMany
     {
         return $this->hasMany(PostSubscription::class);
     }
 
-    public function scopeWithVote($query)
+    public function scopeWithVote($query): void
     {
         if (auth()->check()) {
             $userId = auth()->id();
@@ -114,7 +119,7 @@ class Post extends Model
     /**
      * Get all integration links for the post.
      */
-    public function integrationLinks()
+    public function integrationLinks(): HasMany
     {
         return $this->hasMany(PostIntegrationLink::class);
     }
@@ -122,11 +127,16 @@ class Post extends Model
     /**
      * Get GitHub integration links for the post.
      */
-    public function githubLinks()
+    public function githubLinks(): HasMany
     {
         return $this->hasMany(PostIntegrationLink::class)
             ->whereHas('provider', function ($query) {
                 $query->where('type', 'github');
             });
+    }
+
+    public function updateVotes(): void
+    {
+        $this->update(['votes' => $this->votes()->count()]);
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Post;
@@ -14,6 +16,7 @@ use App\Models\PostIntegrationLink;
 use App\Http\Controllers\Controller;
 use App\Models\IntegrationRepository;
 use App\Jobs\SendStatusChangeNotifications;
+use Illuminate\Http\JsonResponse;
 
 class FeedbackController extends Controller
 {
@@ -234,5 +237,26 @@ class FeedbackController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => 'Failed to generate description'], 500);
         }
+    }
+
+    public function search(Request $request): JsonResponse
+    {
+        $request->validate(['search' => ['string', 'nullable']]);
+        $search = $request->input('search');
+
+        if (empty($search)) {
+            return response()->json([]);
+        }
+
+        $query = Post::query();
+
+        $query->where(function ($q) use ($search) {
+            $q->where('title', 'like', "%{$search}%")
+                ->orWhere('body', 'like', "%{$search}%");
+        });
+
+        $posts = $query->take(10)->get();
+
+        return response()->json($posts);
     }
 }

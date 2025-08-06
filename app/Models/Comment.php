@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -9,7 +11,7 @@ class Comment extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['post_id', 'parent_id', 'status_id', 'user_id', 'body'];
+    protected $fillable = ['post_id', 'parent_id', 'status_id', 'user_id', 'body', 'is_merge_comment'];
 
     protected static function boot()
     {
