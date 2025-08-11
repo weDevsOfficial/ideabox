@@ -25,7 +25,7 @@ class BoardController extends Controller
             'commented' => 'comments',
         ];
 
-        $postsQuery = Post::where('board_id', $board->id)->notMerged();
+        $postsQuery = Post::where('board_id', $board->id);
         $statuses = Status::select('id')
                           ->inFrontend()
                           ->get();
