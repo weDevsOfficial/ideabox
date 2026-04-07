@@ -86,6 +86,49 @@ php artisan serve
 
 Navigate to http://localhost:8000 in your web browser to view the application.
 
+## Docker Deployment
+
+This repository includes a production-focused Docker setup built around `docker compose`.
+
+1. Copy the Docker env template and fill in your production values:
+
+   ```bash
+   cp .env.docker.example .env
+   ```
+
+2. Generate a stable application key and place it in `APP_KEY` inside `.env`:
+
+   ```bash
+   docker run --rm php:8.3-cli php -r "echo 'base64:'.base64_encode(random_bytes(32)).PHP_EOL;"
+   ```
+
+3. Set `APP_URL` to the public HTTPS URL you will deploy behind. This is required for correct GitHub OAuth callbacks and webhook URLs.
+
+4. Build and start the deployment stack:
+
+   ```bash
+   docker compose up -d --build
+   ```
+
+5. Optionally seed the first deployment:
+
+   ```bash
+   docker compose exec app php artisan db:seed --force
+   ```
+
+6. Open the application at `http://localhost:8080` locally, or at your deployed domain. Container health is exposed at `/up`.
+
+### Updating a Deployment
+
+Future updates follow the same rebuild-and-redeploy flow:
+
+```bash
+git pull
+docker compose up -d --build
+```
+
+The app container automatically waits for MySQL, runs `php artisan migrate --force`, ensures `public/storage` is linked, and warms Laravel's config and view caches on startup.
+
 ### Contributing
 
 Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are greatly appreciated.
