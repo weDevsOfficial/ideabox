@@ -17,3 +17,4 @@ yarn-error.log
 /.vscode
 .php-cs-fixer.cache
 config.bat
+.env
