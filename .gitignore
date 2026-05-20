@@ -12,11 +12,10 @@ Homestead.yaml
 auth.json
 npm-debug.log
 yarn-error.log
-.env
-.env.production
 /.fleet
 /.idea
 /.vscode
 .php-cs-fixer.cache
 bootstrap/ssr/*
 config.bat
+.env
