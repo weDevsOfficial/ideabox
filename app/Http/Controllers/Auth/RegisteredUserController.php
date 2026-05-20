@@ -21,7 +21,18 @@ class RegisteredUserController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('Auth/Register');
+        return Inertia::render('Auth/Register', [
+            'googleAuthEnabled' => $this->isGoogleAuthEnabled(),
+        ]);
+    }
+
+    /**
+     * Check if Google OAuth is configured.
+     */
+    private function isGoogleAuthEnabled(): bool
+    {
+        return !empty(config('services.google.client_id'))
+            && !empty(config('services.google.client_secret'));
     }
 
     /**

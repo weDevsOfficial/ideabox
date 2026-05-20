@@ -1,9 +1,9 @@
 import { useEffect, FormEventHandler } from 'react';
 import Checkbox from '@/Components/Checkbox';
 import GuestLayout from '@/Layouts/GuestLayout';
+import GoogleIcon from '@/Components/GoogleIcon';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
-import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { Button } from '@wedevs/tail-react';
@@ -11,9 +11,11 @@ import { Button } from '@wedevs/tail-react';
 export default function Login({
   status,
   canResetPassword,
+  googleAuthEnabled,
 }: {
   status?: string;
   canResetPassword: boolean;
+  googleAuthEnabled: boolean;
 }) {
   const { data, setData, post, processing, errors, reset } = useForm({
     email: '',
@@ -75,7 +77,7 @@ export default function Login({
           <InputError message={errors.password} className="mt-2" />
         </div>
 
-        <div className="block mt-4">
+        <div className="flex items-center justify-between mt-4">
           <label className="flex items-center">
             <Checkbox
               name="remember"
@@ -86,23 +88,42 @@ export default function Login({
               Remember me
             </span>
           </label>
-        </div>
 
-        <div className="flex items-center justify-end mt-4">
           {canResetPassword && (
             <Link
               href={route('password.request')}
-              className="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
+              className="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-500"
             >
               Forgot your password?
             </Link>
           )}
-
-          <Button type="submit" className="ms-4" disabled={processing}>
-            Log in
-          </Button>
         </div>
+
+        <Button type="submit" className="w-full mt-6" disabled={processing}>
+          Log in
+        </Button>
       </form>
+
+      {googleAuthEnabled && (
+        <>
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300 dark:border-gray-600" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="bg-white dark:bg-gray-800 px-4 text-gray-500 dark:text-gray-400">or</span>
+            </div>
+          </div>
+
+          <a
+            href={route('auth.google')}
+            className="flex w-full items-center justify-center gap-3 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-transparent px-4 py-3 text-base font-medium text-gray-700 dark:text-gray-300 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+          >
+            <GoogleIcon className="h-5 w-5" />
+            <span>Continue with Google</span>
+          </a>
+        </>
+      )}
     </GuestLayout>
   );
 }

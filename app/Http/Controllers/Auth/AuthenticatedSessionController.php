@@ -22,7 +22,17 @@ class AuthenticatedSessionController extends Controller
         return Inertia::render('Auth/Login', [
             'canResetPassword' => Route::has('password.request'),
             'status' => session('status'),
+            'googleAuthEnabled' => $this->isGoogleAuthEnabled(),
         ]);
+    }
+
+    /**
+     * Check if Google OAuth is configured.
+     */
+    private function isGoogleAuthEnabled(): bool
+    {
+        return !empty(config('services.google.client_id'))
+            && !empty(config('services.google.client_secret'));
     }
 
     /**

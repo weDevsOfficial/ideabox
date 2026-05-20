@@ -29,6 +29,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'role',
         'email_preferences',
+        'google_id',
+        'avatar_url',
     ];
 
     /**
@@ -42,6 +44,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at',
         'created_at',
         'updated_at',
+        'google_id',
     ];
 
     /**
@@ -85,6 +88,10 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function getAvatarAttribute(): string
     {
+        if ($this->avatar_url) {
+            return $this->avatar_url;
+        }
+
         return 'https://www.gravatar.com/avatar/' . md5($this->email) . '?s=56&d=mm';
     }
 
