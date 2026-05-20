@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
+use App\Http\Controllers\HealthCheckController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\StatusController;
@@ -34,6 +35,8 @@ use App\Http\Controllers\Frontend\SubscriptionController;
 |
 */
 
+Route::get('/up', HealthCheckController::class)
+    ->name('health.up');
 Route::get('/', [HomeController::class, 'index'])
     ->name('home');
 Route::get('/b/{board}', [BoardController::class, 'show'])
