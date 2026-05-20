@@ -94,7 +94,9 @@ export default function LinkManager({ value, onChange }: LinkManagerProps) {
   return (
     <div>
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-sm font-semibold">Links</h3>
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+          Links
+        </h3>
         <Button
           size="small"
           variant="secondary"
@@ -107,7 +109,9 @@ export default function LinkManager({ value, onChange }: LinkManagerProps) {
       </div>
 
       {links.length === 0 ? (
-        <p className="text-sm italic text-gray-500">No links added yet.</p>
+        <p className="text-sm italic text-gray-500 dark:text-gray-400">
+          No links added yet.
+        </p>
       ) : (
         <DragDropContext onDragEnd={handleDragEnd}>
           <Droppable droppableId="links">
@@ -137,10 +141,10 @@ export default function LinkManager({ value, onChange }: LinkManagerProps) {
                             <Bars3Icon className="h-4 w-4" />
                           </div>
                           <div>
-                            <div className="text-sm font-medium">
+                            <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                               {link.label}
                             </div>
-                            <div className="max-w-md truncate font-mono text-sm text-gray-500">
+                            <div className="max-w-md truncate font-mono text-sm text-gray-500 dark:text-gray-400">
                               {link.href}
                               {link.is_external && (
                                 <span className="ml-1 text-xs italic">
