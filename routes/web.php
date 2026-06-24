@@ -21,6 +21,7 @@ use App\Http\Controllers\Admin\GitHub\GitHubRepositoryController;
 use App\Http\Controllers\Admin\BoardController as AdminBoardController;
 use App\Http\Controllers\Admin\CommentController as AdminCommentController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\BillingController;
 use App\Http\Controllers\Frontend\SubscriptionController;
 
 /*
@@ -50,6 +51,10 @@ Route::prefix('admin')->middleware('auth', 'verified', 'admin')->group(function 
     Route::get('/settings', [SettingController::class, 'index'])->name('admin.settings.index');
     Route::post('/settings', [SettingController::class, 'update'])->name('admin.settings.update');
 
+    // Billing / Freemius SaaS
+    Route::get('/billing', [BillingController::class, 'index'])->name('admin.billing.index');
+    Route::post('/billing/activate', [BillingController::class, 'activate'])->name('admin.billing.activate');
+
     Route::get('/feedbacks/search', [FeedbackController::class, 'search'])->name('admin.feedbacks.search');
     Route::get('/feedbacks', [FeedbackController::class, 'index'])->name('admin.feedbacks.index');
     Route::get('/feedbacks/{post}', [FeedbackController::class, 'show'])->name('admin.feedbacks.show');
@@ -60,7 +65,9 @@ Route::prefix('admin')->middleware('auth', 'verified', 'admin')->group(function 
     Route::delete('/feedbacks/{post}', [FeedbackController::class, 'destroy'])->name('admin.feedbacks.destroy');
     Route::post('/feedbacks/{post}/merge', [MergeController::class, 'merge'])->name('admin.feedbacks.merge');
 
-    Route::post('/api/generate-feature-description', [FeedbackController::class, 'generateDescription'])->name('api.generate-feature-description');
+    Route::post('/api/generate-feature-description', [FeedbackController::class, 'generateDescription'])
+        ->middleware('premium:ai_assist')
+        ->name('api.generate-feature-description');
 
     Route::delete('/comment/{comment}', [AdminCommentController::class, 'destroy'])->name('admin.comments.destroy');
 
@@ -85,8 +92,10 @@ Route::prefix('admin')->middleware('auth', 'verified', 'admin')->group(function 
 
     Route::get('/search-users', [UserSearchController::class, 'search'])->name('admin.users.search');
 
-    // Integrations main page
-    Route::get('/integrations', [IntegrationsController::class, 'index'])->name('admin.integrations.index');
+    // Integrations main page (premium-gated)
+    Route::get('/integrations', [IntegrationsController::class, 'index'])
+        ->middleware('premium:integrations')
+        ->name('admin.integrations.index');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -106,7 +115,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::get('posts/{post}/unsubscribe', [SubscriptionController::class, 'unsubscribe'])->name('post.unsubscribe');
 
 // GitHub Integration Routes - Updated to use the new controllers
-Route::middleware(['auth', 'admin', 'verified'])->prefix('admin/integrations/github')->name('admin.integrations.github.')->group(function () {
+Route::middleware(['auth', 'admin', 'verified', 'premium:integrations'])->prefix('admin/integrations/github')->name('admin.integrations.github.')->group(function () {
     // Account management
     Route::get('/', [GitHubAccountController::class, 'settings'])->name('settings');
     Route::post('/connect', [GitHubAccountController::class, 'connect'])->name('connect');

@@ -107,6 +107,16 @@ export default function SettingInput({
     case 'text':
       return <Textarea value={value || ''} onChange={onChange} rows={3} />;
 
+    case 'password':
+      return (
+        <TextField
+          type="password"
+          value={value || ''}
+          onChange={onChange}
+          autoComplete="new-password"
+        />
+      );
+
     default:
       return <TextField type="text" value={value || ''} onChange={onChange} />;
   }

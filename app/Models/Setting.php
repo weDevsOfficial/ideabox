@@ -129,6 +129,43 @@ class Setting extends Model
                 ],
             ],
 
+            // Billing / Freemius SaaS Group
+            'billing' => [
+                'label' => 'Billing',
+                'settings' => [
+                    'freemius_enabled' => [
+                        'type' => 'boolean',
+                        'label' => 'Enable SaaS Mode',
+                        'description' => 'Gate premium features behind an active Freemius license. When off, all features are unlocked.',
+                        'default' => false,
+                    ],
+                    'freemius_product_id' => [
+                        'type' => 'string',
+                        'label' => 'Freemius Product ID',
+                        'description' => 'The Product (Plugin) ID from your Freemius Developer Dashboard.',
+                        'default' => '',
+                    ],
+                    'freemius_public_key' => [
+                        'type' => 'string',
+                        'label' => 'Freemius Public Key',
+                        'description' => 'The public key used to load the embedded checkout.',
+                        'default' => '',
+                    ],
+                    'freemius_secret_key' => [
+                        'type' => 'password',
+                        'label' => 'Freemius Secret Key',
+                        'description' => 'The secret key used to verify webhooks. Keep this private.',
+                        'default' => '',
+                    ],
+                    'freemius_plan_id' => [
+                        'type' => 'string',
+                        'label' => 'Premium Plan ID',
+                        'description' => 'The Freemius Plan ID customers purchase to unlock premium features.',
+                        'default' => '',
+                    ],
+                ],
+            ],
+
             // Links Settings Group
             'links' => [
                 'label' => 'Links',

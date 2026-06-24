@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\GitHubWebhookController;
+use App\Http\Controllers\Api\FreemiusWebhookController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -21,3 +22,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 // Webhook routes
 Route::post('/webhooks/github', [GitHubWebhookController::class, 'handle'])->name('api.webhooks.github');
+Route::post('/webhooks/freemius', [FreemiusWebhookController::class, 'handle'])->name('api.webhooks.freemius');

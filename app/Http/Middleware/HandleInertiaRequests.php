@@ -9,6 +9,7 @@ use Inertia\Middleware;
 use App\Facades\Settings;
 use Tightenco\Ziggy\Ziggy;
 use Illuminate\Http\Request;
+use App\Services\Freemius\FreemiusService;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -44,6 +45,10 @@ class HandleInertiaRequests extends Middleware
             'success' => fn () => $request->session()->get('success'),
             'error' => fn () => $request->session()->get('error'),
             'siteSettings' => Settings::all(),
+            'premium' => fn () => [
+                'saasEnabled' => app(FreemiusService::class)->saasEnabled(),
+                'features' => app(FreemiusService::class)->featureAvailability(),
+            ],
             'boards' => Board::getCachedPublicBoards(),
             'ziggy' => fn () => [
                 ...(new Ziggy())->toArray(),

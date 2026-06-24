@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Services\Freemius\FreemiusService;
 use App\Services\SettingService;
 use Illuminate\Support\ServiceProvider;
 
@@ -16,6 +17,10 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->singleton(SettingService::class, function ($app) {
             return new SettingService();
+        });
+
+        $this->app->singleton(FreemiusService::class, function ($app) {
+            return new FreemiusService();
         });
     }
 

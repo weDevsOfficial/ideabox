@@ -32,9 +32,15 @@ export type PageProps<
   appLogo: string;
   boards: BoardType[];
   siteSettings?: SiteSettings;
+  premium?: PremiumProps;
   success?: string;
   error?: string;
 };
+
+export interface PremiumProps {
+  saasEnabled: boolean;
+  features: Record<string, boolean>;
+}
 
 export interface PaginatedLink {
   url: string;

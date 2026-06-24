@@ -75,6 +75,13 @@ export default function Authenticated({
                 >
                   Settings
                 </NavLink>
+
+                <NavLink
+                  href={route('admin.billing.index')}
+                  active={route().current('admin.billing.*')}
+                >
+                  Billing
+                </NavLink>
               </div>
             </div>
 
@@ -215,6 +222,13 @@ export default function Authenticated({
               active={route().current('admin.settings.*')}
             >
               Settings
+            </ResponsiveNavLink>
+
+            <ResponsiveNavLink
+              href={route('admin.billing.index')}
+              active={route().current('admin.billing.*')}
+            >
+              Billing
             </ResponsiveNavLink>
           </div>
 
