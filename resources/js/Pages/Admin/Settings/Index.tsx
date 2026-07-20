@@ -88,7 +88,7 @@ export default function SettingsIndex({
   return (
     <Authenticated
       header={
-        <h2 className="text-xl font-semibold leading-tight text-gray-800">
+        <h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-100">
           Settings
         </h2>
       }
